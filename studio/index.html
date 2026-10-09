@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: http://localhost:*; frame-src http://localhost:*; connect-src 'self'" />
+  <title>Game Forge Studio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">◆</span> Game Forge <b>Studio</b></div>
+    <div class="status" id="status"><span class="dot"></span><span id="statusText">Checking Claude Code…</span></div>
+  </header>
+
+  <main class="layout">
+    <!-- games -->
+    <aside class="side">
+      <button class="primary wide" id="newGame">＋ New game</button>
+      <div class="label">My games</div>
+      <div id="games" class="games"></div>
+      <button class="ghost wide small" id="openFolder">Open games folder</button>
+    </aside>
+
+    <!-- chat -->
+    <section class="chat">
+      <div class="chatHead">
+        <div><div class="title" id="chatTitle">New game</div><div class="sub" id="chatSub">Describe the game you want and Claude Code will build it.</div></div>
+        <div class="actions">
+          <button class="ghost small" id="exportBtn" hidden>Export for itch.io</button>
+          <button class="ghost small" id="resetChat" title="Start a fresh conversation about this game">New chat</button>
+        </div>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="fixes" id="fixes" hidden></div>
+      <div class="chips" id="chips"></div>
+      <form class="composer" id="composer">
+        <textarea id="input" rows="2" placeholder="Describe your game, or ask for a change…"></textarea>
+        <button class="primary" id="send" type="submit">Send</button>
+        <button class="danger" id="stop" type="button" hidden>Stop</button>
+      </form>
+    </section>
+
+    <!-- preview -->
+    <section class="preview" id="preview">
+      <div class="previewHead">
+        <div class="title" id="previewTitle">Preview</div>
+        <div class="actions">
+          <button class="ghost small" id="reload" title="Restart the game">⟳ Restart</button>
+          <button class="ghost small" id="openBrowser" title="Open in your browser">↗ Open in browser</button>
+          <button class="ghost small" id="togglePreview" title="Hide the preview panel">⇥</button>
+        </div>
+      </div>
+      <div class="frameWrap">
+        <iframe id="frame" allow="autoplay; fullscreen; pointer-lock; gamepad" title="Game preview"></iframe>
+        <div class="empty" id="emptyPreview">Your game will appear here as soon as it exists.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- first-run setup: everything stays in Anthropic's own sign-in flow -->
+  <div class="setup" id="setup" hidden>
+    <div class="card">
+      <h1>Let's get you set up</h1>
+      <p class="muted">Game Forge Studio runs <b>Claude Code</b> on your computer with your own Claude account. Your sign-in stays with Claude: this app never sees your password or tokens.</p>
+      <ol class="steps">
+        <li id="stepInstall"><div><b>Install Claude Code</b><span class="muted" id="installNote">Opens a terminal window with the official installer.</span></div><button class="primary small" id="installBtn">Install</button></li>
+        <li id="stepLogin"><div><b>Sign in with your Claude account</b><span class="muted">Opens Claude's own sign-in page in your browser. Needs a Claude Pro or Max plan.</span></div><button class="primary small" id="loginBtn">Sign in</button></li>
+        <li id="stepTools"><div><b>Game tools</b><span class="muted" id="toolsNote">Checking…</span></div></li>
+      </ol>
+      <button class="ghost small" id="recheck">I've done it — check again</button>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

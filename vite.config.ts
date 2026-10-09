@@ -14,6 +14,8 @@ const games = readdirSync(resolve(root, 'games'), { withFileTypes: true })
 
 export default defineConfig({
   base: './',
+  // dependency cache in the project, not node_modules/.vite (in the Studio app node_modules lives inside the signed app bundle)
+  cacheDir: '.vite-cache',
   // the CC0 asset library is served as-is (stable paths for models/textures/sounds) — see kit/assets.ts
   publicDir: only ? false : 'assets',
   resolve: { alias: { '@kit': resolve(root, 'kit') } },

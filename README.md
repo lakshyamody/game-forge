@@ -13,6 +13,16 @@ Everything is set up for an AI agent to work fast: a shared game kit (juice, pro
 
 All games were built by Claude in this repo from short prompts, using the shared kit and the CC0 asset library below.
 
+## Game Forge Studio (desktop app, no setup)
+
+For people who don't use a terminal: a Mac app with a chat on the left and the live game on the right.
+
+- **One download:** `npm run studio:build` makes `dist-studio/Game-Forge-Studio.dmg` (~380 MB). It bundles the game tools, the asset library and every library, and runs on its own built-in Node, so the person you send it to doesn't install Node, npm or git.
+- **Uses their own Claude Code:** the setup screen installs Claude Code with Anthropic's official installer and signs in through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max).
+- **Making games:** "New game" → describe it → Claude Code builds it and the preview appears. Ask for changes in plain words; click a quick-fix to apply a kid-check fix; "Export for itch.io" makes the zip.
+- Games live in `~/Game Forge/games`. Try the app from this repo with `npm run studio`.
+- Not yet: Windows build, and an Apple Developer ID signature. Until it's signed and notarized, people right-click the app → Open the first time.
+
 ## Asset library
 
 ![Asset library](docs/screenshots/asset-library.jpg)

@@ -50,6 +50,10 @@ A browser-game workshop: shared kit + genre templates + headless playtesting, so
 
 Every game build ends with a kid check (`.claude/skills/kid-check/SKILL.md`): 5 problems a kid would point out in how the game looks (colours, sizes, flat or unfinished visuals, HUD look; not gameplay), each with a small (~10 line) fix with a fix already implemented, tested and saved as `games/<slug>/fixes/<n>.patch`, listed in `games/<slug>/FIXES.md`. **When the user says "fix 2" / "fix all" / names a listed problem, run `npm run fixes -- apply <slug> <n|all>`** — don't re-implement it.
 
+## Game Forge Studio
+
+`studio/` is a desktop app (Electron) that runs the user's own Claude Code CLI in this repo, with a live preview. `npm run studio` (dev) · `npm run studio:build` (macOS .app + .dmg via `scripts/build-studio.mjs`). In the packaged app the workspace is `~/Game Forge`, `node`/`npm`/`npx` are shims on the app's built-in Node, and Claude Code gets a short extra system prompt (plain-language replies, never start dev servers).
+
 ## Commands
 
 `npm run new` (list) · `npm run new -- <slug> --template <t>` / `--from <game>` · `npm run play -- <slug> [query]` · `npm run shot -- <slug>` · `npm run check` · `npm run assets -- …` · `npm run fixes -- start|save|apply|undo|list <slug> [n]` · `npm run ship -- <slug>` (itch.io zip, only the assets it uses) · `npm run build` (whole arcade + library)
