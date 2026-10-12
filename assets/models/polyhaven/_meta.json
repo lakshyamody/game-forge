@@ -1,0 +1,2385 @@
+{
+ "street_lamp_01": {
+  "categories": [
+   "lighting",
+   "industrial",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   704.3362259864807,
+   386.49316132068634,
+   3870.5554008483887
+  ]
+ },
+ "Lantern_01": {
+  "categories": [
+   "props",
+   "lighting"
+  ],
+  "dimensions": [
+   122.08568677306175,
+   97.18310832977295,
+   294.2466139793396
+  ]
+ },
+ "Chandelier_03": {
+  "categories": [
+   "lighting",
+   "decorative"
+  ],
+  "dimensions": [
+   780.4270684719086,
+   785.4602336883545,
+   1040.6459806239354
+  ]
+ },
+ "Chandelier_01": {
+  "categories": [
+   "lighting",
+   "decorative"
+  ],
+  "dimensions": [
+   746.4556992053986,
+   815.5497610569,
+   798.2709443223541
+  ]
+ },
+ "modern_ceiling_lamp_01": {
+  "categories": [
+   "lighting"
+  ],
+  "dimensions": [
+   431.6493272781372,
+   431.6607564687729,
+   951.5514969825745
+  ]
+ },
+ "brass_candleholders": {
+  "categories": [
+   "decorative",
+   "lighting"
+  ],
+  "dimensions": [
+   1052.9398620128632,
+   364.6823465824127,
+   835.2597653865814
+  ]
+ },
+ "lightbulb_01": {
+  "categories": [
+   "lighting",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   59.98999997973442,
+   59.99000743031502,
+   100.28896853327751
+  ]
+ },
+ "desk_lamp_arm_01": {
+  "categories": [
+   "lighting",
+   "rigged",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   617.3093914985657,
+   408.02252292633057,
+   879.0190517902374
+  ]
+ },
+ "Chandelier_02": {
+  "categories": [
+   "lighting"
+  ],
+  "dimensions": [
+   678.9563298225403,
+   619.0831661224365,
+   848.0727672576904
+  ]
+ },
+ "street_lamp_02": {
+  "categories": [
+   "lighting",
+   "industrial",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   386.49316132068634,
+   806.7893021069672,
+   1675.0419437885284
+  ]
+ },
+ "wooden_lantern_01": {
+  "categories": [
+   "props",
+   "lighting",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   221.04809433221817,
+   234.72441732883453,
+   530.1365610212088
+  ]
+ },
+ "brass_diya_lantern": {
+  "categories": [
+   "decorative",
+   "lighting"
+  ],
+  "dimensions": [
+   123.00453707575798,
+   123.00454080104828,
+   380.8239474892616
+  ]
+ },
+ "lantern_chandelier_01": {
+  "categories": [
+   "lighting"
+  ],
+  "dimensions": [
+   579.170286655426,
+   574.6368169784546,
+   877.587977796793
+  ]
+ },
+ "industrial_wall_lamp": {
+  "categories": [
+   "lighting"
+  ],
+  "dimensions": [
+   273.4608203172684,
+   140.37844325849136,
+   429.90660667419434
+  ]
+ },
+ "chinese_chandelier": {
+  "categories": [
+   "lighting",
+   "decorative"
+  ],
+  "dimensions": [
+   878.3927261829376,
+   878.709465265274,
+   748.2100167544559
+  ]
+ },
+ "industrial_wall_sconce": {
+  "categories": [
+   "lighting",
+   "decorative"
+  ],
+  "dimensions": [
+   150.348000228405,
+   251.5759002417326,
+   341.7818397283554
+  ]
+ },
+ "wooden_candlestick": {
+  "categories": [
+   "decorative",
+   "lighting"
+  ],
+  "dimensions": [
+   98.3029305934906,
+   99.87897053360939,
+   219.74407136440277
+  ]
+ },
+ "lightbulb_led": {
+  "categories": [
+   "electronics",
+   "lighting",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   61.441509053111076,
+   61.441510915756226,
+   100.25119408965111
+  ]
+ },
+ "vintage_oil_lamp": {
+  "categories": [
+   "lighting",
+   "decorative"
+  ],
+  "dimensions": [
+   219.9999988079071,
+   219.9999913573265,
+   801.6371909276536
+  ]
+ },
+ "hanging_industrial_lamp": {
+  "categories": [
+   "lighting"
+  ],
+  "dimensions": [
+   549.6065020561218,
+   549.606442451477,
+   1355.3501134738326
+  ]
+ },
+ "industrial_pipe_lamp": {
+  "categories": [
+   "collection: project_lighthouse",
+   "industrial",
+   "lighting"
+  ],
+  "dimensions": [
+   182.99034982919693,
+   262.07105815410614,
+   364.1493618488312
+  ]
+ },
+ "security_light": {
+  "categories": [
+   "lighting",
+   "industrial",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   323.14473390579224,
+   417.2230511903763,
+   530.9766530990601
+  ]
+ },
+ "caged_hanging_light": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "industrial"
+  ],
+  "dimensions": [
+   1161.8340015411377,
+   314.8960471153259,
+   750.0966191291809
+  ]
+ },
+ "mounted_fluorescent_lights": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "industrial"
+  ],
+  "dimensions": [
+   912.1809005737305,
+   645.4365849494934,
+   35.35318718786584
+  ]
+ },
+ "pull_chain_light_socket": {
+  "categories": [
+   "lighting",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   110.2633886039257,
+   110.2633848786354,
+   165.41572205081323
+  ]
+ },
+ "industrial_caged_sconce": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "industrial"
+  ],
+  "dimensions": [
+   1210.1812362670898,
+   389.4345611333847,
+   912.8422662615776
+  ]
+ },
+ "portable_searchlight": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "electronics",
+   "tools",
+   "props"
+  ],
+  "dimensions": [
+   165.27599096298218,
+   253.3835619688034,
+   185.3470355272293
+  ]
+ },
+ "pastic_torch_6v": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "tools",
+   "electronics",
+   "props"
+  ],
+  "dimensions": [
+   136.91972941160202,
+   224.21807795763016,
+   141.70978963375092
+  ]
+ },
+ "vintage_flashlight": {
+  "categories": [
+   "collection: project_lighthouse",
+   "lighting",
+   "electronics",
+   "props",
+   "tools"
+  ],
+  "dimensions": [
+   95.86484730243683,
+   305.46389520168304,
+   144.33311545986305
+  ]
+ },
+ "modular_fort_01": {
+  "categories": [
+   "structures",
+   "buildings",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   71375.29754638672,
+   42669.87609863281,
+   13672.092854976654
+  ]
+ },
+ "modular_industrial_pipes_01": {
+  "categories": [
+   "industrial",
+   "structures"
+  ],
+  "dimensions": [
+   1402.8016328811646,
+   307.5956106185913,
+   1954.6396136283875
+  ]
+ },
+ "utility_box_02": {
+  "categories": [
+   "structures",
+   "industrial",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   920.0001955032349,
+   431.999996304512,
+   1120.3334331512451
+  ]
+ },
+ "modular_wooden_pier": {
+  "categories": [
+   "structures",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   3101.5628576278687,
+   19026.371479034424,
+   7515.67667722702
+  ]
+ },
+ "modular_chainlink_fence": {
+  "categories": [
+   "structures",
+   "industrial",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   8115.001916885376,
+   2149.1531878709793,
+   2522.9129791259766
+  ]
+ },
+ "stone_fire_pit": {
+  "categories": [
+   "structures",
+   "buildings",
+   "furniture",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   1448.4962224960327,
+   1433.234453201294,
+   388.32607865333557
+  ]
+ },
+ "modular_electricity_poles": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   13119.13776397705,
+   1957.2706818580627,
+   7000.0002812594175
+  ]
+ },
+ "rollershutter_window_01": {
+  "categories": [
+   "structures",
+   "industrial",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   5100.001215934753,
+   300.0859081512317,
+   1850.7245529547163
+  ]
+ },
+ "concrete_road_barrier": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   1545.3570485115051,
+   640.9457623958588,
+   835.279269143939
+  ]
+ },
+ "utility_box_01": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   520.0002193450928,
+   431.999996304512,
+   1120.3334331512451
+  ]
+ },
+ "modular_fire_escape": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   6661.200046539307,
+   1420.7648038864136,
+   9756.551027297974
+  ]
+ },
+ "large_castle_door": {
+  "categories": [
+   "structures",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   2012.115716934204,
+   338.9068990945816,
+   2964.752435684204
+  ]
+ },
+ "concrete_road_barrier_02": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   1566.9698119163513,
+   442.20101833343506,
+   1111.9812715332955
+  ]
+ },
+ "fire_hydrant": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   874.623566865921,
+   317.74356961250305,
+   799.4560238003032
+  ]
+ },
+ "modular_pipes": {
+  "categories": [
+   "industrial",
+   "structures"
+  ],
+  "dimensions": [
+   4187.440872192383,
+   457.7658101916313,
+   2434.948639709063
+  ]
+ },
+ "rollershutter_window_02": {
+  "categories": [
+   "industrial",
+   "structures",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   3600.000321865082,
+   168.07068698108196,
+   1560.8682408933419
+  ]
+ },
+ "water_manhole_cover": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   690.7604932785034,
+   690.7604932785034,
+   67.61780008673668
+  ]
+ },
+ "modular_urban_apartments_facade": {
+  "categories": [
+   "collection: hidden_alley",
+   "structures",
+   "buildings"
+  ],
+  "dimensions": [
+   51529.99687194824,
+   6664.999693632126,
+   17000
+  ]
+ },
+ "modular_metal_gutter": {
+  "categories": [
+   "industrial",
+   "structures",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   2268.4829235076904,
+   1514.7015303373337,
+   1842.6082134246826
+  ]
+ },
+ "modular_pipes_plastic_01": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   879.9068927764893,
+   361.76106333732605,
+   75.73375664651394
+  ]
+ },
+ "rollershutter_window_03": {
+  "categories": [
+   "industrial",
+   "buildings",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   2976.2515127658844,
+   153.08569185435772,
+   1546.278931200959
+  ]
+ },
+ "modular_airduct_circular_01": {
+  "categories": [
+   "industrial",
+   "structures",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   4170.705795288086,
+   1463.481143116951,
+   1324.144184589386
+  ]
+ },
+ "modular_factory_facade": {
+  "categories": [
+   "collection: hidden_alley",
+   "structures",
+   "buildings"
+  ],
+  "dimensions": [
+   53329.99801635742,
+   5356.249764561653,
+   29000
+  ]
+ },
+ "large_iron_gate": {
+  "categories": [
+   "structures",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   2950.09183883667,
+   97.33648598194122,
+   2928.6537868902087
+  ]
+ },
+ "rollershutter_door": {
+  "categories": [
+   "structures",
+   "industrial",
+   "buildings",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   3079.9999833106995,
+   300.0857066363096,
+   2399.973489344575
+  ]
+ },
+ "gate_latch_01": {
+  "categories": [
+   "industrial",
+   "buildings",
+   "structures",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   205.09500801563263,
+   74.74934868514538,
+   85.42444556951523
+  ]
+ },
+ "wine_bottles_01": {
+  "categories": [
+   "props",
+   "containers",
+   "dishes"
+  ],
+  "dimensions": [
+   676.3246953487396,
+   80.56290075182915,
+   331.367195234634
+  ]
+ },
+ "Barrel_01": {
+  "categories": [
+   "industrial",
+   "containers"
+  ],
+  "dimensions": [
+   563.0351305007935,
+   563.0352199077606,
+   880.0000050105155
+  ]
+ },
+ "modular_street_seating": {
+  "categories": [
+   "furniture",
+   "seating",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   4339.9999141693115,
+   770.3700959682465,
+   950.000050743509
+  ]
+ },
+ "treasure_chest": {
+  "categories": [
+   "props",
+   "containers",
+   "decorative",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   959.0365290641785,
+   522.853434085846,
+   618.9745217561722
+  ]
+ },
+ "cardboard_box_01": {
+  "categories": [
+   "industrial",
+   "containers",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   387.02359795570374,
+   515.8704221248627,
+   341.7995423078537
+  ]
+ },
+ "brass_vase_03": {
+  "categories": [
+   "containers",
+   "props",
+   "decorative",
+   "vases"
+  ],
+  "dimensions": [
+   82.50189200043678,
+   82.50195905566216,
+   200.36906062159687
+  ]
+ },
+ "Barrel_02": {
+  "categories": [
+   "industrial",
+   "containers",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   488.17557096481323,
+   484.6164435148239,
+   879.9999924376607
+  ]
+ },
+ "brass_goblets": {
+  "categories": [
+   "props",
+   "dishes",
+   "decorative",
+   "containers"
+  ],
+  "dimensions": [
+   453.39466631412506,
+   297.6139709353447,
+   273.377850651741
+  ]
+ },
+ "metal_trash_can": {
+  "categories": [
+   "industrial",
+   "containers",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   1846.9352722167969,
+   556.2898814678192,
+   906.1697272554738
+  ]
+ },
+ "wooden_crate_01": {
+  "categories": [
+   "containers",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   825.2729177474976,
+   408.9537411928177,
+   349.6182831004262
+  ]
+ },
+ "wine_barrel_01": {
+  "categories": [
+   "containers"
+  ],
+  "dimensions": [
+   741.9015169143677,
+   756.035715341568,
+   871.2633550167084
+  ]
+ },
+ "antique_ceramic_vase_01": {
+  "categories": [
+   "decorative",
+   "containers",
+   "vases"
+  ],
+  "dimensions": [
+   255.02996146678925,
+   255.02994656562805,
+   439.553053722193
+  ]
+ },
+ "barrel_03": {
+  "categories": [
+   "industrial",
+   "containers"
+  ],
+  "dimensions": [
+   633.943498134613,
+   638.5995149612427,
+   930.4736243899824
+  ]
+ },
+ "ceramic_vase_02": {
+  "categories": [
+   "decorative",
+   "containers",
+   "vases"
+  ],
+  "dimensions": [
+   219.83815729618073,
+   221.4527726173401,
+   309.2874630820006
+  ]
+ },
+ "ceramic_vase_01": {
+  "categories": [
+   "vases",
+   "containers",
+   "decorative"
+  ],
+  "dimensions": [
+   204.87193763256073,
+   206.37669414281845,
+   401.379804010503
+  ]
+ },
+ "wooden_bucket_02": {
+  "categories": [
+   "props",
+   "containers",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   615.3266429901123,
+   616.3034439086914,
+   350.42548179626465
+  ]
+ },
+ "barrel_stove": {
+  "categories": [
+   "industrial",
+   "containers",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   599.3210971355438,
+   598.1101393699646,
+   855.6039333343506
+  ]
+ },
+ "wicker_basket_01": {
+  "categories": [
+   "containers",
+   "decorative",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   383.2242637872696,
+   295.01520097255707,
+   117.42293369024992
+  ]
+ },
+ "metal_tool_chest": {
+  "categories": [
+   "props",
+   "tools",
+   "industrial",
+   "containers",
+   "rigged",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   685.3884160518646,
+   407.15324878692627,
+   651.8355906009674
+  ]
+ },
+ "jug_01": {
+  "categories": [
+   "props",
+   "decorative",
+   "dishes",
+   "containers"
+  ],
+  "dimensions": [
+   275.3216624259949,
+   167.5262302160263,
+   211.31345149478875
+  ]
+ },
+ "CheeseBox_01": {
+  "categories": [
+   "props",
+   "containers",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   240.39557576179504,
+   135.5806179344654,
+   92.68356184475124
+  ]
+ },
+ "wooden_bucket_01": {
+  "categories": [
+   "props",
+   "containers",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   366.97085201740265,
+   342.2211855649948,
+   549.862340092659
+  ]
+ },
+ "wooden_barrels_01": {
+  "categories": [
+   "containers",
+   "props",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   4440.432071685791,
+   3344.5359468460083,
+   956.7059241235256
+  ]
+ },
+ "wooden_crate_02": {
+  "categories": [
+   "containers",
+   "props",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   1166.325867176056,
+   529.1010439395905,
+   463.95453810691833
+  ]
+ },
+ "watering_can_metal_01": {
+  "categories": [
+   "containers",
+   "tools",
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   191.01857393980026,
+   452.33607292175293,
+   196.81852799840271
+  ]
+ },
+ "russian_food_cans_01": {
+  "categories": [
+   "containers",
+   "props",
+   "food"
+  ],
+  "dimensions": [
+   142.3535794019699,
+   46.203918755054474,
+   84.89999175071716
+  ]
+ },
+ "brass_pan_01": {
+  "categories": [
+   "props",
+   "containers",
+   "decorative",
+   "dishes"
+  ],
+  "dimensions": [
+   191.2703588604927,
+   449.6646225452423,
+   52.509385510347784
+  ]
+ },
+ "ceramic_vase_04": {
+  "categories": [
+   "containers",
+   "decorative",
+   "vases"
+  ],
+  "dimensions": [
+   183.31684917211533,
+   181.98027461767197,
+   342.3411250114441
+  ]
+ },
+ "brass_pot_02": {
+  "categories": [
+   "props",
+   "dishes",
+   "containers",
+   "decorative"
+  ],
+  "dimensions": [
+   366.66905879974365,
+   302.2904098033905,
+   108.54637622833252
+  ]
+ },
+ "spray_paint_bottles": {
+  "categories": [
+   "props",
+   "containers",
+   "industrial",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   158.16618502140045,
+   65.64361602067947,
+   228.63975167274475
+  ]
+ },
+ "lubricant_spray": {
+  "categories": [
+   "props",
+   "containers",
+   "tools",
+   "decorative",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   66.9858492910862,
+   64.59099799394608,
+   164.8811548948288
+  ]
+ },
+ "power_box_01": {
+  "categories": [
+   "industrial",
+   "props",
+   "electronics",
+   "tools",
+   "rigged",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   377.4920701980591,
+   418.45703125,
+   503.142774105072
+  ]
+ },
+ "covered_car": {
+  "categories": [
+   "props",
+   "industrial",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   1788.962960243225,
+   4380.25426864624,
+   1411.1130833625793
+  ]
+ },
+ "steel_frame_shelves_01": {
+  "categories": [
+   "furniture",
+   "shelves",
+   "industrial",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   1097.4148511886597,
+   502.1176338195801,
+   2140.5010361922905
+  ]
+ },
+ "WetFloorSign_01": {
+  "categories": [
+   "props",
+   "industrial",
+   "office"
+  ],
+  "dimensions": [
+   300.0548481941223,
+   358.5093021392822,
+   629.5440040994436
+  ]
+ },
+ "security_camera_01": {
+  "categories": [
+   "electronics",
+   "appliances",
+   "industrial",
+   "rigged",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   169.5517897605896,
+   553.6733567714691,
+   286.04651242494583
+  ]
+ },
+ "exterior_aircon_unit": {
+  "categories": [
+   "appliances",
+   "industrial",
+   "electronics",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   1799.971342086792,
+   374.15920197963715,
+   927.8970956802368
+  ]
+ },
+ "old_tyre": {
+  "categories": [
+   "industrial",
+   "props",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   600.0000238418579,
+   164.99999910593033,
+   600.0000238418579
+  ]
+ },
+ "modular_airduct_rectangular_01": {
+  "categories": [
+   "industrial"
+  ],
+  "dimensions": [
+   7663.504123687744,
+   2586.645245552063,
+   1256.1511993408203
+  ]
+ },
+ "steel_frame_shelves_02": {
+  "categories": [
+   "furniture",
+   "industrial",
+   "shelves",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   593.3027565479279,
+   502.37810611724854,
+   2141.6114285821095
+  ]
+ },
+ "wooden_hammer_01": {
+  "categories": [
+   "industrial",
+   "tools",
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   111.81152239441872,
+   23.39816838502884,
+   279.15042638778687
+  ]
+ },
+ "korean_fire_extinguisher_01": {
+  "categories": [
+   "industrial",
+   "props"
+  ],
+  "dimensions": [
+   279.957577586174,
+   367.44324862957,
+   659.2507164176169
+  ]
+ },
+ "security_camera_02": {
+  "categories": [
+   "industrial",
+   "electronics",
+   "appliances",
+   "rigged",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   140.66611975431442,
+   393.7917649745941,
+   208.5888683795929
+  ]
+ },
+ "spray_paint_bottles_02": {
+  "categories": [
+   "industrial",
+   "props",
+   "tools",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   195.52983343601227,
+   77.2877000272274,
+   218.91105466056615
+  ]
+ },
+ "small_oil_can_01": {
+  "categories": [
+   "industrial",
+   "tools",
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   266.0944238305092,
+   103.84923219680786,
+   236.79310083389282
+  ]
+ },
+ "handsaw_wood": {
+  "categories": [
+   "props",
+   "tools",
+   "industrial",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   40.833745151758194,
+   632.9791843891144,
+   166.52002930641174
+  ]
+ },
+ "crowbar_01": {
+  "categories": [
+   "tools",
+   "industrial",
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   40.41172005236149,
+   127.58862972259521,
+   555.3637742996216
+  ]
+ },
+ "sofa_02": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   1807.1673512458801,
+   817.7513778209686,
+   709.4888985157013
+  ]
+ },
+ "sofa_03": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   2731.17733001709,
+   925.0842034816742,
+   1118.2640366605483
+  ]
+ },
+ "modern_arm_chair_01": {
+  "categories": [
+   "furniture",
+   "seating",
+   "office"
+  ],
+  "dimensions": [
+   820.3444182872772,
+   986.5616858005524,
+   1022.8520567470696
+  ]
+ },
+ "Sofa_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   1571.4675784111023,
+   658.0145359039307,
+   796.515051391907
+  ]
+ },
+ "outdoor_table_chair_set_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   776.0046124458313,
+   1831.0473561286926,
+   858.5816156119108
+  ]
+ },
+ "GreenChair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   673.0944514274597,
+   664.3875539302826,
+   1058.5118799936026
+  ]
+ },
+ "Ottoman_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   884.5577836036682,
+   621.1484670639038,
+   624.3239195573551
+  ]
+ },
+ "plastic_monobloc_chair_01": {
+  "categories": [
+   "furniture",
+   "seating",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   641.8611407279968,
+   627.5919079780579,
+   879.8411972820759
+  ]
+ },
+ "ArmChair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   848.4309017658234,
+   765.7602727413177,
+   1065.087635157397
+  ]
+ },
+ "Rockingchair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   708.1280946731567,
+   833.482027053833,
+   994.9284568428993
+  ]
+ },
+ "wooden_picnic_table": {
+  "categories": [
+   "furniture",
+   "seating",
+   "table"
+  ],
+  "dimensions": [
+   2240.9759759902954,
+   3022.329568862915,
+   745.9869086742401
+  ]
+ },
+ "SchoolChair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   565.8532977104187,
+   675.2548813819885,
+   1006.035539903678
+  ]
+ },
+ "mid_century_lounge_chair": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   1008.6143612861633,
+   1190.310776233673,
+   1169.0847246776136
+  ]
+ },
+ "BarberShopChair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   756.5155327320099,
+   1327.9063999652863,
+   1489.0052630568675
+  ]
+ },
+ "WoodenChair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   688.1728172302246,
+   658.4618389606476,
+   2273.514856118709
+  ]
+ },
+ "painted_wooden_chair_01": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   431.75144493579865,
+   539.8241728544235,
+   956.4821355743334
+  ]
+ },
+ "wooden_stool_02": {
+  "categories": [
+   "seating",
+   "furniture"
+  ],
+  "dimensions": [
+   265.1771306991577,
+   183.12730640172958,
+   181.92848344915546
+  ]
+ },
+ "dining_chair_02": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   433.5707724094391,
+   576.4201134443283,
+   973.3776897192001
+  ]
+ },
+ "painted_wooden_chair_02": {
+  "categories": [
+   "furniture",
+   "seating"
+  ],
+  "dimensions": [
+   639.3895149230957,
+   662.097692489624,
+   1263.7710904044432
+  ]
+ },
+ "wooden_stool_01": {
+  "categories": [
+   "seating",
+   "furniture",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   425.3551661968231,
+   442.36281514167786,
+   437.35266576914
+  ]
+ },
+ "potted_plant_02": {
+  "categories": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "nature"
+  ],
+  "dimensions": [
+   701.1570334434509,
+   657.3865860700607,
+   841.1787391305552
+  ]
+ },
+ "potted_plant_04": {
+  "categories": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "succulent",
+   "nature"
+  ],
+  "dimensions": [
+   170.27407884597778,
+   185.9453096985817,
+   267.5964875961654
+  ]
+ },
+ "potted_plant_01": {
+  "categories": [
+   "decorative",
+   "plants",
+   "potted plants",
+   "nature"
+  ],
+  "dimensions": [
+   588.9185070991516,
+   636.6117596626282,
+   1350.7787585258484
+  ]
+ },
+ "planter_box_01": {
+  "categories": [
+   "decorative",
+   "containers",
+   "potted plants",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   912.6113951206207,
+   413.6679768562317,
+   424.96823612600565
+  ]
+ },
+ "planter_box_02": {
+  "categories": [
+   "containers",
+   "decorative",
+   "potted plants",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   1251.5764236450195,
+   467.18619763851166,
+   453.37272534379736
+  ]
+ },
+ "planter_box_03": {
+  "categories": [
+   "containers",
+   "decorative",
+   "potted plants",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   914.3069684505463,
+   655.5436849594116,
+   855.1032352806942
+  ]
+ },
+ "fern_02": {
+  "categories": [
+   "plants",
+   "nature",
+   "collection: smugglers_cove",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   1972.5302457809448,
+   1724.0281701087952,
+   427.6947118341923
+  ]
+ },
+ "celandine_01": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "flowers"
+  ],
+  "dimensions": [
+   3492.500424385071,
+   933.4844052791595,
+   934.6956610679626
+  ]
+ },
+ "dandelion_01": {
+  "categories": [
+   "plants",
+   "flowers",
+   "nature",
+   "ground cover"
+  ],
+  "dimensions": [
+   4214.337892830372,
+   257.75373727083206,
+   170.49064673483372
+  ]
+ },
+ "dry_branches_medium_01": {
+  "categories": [
+   "props",
+   "nature",
+   "plants",
+   "ground cover",
+   "collection: pine_forest",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   1059.486210346222,
+   1299.152910709381,
+   340.9853130578995
+  ]
+ },
+ "grass_medium_02": {
+  "categories": [
+   "nature",
+   "ground cover",
+   "grass",
+   "plants",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   3579.970385879278,
+   1406.527042388916,
+   1448.2848644256592
+  ]
+ },
+ "shrub_sorrel_01": {
+  "categories": [
+   "plants",
+   "flowers",
+   "nature",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   352.09934413433075,
+   146.4103851467371,
+   58.00368043128401
+  ]
+ },
+ "anthurium_botany_01": {
+  "categories": [
+   "plants",
+   "nature",
+   "collection: the_shed",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   2806.4264059066772,
+   1800.9886145591736,
+   506.7181019112468
+  ]
+ },
+ "dead_tree_trunk_02": {
+  "categories": [
+   "nature",
+   "plants",
+   "trees",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   4053.7197589874268,
+   1056.6102862358093,
+   1055.4723739624023
+  ]
+ },
+ "moss_01": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   838.9523178339005,
+   300.28730630874634,
+   298.94982278347015
+  ]
+ },
+ "nettle_plant": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   1084.1034203767776,
+   94.6834422647953,
+   218.78226287662983
+  ]
+ },
+ "searsia_lucida": {
+  "categories": [
+   "nature",
+   "plants",
+   "trees",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   4782.970905303955,
+   2844.3095684051514,
+   2339.1980212181807
+  ]
+ },
+ "tree_stump_01": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "trees",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   1425.5504608154297,
+   1590.3143286705017,
+   572.6675391197205
+  ]
+ },
+ "othonna_cerarioides": {
+  "categories": [
+   "nature",
+   "plants",
+   "trees",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   3970.029592514038,
+   1798.905849456787,
+   1969.5868343114853
+  ]
+ },
+ "pine_sapling_small": {
+  "categories": [
+   "nature",
+   "plants",
+   "trees",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   2642.0599818229675,
+   770.349532365799,
+   1298.9574084058404
+  ]
+ },
+ "quiver_tree_02": {
+  "categories": [
+   "nature",
+   "trees",
+   "plants",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   872.0614314079285,
+   880.8198273181915,
+   1468.88018399477
+  ]
+ },
+ "tree_stump_02": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "trees",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   1521.6976404190063,
+   1392.5331234931946,
+   522.0921486616135
+  ]
+ },
+ "quiver_tree_01": {
+  "categories": [
+   "nature",
+   "plants",
+   "trees",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   1181.235671043396,
+   968.5054421424866,
+   2715.5103981494904
+  ]
+ },
+ "dead_quiver_trunk": {
+  "categories": [
+   "collection: namaqualand",
+   "nature",
+   "trees"
+  ],
+  "dimensions": [
+   307.8220337629318,
+   268.08640360832214,
+   1995.5217698588967
+  ]
+ },
+ "rock_moss_set_02": {
+  "categories": [
+   "rocks",
+   "nature",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   8278.153419494629,
+   3410.416603088379,
+   1368.368238210678
+  ]
+ },
+ "rock_moss_set_01": {
+  "categories": [
+   "rocks",
+   "nature",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   8004.603862762451,
+   6948.764801025391,
+   1768.319845199585
+  ]
+ },
+ "boulder_01": {
+  "categories": [
+   "rocks",
+   "nature",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   1272.6830840110779,
+   1830.7338953018188,
+   1003.8918256759644
+  ]
+ },
+ "namaqualand_boulder_02": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   2533.2456827163696,
+   1234.761118888855,
+   883.3709806203842
+  ]
+ },
+ "namaqualand_cliff_02": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   20229.52938079834,
+   6593.420505523682,
+   7187.2673481702805
+  ]
+ },
+ "sand_rocks_small_01": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: smugglers_cove",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   4626.639604568481,
+   3884.438395500183,
+   536.2379923462868
+  ]
+ },
+ "namaqualand_boulder_03": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: namaqualand"
+  ],
+  "dimensions": [
+   2407.663106918335,
+   3065.406084060669,
+   1473.654329776764
+  ]
+ },
+ "rock_09": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   74.13503155112267,
+   144.81624960899353,
+   32.94885210925713
+  ]
+ },
+ "mountainside": {
+  "categories": [
+   "nature",
+   "rocks",
+   "collection: verdant_trail"
+  ],
+  "dimensions": [
+   10214.37692642212,
+   5254.634857177734,
+   10526.674702763557
+  ]
+ },
+ "namaqualand_boulder_05": {
+  "categories": [
+   "collection: namaqualand",
+   "nature",
+   "rocks"
+  ],
+  "dimensions": [
+   1364.0307188034058,
+   748.7391829490662,
+   538.3217036724091
+  ]
+ },
+ "Camera_01": {
+  "categories": [
+   "props",
+   "electronics"
+  ],
+  "dimensions": [
+   213.90153467655182,
+   262.82382383942604,
+   77.84665003418922
+  ]
+ },
+ "Television_01": {
+  "categories": [
+   "props",
+   "electronics",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   599.9999642372131,
+   470.8106815814972,
+   456.84892892313655
+  ]
+ },
+ "chess_set": {
+  "categories": [
+   "decorative",
+   "props"
+  ],
+  "dimensions": [
+   553.2379746437073,
+   553.2379746437073,
+   112.3529537471768
+  ]
+ },
+ "horse_statue_01": {
+  "categories": [
+   "props",
+   "decorative"
+  ],
+  "dimensions": [
+   163.80367428064346,
+   107.79086500406265,
+   219.97890953571186
+  ]
+ },
+ "tea_set_01": {
+  "categories": [
+   "props",
+   "dishes"
+  ],
+  "dimensions": [
+   918.4822738170624,
+   483.876571059227,
+   164.99304870376363
+  ]
+ },
+ "rubber_duck_toy": {
+  "categories": [
+   "props",
+   "decorative",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   213.5048285126686,
+   300.00218749046326,
+   285.52286326885223
+  ]
+ },
+ "alarm_clock_01": {
+  "categories": [
+   "props",
+   "decorative",
+   "rigged"
+  ],
+  "dimensions": [
+   227.71471738815308,
+   168.41959953308105,
+   174.15538430213928
+  ]
+ },
+ "book_encyclopedia_set_01": {
+  "categories": [
+   "props",
+   "decorative",
+   "books"
+  ],
+  "dimensions": [
+   551.2974057346582,
+   163.06233406066895,
+   237.41818653931634
+  ]
+ },
+ "CoffeeCart_01": {
+  "categories": [
+   "appliances",
+   "props",
+   "furniture",
+   "office"
+  ],
+  "dimensions": [
+   2167.636811733246,
+   1073.2900500297546,
+   1717.6724136807024
+  ]
+ },
+ "Ukulele_01": {
+  "categories": [
+   "props",
+   "instrument"
+  ],
+  "dimensions": [
+   177.8610646724701,
+   50.76222866773605,
+   526.9626826047897
+  ]
+ },
+ "cannon_01": {
+  "categories": [
+   "props",
+   "rigged",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   1233.32679271698,
+   2302.3523092269897,
+   786.8735939264297
+  ]
+ },
+ "cassette_player": {
+  "categories": [
+   "props",
+   "electronics"
+  ],
+  "dimensions": [
+   129.46044653654099,
+   48.87990656585117,
+   236.81782186031342
+  ]
+ },
+ "Drill_01": {
+  "categories": [
+   "props",
+   "tools",
+   "electronics",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   182.8799918293953,
+   52.41549015045166,
+   185.06235629320145
+  ]
+ },
+ "baseball_01": {
+  "categories": [
+   "props"
+  ],
+  "dimensions": [
+   73.97906854748726,
+   75.37996023893356,
+   75.57932659983635
+  ]
+ },
+ "antique_katana_01": {
+  "categories": [
+   "props"
+  ],
+  "dimensions": [
+   93.37274730205536,
+   93.37274730205536,
+   1002.9437839984894
+  ]
+ },
+ "carved_wooden_elephant": {
+  "categories": [
+   "props",
+   "decorative"
+  ],
+  "dimensions": [
+   109.18296501040459,
+   57.556506246328354,
+   96.15053108427674
+  ]
+ },
+ "croissant": {
+  "categories": [
+   "props",
+   "food"
+  ],
+  "dimensions": [
+   200.00000298023224,
+   75.51151886582375,
+   61.99566961731762
+  ]
+ },
+ "Megaphone_01": {
+  "categories": [
+   "props",
+   "electronics",
+   "tools"
+  ],
+  "dimensions": [
+   370.6655204296112,
+   228.45355421304703,
+   300.07804185152054
+  ]
+ },
+ "CashRegister_01": {
+  "categories": [
+   "appliances",
+   "props"
+  ],
+  "dimensions": [
+   600.4907041788101,
+   624.2051124572754,
+   621.3557496666908
+  ]
+ },
+ "lemon": {
+  "categories": [
+   "props",
+   "food"
+  ],
+  "dimensions": [
+   68.68193298578262,
+   68.2600848376751,
+   95.36931291222572
+  ]
+ },
+ "wooden_bowl_01": {
+  "categories": [
+   "props",
+   "decorative",
+   "dishes"
+  ],
+  "dimensions": [
+   313.08163702487946,
+   309.1423809528351,
+   93.69255532510579
+  ]
+ },
+ "carrot_cake": {
+  "categories": [
+   "food",
+   "props"
+  ],
+  "dimensions": [
+   225.42137652635574,
+   225.38353502750397,
+   97.57296415045857
+  ]
+ },
+ "football": {
+  "categories": [
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   508.87757539749146,
+   222.1573293209076,
+   221.88469767570496
+  ]
+ },
+ "dartboard": {
+  "categories": [
+   "props",
+   "decorative",
+   "wall decoration",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   450.6962299346924,
+   39.77856128316404,
+   450.6962150335312
+  ]
+ },
+ "rusted_spade_01": {
+  "categories": [
+   "tools",
+   "props",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   168.1148111820221,
+   45.56426405906677,
+   1100.9047627449036
+  ]
+ },
+ "boombox": {
+  "categories": [
+   "appliances",
+   "electronics",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   723.7796187400818,
+   186.46465986967087,
+   470.10064125061035
+  ]
+ },
+ "wooden_table_02": {
+  "categories": [
+   "furniture",
+   "table"
+  ],
+  "dimensions": [
+   1134.41663980484,
+   706.0248255729675,
+   799.5428870490286
+  ]
+ },
+ "round_wooden_table_01": {
+  "categories": [
+   "furniture",
+   "table"
+  ],
+  "dimensions": [
+   1399.3489742279053,
+   1399.3489146232605,
+   1005.0213932991028
+  ]
+ },
+ "GothicCabinet_01": {
+  "categories": [
+   "furniture",
+   "shelves"
+  ],
+  "dimensions": [
+   1719.1437482833862,
+   1128.6656260490417,
+   2360.900953424988
+  ]
+ },
+ "ClassicConsole_01": {
+  "categories": [
+   "furniture",
+   "table"
+  ],
+  "dimensions": [
+   1543.0203676223755,
+   589.2754197120667,
+   949.0714100943478
+  ]
+ },
+ "GothicCommode_01": {
+  "categories": [
+   "furniture",
+   "shelves"
+  ],
+  "dimensions": [
+   1201.4026641845703,
+   580.6596577167511,
+   1212.042630148815
+  ]
+ },
+ "GothicBed_01": {
+  "categories": [
+   "furniture",
+   "bed"
+  ],
+  "dimensions": [
+   1493.751883506775,
+   2039.9999022483826,
+   1533.8402975614968
+  ]
+ },
+ "WoodenTable_01": {
+  "categories": [
+   "furniture"
+  ],
+  "dimensions": [
+   1799.6479272842407,
+   657.1746468544006,
+   548.8492709302584
+  ]
+ },
+ "ornate_mirror_01": {
+  "categories": [
+   "decorative",
+   "wall decoration",
+   "furniture"
+  ],
+  "dimensions": [
+   486.4957332611084,
+   25.958335027098656,
+   744.1554069519043
+  ]
+ },
+ "mantel_clock_01": {
+  "categories": [
+   "decorative",
+   "appliances",
+   "rigged"
+  ],
+  "dimensions": [
+   483.6633503437042,
+   250.80496072769165,
+   160.9499454498291
+  ]
+ },
+ "electric_stove": {
+  "categories": [
+   "electronics",
+   "appliances",
+   "rigged",
+   "props"
+  ],
+  "dimensions": [
+   502.59482860565186,
+   647.6211845874786,
+   858.6971759796143
+  ]
+ },
+ "ceiling_fan": {
+  "categories": [
+   "appliances",
+   "electronics"
+  ],
+  "dimensions": [
+   1462.9170894622803,
+   1462.9170894622803,
+   516.343355178833
+  ]
+ },
+ "grass_medium_01": {
+  "categories": [
+   "grass",
+   "nature",
+   "ground cover",
+   "collection: pine_forest"
+  ],
+  "dimensions": [
+   7266.327619552612,
+   1259.2098712921143,
+   1177.0583391189575
+  ]
+ },
+ "grass_bermuda_01": {
+  "categories": [
+   "grass",
+   "nature",
+   "ground cover",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   3135.906159877777,
+   1073.481559753418,
+   1059.9278211593628
+  ]
+ },
+ "weed_plant_02": {
+  "categories": [
+   "nature",
+   "plants",
+   "ground cover",
+   "collection: the_shed"
+  ],
+  "dimensions": [
+   2125.253051519394,
+   290.9194082021713,
+   75.0729264691472
+  ]
+ },
+ "calathea_orbifolia_01": {
+  "categories": [
+   "plants",
+   "nature",
+   "ground cover",
+   "collection: smugglers_cove"
+  ],
+  "dimensions": [
+   2491.507411003113,
+   1193.592220544815,
+   424.2942640557885
+  ]
+ },
+ "street_rat": {
+  "categories": [
+   "nature",
+   "creature",
+   "collection: hidden_alley"
+  ],
+  "dimensions": [
+   32.26977214217186,
+   148.4108306467533,
+   34.03247334063053
+  ]
+ }
+}

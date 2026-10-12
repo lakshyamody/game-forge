@@ -1,0 +1,19 @@
+{
+ "anims-male": {
+  "walk": 1.012,
+  "walk-fast": 1.495,
+  "stroll": 0.693,
+  "run": 2.88,
+  "run-fast": 5.839,
+  "drunk": 0.816,
+  "cheer": 0
+ },
+ "anims-female": {
+  "walk": 1.214,
+  "walk-fast": 1.53,
+  "stroll": 0.926,
+  "run": 2.765,
+  "run-fast": 5.379,
+  "drunk": 0.904
+ }
+}
