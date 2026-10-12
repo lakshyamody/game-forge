@@ -35,7 +35,7 @@ Target: a game that is **fun within 10 seconds of pressing play**, verified by p
 | Real rigid bodies: stacking, slingshot, golf, ragdoll | `--template physics` |
 | Needs 3D | `--template 3d` |
 
-- **Art & sound** — pick packs from the asset library (`assets/CATALOG.md`): animated characters from whichever pack fits (`kaykit-adventurers`, `kaykit-skeletons`, `blocky-characters`, `mini-characters`, `graveyard-kit` — see the table in AGENTS.md; vary it between games), props from the matching kit, a Poly Haven texture/sky for surfaces, footsteps/impacts/voice from the sound packs. If nothing fits, `npm run assets -- add <kenney-slug>` (browse kenney.nl/assets) before falling back to procedural art.
+- **Art & sound** — for a realistic look use the realism stack (AGENTS.md › Realistic 3D) with Rocketbox people, Poly Haven/ambientCG materials and `buildCity`/`buildCar`; otherwise pick packs from the asset library (`assets/CATALOG.md`): animated characters from whichever pack fits (`kaykit-adventurers`, `kaykit-skeletons`, `blocky-characters`, `mini-characters`, `graveyard-kit` — see the table in AGENTS.md; vary it between games), props from the matching kit, a Poly Haven texture/sky for surfaces, footsteps/impacts/voice from the sound packs. If nothing fits, `npm run assets -- add <kenney-slug>` (browse kenney.nl/assets) before falling back to procedural art.
 - **Juice plan** — which feedback fires on the core verb, on reward, on damage ([game-feel.md](game-feel.md)).
 - **Out of scope** — name what you're NOT building this session.
 

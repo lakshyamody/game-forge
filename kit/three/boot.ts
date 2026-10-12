@@ -56,10 +56,13 @@ export function bootThree(o: ThreeOpts = {}) {
   Object.assign(hud.style, { position: 'absolute', inset: '0', pointerEvents: 'none', fontFamily: 'Orbitron, system-ui, sans-serif', color: '#fff' });
   parent.appendChild(hud);
 
+  const resizers: ((w: number, h: number) => void)[] = [];
+  let customRender: ((dt: number) => void) | null = null;
   const resize = () => {
     const w = parent.clientWidth || innerWidth, h = parent.clientHeight || innerHeight;
     renderer.setSize(w, h, false);
     composer?.setSize(w, h);
+    for (const r of resizers) r(w, h);
     camera.aspect = w / h; camera.updateProjectionMatrix();
   };
   addEventListener('resize', resize); resize();
@@ -76,7 +79,7 @@ export function bootThree(o: ThreeOpts = {}) {
       // camera shake is applied for the render only, then removed, so game logic never sees it
       const ox = (Math.random() - 0.5) * shake, oy = (Math.random() - 0.5) * shake;
       camera.position.x += ox; camera.position.y += oy;
-      composer ? composer.render() : renderer.render(scene, camera);
+      if (customRender) customRender(dt); else if (composer) composer.render(); else renderer.render(scene, camera);
       camera.position.x -= ox; camera.position.y -= oy;
       shake *= Math.pow(0.0005, dt);
     });
@@ -86,6 +89,10 @@ export function bootThree(o: ThreeOpts = {}) {
     THREE, renderer, scene, camera, composer, bloomPass, hud, loop,
     /** world-unit shake amplitude, decays automatically */
     shake(amount = 0.3) { shake = Math.max(shake, amount); },
+    /** take over how each frame is drawn (e.g. kit/three/realism's post-processing chain) */
+    setRender(fn: ((dt: number) => void) | null) { customRender = fn; },
+    /** called with the canvas size now and on every resize */
+    onResize(fn: (w: number, h: number) => void) { resizers.push(fn); fn(parent.clientWidth || innerWidth, parent.clientHeight || innerHeight); },
     set paused(p: boolean) { paused = p; },
     get paused() { return paused; },
   };

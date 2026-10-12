@@ -40,6 +40,8 @@ for (const lit of literals) {
   }
   if (!lit.includes('/')) { add(`hdri/${lit}.hdr`); if (existsSync(join(A, 'textures', lit))) for (const f of readdirSync(join(A, 'textures', lit))) keep.add(`textures/${lit}/${f}`); }
 }
+// licence notices travel with the files that need them (MIT: Rocketbox people)
+for (const p of [...keep]) { const lic = p.replace(/[^/]+$/, 'LICENSE.md'); if (p.startsWith('models/') && existsSync(join(A, lic))) keep.add(lic); }
 let bytes = 0;
 for (const p of keep) { if (statSync(join(A, p)).isDirectory()) continue; const d = join(out, p); mkdirSync(dirname(d), { recursive: true }); cpSync(join(A, p), d); bytes += statSync(join(A, p)).size; }
 console.log(`  assets: ${keep.size} files (${(bytes / 1048576).toFixed(1)} MB) of the library`);

@@ -37,7 +37,10 @@ function copyGame(from, to) {
 function walk(d) { return existsSync(d) ? readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; }) : []; }
 function typecheck() {
   const r = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '--noEmit', '-p', root], { cwd: root, encoding: 'utf8' });
-  return r.status === 0 ? null : (r.stdout + r.stderr).split('\n').slice(0, 15).join('\n');
+  if (r.status === 0) return null;
+  // only errors in this game or the shared code count — another game's broken file shouldn't block this one
+  const mine = (r.stdout + r.stderr).split('\n').filter((l) => /error TS/.test(l) && (l.startsWith(`games/${slug}/`) || /^(kit|templates|src)\//.test(l)));
+  return mine.length ? mine.slice(0, 15).join('\n') : null;
 }
 function setStatus(n, done) {
   if (!existsSync(fixesMd)) return;

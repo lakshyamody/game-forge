@@ -10,6 +10,8 @@ Everything is set up for an AI agent to work fast: a shared game kit (juice, pro
 | **Neon Swarm** — twin-stick roguelite (2D, Phaser) | **Block Racer** — voxel drift racer (3D, Three.js) |
 | ![Hollow House](docs/screenshots/hollow-house.jpg) | ![Arcade](docs/screenshots/arcade.jpg) |
 | **Hollow House** — first-person horror (3D, Three.js) | **The arcade** — every game you make shows up here |
+| ![Sunset District](docs/screenshots/sunset-district.jpg) | |
+| **Sunset District** — realistic GTA-style city: traffic, people, golden hour → night (3D, Three.js) | |
 
 All games were built by Claude in this repo from short prompts, using the shared kit and the CC0 asset library below.
 
@@ -27,11 +29,12 @@ For people who don't use a terminal: a Mac app with a chat on the left and the l
 
 ![Asset library](docs/screenshots/asset-library.jpg)
 
-**~2,700 3D models · ~1,900 sprites · ~670 sounds · 16 photoreal textures · 6 HDRI skies**, all CC0 (free for commercial use, no attribution required) — from [Kenney](https://kenney.nl), [KayKit](https://kaylousberg.com) and [Poly Haven](https://polyhaven.com). Animated characters (walk, run, shoot, kick, die…), zombies and skeletons, cars, guns, furniture, nature, castles, space, food, dungeons, platformer tiles, UI, icons, footsteps, impacts, lasers, explosions, door creaks, an announcer voice, and more.
+**Thousands of 3D models, hundreds of photoscanned PBR materials and HDRI skies, realistic people with motion capture, ~1,900 sprites, ~670 sounds** — free for commercial use, from [Kenney](https://kenney.nl), [KayKit](https://kaylousberg.com), [Poly Haven](https://polyhaven.com), [ambientCG](https://ambientcg.com) (CC0) and [Microsoft Rocketbox](https://github.com/microsoft/Microsoft-Rocketbox) (MIT). Exact counts: `assets/CATALOG.md`.
 
 - Browse it at **`/assets.html`** (link on the arcade page): search, spin models in 3D, play their animations, listen to sounds, copy names.
 - Claude reads `assets/CATALOG.md` and uses the library automatically when it builds a game.
-- Need something else? `npm run assets -- add <kenney-pack>`, `npm run assets -- kaykit <pack>`, or `npm run assets -- texture <polyhaven-id>` pulls it in, ready to use.
+- **Realistic games:** a built-in realism stack (sky + sun, soft shadows, ambient occlusion, bloom, filmic tone mapping, day/night), a procedural city and procedural cars — see `games/sunset-district`, a GTA-style city demo.
+- Need something else? `npm run assets -- add <kenney-pack>`, `kaykit <pack>`, `model|texture|hdri <polyhaven-id>`, `ambientcg <id>`, `rocketbox`, or `npm run assets -- texture <polyhaven-id>` pulls it in, ready to use.
 
 ## Quick start
 
