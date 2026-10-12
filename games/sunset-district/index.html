@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Sunset District</title>
+  <link rel="icon" href="data:," />
+  <style>
+    html, body { margin: 0; height: 100%; background: #0d1015; overflow: hidden; }
+    #game { position: fixed; inset: 0; }
+    .hud { font-family: "Pricedown", Impact, "Arial Black", sans-serif !important; color: #fff; user-select: none; }
+    .hud > * { position: absolute; }
+    .hud .sub { font-family: system-ui, sans-serif; font-size: 13px; letter-spacing: 2px; opacity: .85; }
+    .load { inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; letter-spacing: 3px; background: #0d1015; }
+    .tl { top: 18px; right: 22px; text-align: right; } #cash { font-size: 42px; color: #7dff8a; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; }
+    .tc { top: 20px; left: 50%; transform: translateX(-50%); font-family: system-ui, sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 1px; background: #000a; padding: 8px 16px; border-radius: 6px; }
+    .tc:empty { display: none; } .tc b { color: #4dff8a; } .tc b.y { color: #ffd84d; }
+    #map { left: 22px; bottom: 22px; border-radius: 50%; border: 3px solid #000a; box-shadow: 0 0 0 2px #fff3; }
+    .br { right: 26px; bottom: 22px; text-align: right; } #spd { font-size: 56px; line-height: 1; text-shadow: 2px 2px 0 #000; }
+    .hint { bottom: 120px; left: 0; right: 0; text-align: center; font-family: system-ui, sans-serif; font-size: 16px; text-shadow: 0 2px 4px #000; }
+    .toast { top: 70px; left: 0; right: 0; text-align: center; font-family: system-ui, sans-serif; font-size: 18px; font-weight: 600; text-shadow: 0 2px 6px #000; transition: opacity .5s; opacity: 0; }
+    .ov { inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: linear-gradient(#0008, #0003 50%, #000c); cursor: pointer; pointer-events: auto; text-align: center; padding: 16px; }
+    .ov h1 { margin: 0; font-size: clamp(48px, 10vw, 120px); letter-spacing: 2px; color: #ffb347; text-shadow: 4px 4px 0 #000; font-style: italic; } .ov h1 span { color: #ff5fa2; }
+    .ov p { margin: 0; font-family: system-ui, sans-serif; } .ov .tag { font-size: 18px; } .ov .keys { font-size: 13px; opacity: .85; background: #0009; padding: 8px 14px; border-radius: 6px; }
+    .ov .go { font-size: 18px; font-weight: 700; color: #7dff8a; animation: b 1.1s steps(2) infinite; } @keyframes b { 50% { opacity: .35; } }
+  </style>
+</head>
+<body><div id="game"></div><script type="module" src="./main.ts"></script></body>
+</html>

@@ -1,0 +1,13 @@
+diff --git a/games/sunset-district/main.ts b/games/sunset-district/main.ts
+index ba7a950..b340c80 100644
+--- a/games/sunset-district/main.ts
++++ b/games/sunset-district/main.ts
+@@ -31,6 +31,8 @@ const city = await buildCity(scene, {
+   facades: ['red_brick_03', 'factory_brick', 'painted_plaster_wall', 'concrete_wall_008', 'grey_plaster', 'large_red_bricks', 'plaster_brick_pattern'],
+   props: { lamp: 'polyhaven/street_lamp_01', extras: ['polyhaven/fire_hydrant', 'polyhaven/modular_street_seating', 'polyhaven/concrete_road_barrier'] },
+ });
++// tower glass: darker blue-grey tint and a sharper reflection, so towers read as glass, not white plastic
++city.group.traverse((o) => { const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial; if (m?.emissiveMap && m.metalness > 0.5) { m.color.set(0x6f8094); m.roughness = 0.05; } });
+ const CAST = ['business-male-01', 'business-male-02', 'business-female-01', 'female-adult-01', 'female-adult-02', 'female-adult-03', 'female-adult-04', 'male-adult-02', 'male-adult-03', 'male-adult-04', 'male-adult-05', 'police-male-01', 'construction-male-01', 'medical-female-01', 'sports-female-01', 'delivery-male-01'];
+ const [male, female, speeds] = await Promise.all([loadClips('rocketbox/anims-male'), loadClips('rocketbox/anims-female'), fetch(assetUrl('models/rocketbox/_speeds.json')).then((r) => r.json()).catch(() => ({}))]);
+ const peds = await spawnPeople(scene, city, WORLD.pedestrians, CAST, { male, female }, speeds['anims-male'] ?? {});
