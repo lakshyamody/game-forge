@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Design tokens — a dark, IDE-grade palette (neutral surfaces, one blue accent). */
+@theme {
+  --color-bg: #0a0a0b;
+  --color-panel: #0f0f11;
+  --color-raised: #151518;
+  --color-hover: #1b1b1f;
+  --color-active: #222227;
+  --color-line: #1f1f23;
+  --color-line-strong: #2b2b31;
+  --color-fg: #ececef;
+  --color-muted: #9898a1;
+  --color-subtle: #64646d;
+  --color-accent: #3b82f6;
+  --color-accent-soft: #3b82f61f;
+  --color-ok: #3ecf8e;
+  --color-warn: #f5a524;
+  --color-bad: #f2555a;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+html, body { height: 100%; background: var(--color-bg); color: var(--color-fg); overflow: hidden; }
+body { font-family: var(--font-sans); font-size: 13px; -webkit-font-smoothing: antialiased; }
+* { scrollbar-width: thin; scrollbar-color: #2b2b31 transparent; }
+::selection { background: #3b82f655; }
+.drag { -webkit-app-region: drag; }
+.no-drag { -webkit-app-region: no-drag; }
+@keyframes pulse-dot { 0%, 100% { opacity: .35 } 50% { opacity: 1 } }
+.thinking span { animation: pulse-dot 1.2s infinite; } .thinking span:nth-child(2) { animation-delay: .2s } .thinking span:nth-child(3) { animation-delay: .4s }
+.md code { font-family: var(--font-mono); font-size: 12px; background: #ffffff0f; border: 1px solid #ffffff12; padding: 0 4px; border-radius: 4px; }
+.md b { color: #fff; font-weight: 600; }

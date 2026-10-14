@@ -17,7 +17,7 @@ All games were built by Claude in this repo from short prompts, using the shared
 
 ## Game Forge Studio (desktop app, no setup)
 
-For people who don't use a terminal: a Mac app with a chat on the left and the live game on the right.
+For people who don't use a terminal: a Mac app laid out like Cursor — games on the left, the live game in browser-style tabs in the middle, and the Claude Code agent on the right.
 
 - **One download:** `npm run studio:build` makes `dist-studio/Game-Forge-Studio.dmg` (~380 MB). It bundles the game tools, the asset library and every library, and runs on its own built-in Node, so the person you send it to doesn't install Node, npm or git.
 - **Uses their own Claude Code:** the setup screen installs Claude Code with Anthropic's official installer and signs in through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max).
@@ -125,7 +125,8 @@ games/          your games (each: index.html, main.ts, game.json, GAME.md)
 scripts/        new-game, play, shot (headless playtest), fixes (staged patches), ship, assets (importer CLI)
   importers/      one module per asset source (Kenney, KayKit, Poly Haven, ambientCG, Rocketbox) + catalog
   lib/            shared helpers (paths, CLI flags, type-check, Vite + Chromium)
-studio/         Game Forge Studio desktop app (main.mjs + main/: env, workspace, games, Claude chat runner)
+studio/         Game Forge Studio desktop app (main.mjs + main/: env, workspace, games, Claude chat runner, ui)
+  ui/             its Next.js interface (tabs, browser preview, agent panel)
 .claude/        skills (make-game, kid-check, playtest, polish, ship, phaser4) + type-check hook
 AGENTS.md       instructions for any coding agent (CLAUDE.md imports it)
 ```

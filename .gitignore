@@ -8,3 +8,7 @@ node_modules
 *.log
 /dist-studio
 .vite-cache
+studio/ui/node_modules
+studio/ui/.next
+studio/ui/out
+studio/ui/next-env.d.ts

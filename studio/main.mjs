@@ -9,17 +9,18 @@
  *   npm run studio
  *
  * This file: window, IPC and the game server. The rest lives in main/: paths, state, env (Claude + shims),
- * workspace (packaged setup), games (sidebar list), claude (chat runner).
+ * workspace (packaged setup), games (sidebar list), claude (chat runner), ui (serves the Next.js UI in studio/ui).
  */
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { APP_DIR, ROOT, GAMES, IS_WIN } from './main/paths.mjs';
+import { APP_DIR, RES, ROOT, GAMES, IS_WIN } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 import { checkEnv, ensurePlaywright, installShims, nodeScript, openTerminal } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
 import { listGames } from './main/games.mjs';
 import { jobs, sendChat } from './main/claude.mjs';
+import { serveUi, setMenu, uiUrl } from './main/ui.mjs';
 
 let win = null, vite = null, port = 0;
 const send = (channel, payload) => win?.webContents.send(channel, payload);
@@ -43,19 +44,21 @@ function wire() {
 /** the game preview server — Vite running inside the app's own Node */
 async function startVite() {
   const { createServer } = await import(join(ROOT, 'node_modules/vite/dist/node/index.js'));
-  vite = await createServer({ root: ROOT, configFile: join(ROOT, 'vite.config.ts'), server: { port: 5199, strictPort: false, open: false }, logLevel: 'error' });
+  // packaged: node_modules/assets are links into the app bundle (RES) — let Vite serve files from there too
+  vite = await createServer({ root: ROOT, configFile: join(ROOT, 'vite.config.ts'), server: { port: 5199, strictPort: false, open: false, fs: { allow: [ROOT, RES] } }, logLevel: 'error' });
   await vite.listen();
   port = vite.httpServer.address().port;
 }
 
 app.whenReady().then(async () => {
-  loadState(); ensureWorkspace(); installShims(); wire(); ensurePlaywright((status) => send('tools:status', status));
+  loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu(); ensurePlaywright((status) => send('tools:status', status));
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
-    width: 1500, height: 920, minWidth: 1000, minHeight: 640, title: 'Game Forge Studio', backgroundColor: '#12131a',
+    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#0a0a0b',
+    titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 14, y: 12 },   // macOS buttons sit inside the app's own title bar
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });
-  win.loadFile(join(APP_DIR, 'studio/index.html'));
+  win.loadURL(uiUrl());
   if (existsSync(GAMES)) watch(GAMES, { recursive: true }, (_t, f) => { if (f && /game\.json|FIXES\.md/.test(f)) send('games:changed'); });
   // debug: STUDIO_SCREENSHOT=out.png [STUDIO_QUIT=1] [STUDIO_DELAY=ms] captures the window after load
   if (process.env.STUDIO_SCREENSHOT) setTimeout(async () => { const img = await win.webContents.capturePage(); writeFileSync(process.env.STUDIO_SCREENSHOT, img.toPNG()); if (process.env.STUDIO_QUIT) app.quit(); }, Number(process.env.STUDIO_DELAY ?? 6000));

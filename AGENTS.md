@@ -62,7 +62,7 @@ Every game build ends with a kid check (`.claude/skills/kid-check/SKILL.md`): 5 
 
 ## Game Forge Studio
 
-`studio/` is a desktop app (Electron) that runs the user's own Claude Code CLI in this repo, with a live preview. `npm run studio` (dev) · `npm run studio:build` (macOS .app + .dmg via `scripts/build-studio.mjs`). In the packaged app the workspace is `~/Game Forge`, `node`/`npm`/`npx` are shims on the app's built-in Node, and Claude Code gets a short extra system prompt (plain-language replies, never start dev servers).
+`studio/` is a desktop app (Electron) that runs the user's own Claude Code CLI in this repo, with a live preview. The window is a Next.js app in `studio/ui/` (React, Tailwind 4, Geist, Lucide; static export served over `studio://`): activity bar, games explorer, browser-style tabs with an address bar, a Cursor-style agent panel with the kid-check checklist, status bar. The main process is `studio/main.mjs` + `studio/main/`; the page talks to it only through `window.studio` (`studio/preload.cjs`, typed in `studio/ui/lib/studio.ts`). `npm run studio` (builds the UI if changed) · `npm run studio:dev` (Next hot reload) · `npm run studio:build` (macOS .app + .dmg via `scripts/build-studio.mjs`). In the packaged app the workspace is `~/Game Forge`, `node`/`npm`/`npx` are shims on the app's built-in Node, and Claude Code gets a short extra system prompt (plain-language replies, never start dev servers).
 
 ## Commands
 

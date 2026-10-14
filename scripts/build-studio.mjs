@@ -33,9 +33,13 @@ const electronApp = join(dirname(createRequire(import.meta.url).resolve('electro
 sh('cp', ['-R', electronApp, appPath]);
 rmSync(join(R, 'default_app.asar'), { force: true });
 
-console.log('▸ app code');
+console.log('▸ app code (+ the Next.js UI, exported)');
+const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm', uiDir = join(root, 'studio/ui');
+if (!existsSync(join(uiDir, 'node_modules'))) sh(npm, ['ci'], { cwd: uiDir });
+sh(npm, ['run', 'build'], { cwd: uiDir });
 mkdirSync(join(R, 'app'), { recursive: true });
-cpSync(join(root, 'studio'), join(R, 'app/studio'), { recursive: true });
+// the UI ships as its static export only — not its node_modules or sources
+cpSync(join(root, 'studio'), join(R, 'app/studio'), { recursive: true, filter: (src) => !/studio\/ui\/(?!out(\/|$))/.test(src.split('\\').join('/')) || /studio\/ui$/.test(src) });
 writeFileSync(join(R, 'app/package.json'), JSON.stringify({ name: 'game-forge-studio', productName: name, version: pkg.version, main: 'studio/main.mjs' }, null, 2));
 
 console.log('▸ game tools, showcase games, asset library, libraries (this is the big part)');
