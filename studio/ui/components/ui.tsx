@@ -41,11 +41,14 @@ export const Badge = ({ children, title }: { children: ReactNode; title?: string
 
 export const Kbd = ({ children }: { children: ReactNode }) => <kbd className="font-sans text-[12px] text-subtle">{children}</kbd>;
 
-/** the Game Forge mark: a spark on the brand yellow */
+/** the Game Forge mark: a nine-spoke asterisk, inheriting the text colour so it works light and dark */
 export const Mark = ({ size = 22 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className="shrink-0">
-    <rect width="24" height="24" rx="6" fill="#f5c518" />
-    <path d="M12 4.5c.5 3.9 3.6 7 7.5 7.5-3.9.5-7 3.6-7.5 7.5-.5-3.9-3.6-7-7.5-7.5 3.9-.5 7-3.6 7.5-7.5Z" fill="#1b1b1b" />
+    <g fill="currentColor">
+      {Array.from({ length: 9 }, (_, i) => (
+        <rect key={i} x="10.9" y="3.6" width="2.2" height="8.4" rx="1.1" transform={`rotate(${i * 40 + 27} 12 12)`} />
+      ))}
+    </g>
   </svg>
 );
 
