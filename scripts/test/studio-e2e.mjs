@@ -95,7 +95,6 @@ await t('home: template card and starting-point menu fill the message', async ()
 await t('home: surprise me writes an idea', async () => {
   await page.getByLabel('Surprise me').click();
   assert((await draft()).length > 30, `draft: ${await draft()}`);
-  await page.fill('textarea[aria-label=Message]', '');
 });
 await t('home: tray links open the arcade, asset library and games folder', async () => {
   await page.locator('main button', { hasText: 'Arcade' }).first().click();
@@ -213,6 +212,7 @@ await t('sidebar ⌘B, appearance cycles and persists across reload', async () =
   assert(await theme() === 'light', `default theme ${await theme()}`);
   await page.getByRole('button', { name: /Appearance/ }).click(); assert(await theme() === 'dark', 'not dark');
   await page.reload(); await page.waitForSelector('text=/What should we make/');
+  await page.keyboard.press('Escape');   // not signed in (CI): the setup sheet opens again after a reload
   assert(await theme() === 'dark', 'dark not kept after reload');
   await page.getByRole('button', { name: /Appearance/ }).click(); await page.getByRole('button', { name: /Appearance/ }).click();
   assert(await theme() === 'light', `back to light: ${await theme()}`);
@@ -220,7 +220,8 @@ await t('sidebar ⌘B, appearance cycles and persists across reload', async () =
 await t('account sheet: menu opens it, Escape and Done close it, Help opens the readme', async () => {
   await menu('Account…'); await page.waitForSelector('text=Game tools');
   await page.keyboard.press('Escape'); assert(await page.locator('text=Game tools').count() === 0, 'escape');
-  await page.getByRole('button', { name: 'Account' }).first().click(); await page.getByRole('button', { name: /Done|Later/ }).click();
+  // the sidebar's account button: "Account" when signed in, "Set up Claude Code" when not (CI)
+  await page.getByRole('button', { name: /^(Account|Set up Claude Code)$/ }).first().click(); await page.getByRole('button', { name: /Done|Later/ }).click();
   assert(await page.locator('text=Game tools').count() === 0, 'done');
   await calls(); await page.getByRole('button', { name: 'Help' }).click();
   const c = await calls(); assert(c.some(([k, u]) => k === 'external' && u.includes('github.com')), JSON.stringify(c));
