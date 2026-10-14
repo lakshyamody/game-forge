@@ -53,7 +53,13 @@ for (const f of walk(dest)) {
   if (!/\.(ts|js|json|html|css|md)$/.test(f)) continue;
   let s = readFileSync(f, 'utf8');
   const before = s;
-  s = s.replaceAll('{{TITLE}}', title).replaceAll('{{SLUG}}', slug).replaceAll('{{TAGLINE}}', tagline);
+  // escaped for where the placeholder sits: '…' strings in code, "…" in JSON, text in HTML (a tagline like
+  // "Don't stop" used to end the string early and the new game didn't compile)
+  const esc = f.endsWith('.json') ? (v) => JSON.stringify(v).slice(1, -1)
+    : /\.(ts|js)$/.test(f) ? (v) => v.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+    : f.endsWith('.html') ? (v) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    : (v) => v;
+  s = s.replaceAll('{{TITLE}}', esc(title)).replaceAll('{{SLUG}}', slug).replaceAll('{{TAGLINE}}', esc(tagline));
   if (from) {
     s = s.replaceAll(`'${from}'`, `'${slug}'`).replaceAll(`"${from}"`, `"${slug}"`);   // save keys etc.
     if (oldTitle) s = s.replaceAll(oldTitle, title).replaceAll(oldTitle.toUpperCase(), title.toUpperCase());
