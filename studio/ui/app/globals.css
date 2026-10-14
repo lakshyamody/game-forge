@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
-/* Light, neutral, low-chroma: white content, slightly tinted chrome, hairline borders, one blue accent. */
+/* Two themes from one set of tokens. The window is a dark (or light) backdrop; panels float on it as cards. */
+:root, [data-theme="dark"] {
+  --c-window: #0e0e0f; --c-panel: #19191b; --c-raised: #242427; --c-hover: #2c2c30; --c-line: #29292d; --c-line-strong: #38383d;
+  --c-fg: #ececee; --c-muted: #a1a1a9; --c-subtle: #6f6f77; --c-accent: #6b9cff; --c-ok: #4cc38a; --c-warn: #f2a53d; --c-bad: #ef5a5a;
+  --c-bubble: #242427; color-scheme: dark;
+}
+[data-theme="light"] {
+  --c-window: #f1f1f2; --c-panel: #ffffff; --c-raised: #f3f3f4; --c-hover: #ebebed; --c-line: #e7e7e9; --c-line-strong: #d7d7db;
+  --c-fg: #18181b; --c-muted: #5e5e66; --c-subtle: #90909a; --c-accent: #2563eb; --c-ok: #16a34a; --c-warn: #c2730a; --c-bad: #dc2626;
+  --c-bubble: #f1f1f3; color-scheme: light;
+}
 @theme {
-  --color-bg: #ffffff;
-  --color-chrome: #f7f7f8;
-  --color-hover: #ececee;
-  --color-active: #e4e4e7;
-  --color-line: #e4e4e7;
-  --color-line-strong: #d4d4d8;
-  --color-fg: #18181b;
-  --color-muted: #52525b;
-  --color-subtle: #8b8b94;
-  --color-accent: #2563eb;
-  --color-accent-soft: #eff4ff;
-  --color-ok: #15803d;
-  --color-warn: #b45309;
-  --color-bad: #dc2626;
+  --color-window: var(--c-window); --color-panel: var(--c-panel); --color-raised: var(--c-raised); --color-hover: var(--c-hover);
+  --color-line: var(--c-line); --color-line-strong: var(--c-line-strong); --color-bubble: var(--c-bubble);
+  --color-fg: var(--c-fg); --color-muted: var(--c-muted); --color-subtle: var(--c-subtle);
+  --color-accent: var(--c-accent); --color-ok: var(--c-ok); --color-warn: var(--c-warn); --color-bad: var(--c-bad);
   --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
-  --radius-md: 6px;
 }
 
-html, body { height: 100%; background: var(--color-bg); color: var(--color-fg); overflow: hidden; }
+html, body { height: 100%; background: var(--c-window); color: var(--c-fg); overflow: hidden; }
 body { font-family: var(--font-sans); font-size: 13px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
-* { scrollbar-width: thin; scrollbar-color: #d4d4d8 transparent; }
-::selection { background: #2563eb33; }
+* { scrollbar-width: thin; scrollbar-color: var(--c-line-strong) transparent; }
+::selection { background: color-mix(in srgb, var(--c-accent) 35%, transparent); }
 .drag { -webkit-app-region: drag; }
-.no-drag { -webkit-app-region: no-drag; }
-.md code { font-family: var(--font-mono); font-size: 12px; background: #f4f4f5; border: 1px solid #e4e4e7; padding: 0 4px; border-radius: 4px; }
+.no-drag, .drag button, .drag input, .drag [role=tab] { -webkit-app-region: no-drag; }
+.md code { font-family: var(--font-mono); font-size: 12px; background: var(--c-hover); padding: 0 4px; border-radius: 4px; }
 .md b { font-weight: 600; }
+.md a { color: var(--c-accent); }

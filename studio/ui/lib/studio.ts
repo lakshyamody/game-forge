@@ -4,7 +4,7 @@ export interface Env {
   node: boolean; deps: boolean; tools: string; port: number;
 }
 export interface Fix { n: number; done: boolean; text: string }
-export interface Game { slug: string; thumb: boolean; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
+export interface Game { slug: string; thumb: boolean; engine: string; pitch: string; created: number; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
 export interface RunResult { code: number; stdout: string; stderr: string }
 export type ChatEvent =
   | { key: string; type: 'start' }

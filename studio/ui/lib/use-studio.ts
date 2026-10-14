@@ -111,7 +111,8 @@ export function useStudio() {
     api.onTools((t) => setEnv((e) => (e ? { ...e, tools: t } : e)));
     let timer: ReturnType<typeof setTimeout>;
     api.onGamesChanged(() => { clearTimeout(timer); timer = setTimeout(() => void refreshGames(), 400); });
-    void (async () => { const ok = await check(); await refreshGames(); if (!ok) setSetupOpen(true); })();
+    void refreshGames();   // the games list doesn't depend on the Claude Code check — show it right away
+    void check().then((ok) => { if (!ok) setSetupOpen(true); });
   }, [api]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // poll while setup isn't complete (install / sign-in happen in a terminal window)
