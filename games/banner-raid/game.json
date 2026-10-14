@@ -1,0 +1,7 @@
+{
+  "title": "Banner Raid",
+  "tagline": "Drop your troops, smash the village, steal the gold",
+  "controls": "1–4 pick troop · click/hold outside the red zone to deploy · right-drag/WASD pan · wheel zoom",
+  "color": "#ffd34d",
+  "engine": "three"
+}

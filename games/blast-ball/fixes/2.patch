@@ -1,0 +1,26 @@
+diff --git a/games/blast-ball/pitch.ts b/games/blast-ball/pitch.ts
+index 845e085..885ec8f 100644
+--- a/games/blast-ball/pitch.ts
++++ b/games/blast-ball/pitch.ts
+@@ -66,17 +66,18 @@ export class Stadium {
+     scene.add(pitch);
+ 
+     // advertising boards (walls the ball bounces off)
+-    const boardMat = (hue: number) => new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(hue, 0.7, 0.45), roughness: 0.5, emissive: new THREE.Color().setHSL(hue, 0.8, 0.12) });
++    const boardMat = (hue: number) => new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(hue, 1, 0.3), roughness: 0.5, emissive: new THREE.Color().setHSL(hue, 1, 0.1) });
+     const H = PITCH.wall;
+     const addBoard = (w: number, d: number, x: number, z: number, hue: number) => {
+       const b = new THREE.Mesh(new THREE.BoxGeometry(w, H, d), boardMat(hue)); b.position.set(x, H / 2, z); b.castShadow = b.receiveShadow = true; scene.add(b);
+     };
+     for (let i = 0; i < 6; i++) {
+       const seg = PITCH.length / 6, z = -HALF_L + seg * (i + 0.5);
+-      addBoard(0.3, seg - 0.1, -HALF_W - 0.15, z, i / 6); addBoard(0.3, seg - 0.1, HALF_W + 0.15, z, (i + 3) / 6);
++      const team = i % 2 ? 0.045 : 0.6;   // alternate orange / blue team boards
++      addBoard(0.3, seg - 0.1, -HALF_W - 0.15, z, team); addBoard(0.3, seg - 0.1, HALF_W + 0.15, z, 0.645 - team);
+     }
+     const sideW = (PITCH.width - PITCH.goalWidth) / 2;
+-    for (const z of [-HALF_L - 0.15, HALF_L + 0.15]) for (const s of [-1, 1]) addBoard(sideW, 0.3, s * (PITCH.goalWidth / 2 + sideW / 2), z, z > 0 ? 0.08 : 0.6);
++    for (const z of [-HALF_L - 0.15, HALF_L + 0.15]) for (const s of [-1, 1]) addBoard(sideW, 0.3, s * (PITCH.goalWidth / 2 + sideW / 2), z, z > 0 ? 0.045 : 0.6);
+ 
+     // goals
+     const postMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });

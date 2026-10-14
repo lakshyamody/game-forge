@@ -6,3 +6,10 @@ node_modules
 .DS_Store
 .claude/settings.local.json
 *.log
+/dist-studio
+.vite-cache
+studio/ui/node_modules
+studio/ui/.next
+studio/ui/out
+studio/ui/next-env.d.ts
+studio/ui/tsconfig.tsbuildinfo

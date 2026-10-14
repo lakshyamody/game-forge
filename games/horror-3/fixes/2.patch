@@ -1,0 +1,13 @@
+diff --git a/games/horror-3/main.ts b/games/horror-3/main.ts
+index 327f990..7a5abe8 100644
+--- a/games/horror-3/main.ts
++++ b/games/horror-3/main.ts
+@@ -460,7 +460,7 @@ loop((dt) => {
+   camera.position.x = damp(camera.position.x, px * 0.55, 6, dt);
+   camera.position.y = damp(camera.position.y, camY + py * 0.3, 4, dt);
+   camera.position.z = state === 'play' ? camZ : damp(camera.position.z, camZ, 2.5, dt);
+-  camLook.set(px * 0.35, dying ? 1.1 : 1.0, dying ? pz + 1 : pz - 8);
++  camLook.set(px * 0.35, dying ? 1.1 : 0.5, dying ? pz + 1 : pz - 6.5); // tilt down so the horde behind Jack is in shot
+   camera.lookAt(camLook);
+   (camera as THREE.PerspectiveCamera).fov = damp((camera as THREE.PerspectiveCamera).fov, 58 + speed * 0.45, 3, dt);
+   camera.updateProjectionMatrix();

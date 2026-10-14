@@ -1,0 +1,17 @@
+diff --git a/games/sunset-district/main.ts b/games/sunset-district/main.ts
+index b8765a2..c852e7f 100644
+--- a/games/sunset-district/main.ts
++++ b/games/sunset-district/main.ts
+@@ -52,6 +52,12 @@ const F = { x: startX, z: startZ, yaw: Math.PI / 2, speed: 0 };
+ const cam = { yaw: 0, pitch: -0.18 };
+ let cash = save.get('cash'), crashes = 0, hour = Number(q.get('hour') ?? WORLD.startHour), honkT = 0;
+ 
++// distant skyline: dark tower silhouettes around the city, so streets don't end in a white void
++{
++  const n = 160, sky = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0), new THREE.MeshStandardMaterial({ color: 0x55606e, roughness: 0.6, metalness: 0.4 }), n), m = new THREE.Matrix4();
++  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2 + Math.random() * 0.03, r = city.size[0] * 0.75 + Math.random() * 220, w = 14 + Math.random() * 26; m.compose(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), a), new THREE.Vector3(w, 30 + Math.random() ** 2 * 160, w)); sky.setMatrixAt(i, m); }
++  scene.add(sky);
++}
+ // ---------------------------------------------------------------- fares
+ type Fare = { stage: 'pickup' | 'dropoff'; px: number; pz: number; dx: number; dz: number; time: number; pay: number; ped: THREE.Object3D | null };
+ let fare: Fare | null = null;

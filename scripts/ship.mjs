@@ -7,11 +7,10 @@
  */
 import { build } from 'vite';
 import { existsSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, cpSync, mkdirSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { resolve, join, dirname, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join, dirname } from 'node:path';
 
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+import { root, walk } from './lib/common.mjs';
+import { zipDir } from './lib/platform.mjs';
 const slug = process.argv[2];
 if (!slug || !existsSync(resolve(root, 'games', slug, 'index.html'))) { console.error('usage: npm run ship -- <slug>   (a folder in games/)'); process.exit(1); }
 process.env.GAME = slug;
@@ -21,7 +20,6 @@ const out = resolve(root, 'ship', slug);
 // copy only the library assets this game references (string literals like 'car-kit/race', 'impact-sounds/footstep_*',
 // template prefixes like `voiceover-pack/${line}`, or explicit 'sprites/...'/'textures' ids)
 const A = resolve(root, 'assets');
-const walk = (d) => (existsSync(d) ? readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; }) : []);
 const sources = walk(resolve(root, 'games', slug)).filter((f) => /\.(ts|js)$/.test(f)).map((f) => readFileSync(f, 'utf8')).join('\n');
 const literals = [...sources.matchAll(/(['"`])([a-z0-9_.\-/*]+(?:\$\{[^}]*\})?[a-z0-9_.\-/*]*)\1/gi)].map((m) => m[2]);
 const keep = new Set(['catalog.json', 'LICENSES.md']);
@@ -40,6 +38,8 @@ for (const lit of literals) {
   }
   if (!lit.includes('/')) { add(`hdri/${lit}.hdr`); if (existsSync(join(A, 'textures', lit))) for (const f of readdirSync(join(A, 'textures', lit))) keep.add(`textures/${lit}/${f}`); }
 }
+// licence notices travel with the files that need them (MIT: Rocketbox people)
+for (const p of [...keep]) { const lic = p.replace(/[^/]+$/, 'LICENSE.md'); if (p.startsWith('models/') && existsSync(join(A, lic))) keep.add(lic); }
 let bytes = 0;
 for (const p of keep) { if (statSync(join(A, p)).isDirectory()) continue; const d = join(out, p); mkdirSync(dirname(d), { recursive: true }); cpSync(join(A, p), d); bytes += statSync(join(A, p)).size; }
 console.log(`  assets: ${keep.size} files (${(bytes / 1048576).toFixed(1)} MB) of the library`);
@@ -47,6 +47,5 @@ console.log(`  assets: ${keep.size} files (${(bytes / 1048576).toFixed(1)} MB) o
 writeFileSync(resolve(out, 'index.html'), `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=games/${slug}/"><script>location.replace('games/${slug}/')</script>`);
 const zip = resolve(root, 'ship', `${slug}.zip`);
 rmSync(zip, { force: true });
-if (process.platform === 'win32') execFileSync('powershell', ['-NoProfile', '-Command', `Compress-Archive -Path '${out}\\*' -DestinationPath '${zip}'`]);
-else execFileSync('zip', ['-qr', zip, '.'], { cwd: out });
+zipDir(out, zip);
 console.log(`✔ ship/${slug}/  (static site)\n✔ ship/${slug}.zip  (upload to itch.io as an HTML game)`);

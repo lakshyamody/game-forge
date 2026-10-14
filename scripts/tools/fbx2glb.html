@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>fbx → glb</title>
+<script type="module">
+  // Runs inside headless Chromium (driven by scripts/fbx2glb.mjs): three's FBXLoader + GLTFExporter.
+  import * as THREE from 'three';
+  import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+  import { TGALoader } from 'three/addons/loaders/TGALoader.js';
+  import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+
+  const MAX = 1024;
+  function loaderFor(textures) {
+    const m = new THREE.LoadingManager();
+    // FBXLoader resolves before its textures finish: expose a promise for "everything loaded"
+    m.done = new Promise((res) => { m.onLoad = res; setTimeout(res, 60000); });
+    // FBX files store the artist's absolute texture paths; map by file name to the files we serve
+    m.setURLModifier((url) => { const n = decodeURIComponent(url).split(/[\\/]/).pop().toLowerCase(); return textures[n] ?? url; });
+    m.addHandler(/\.tga$/i, new TGALoader(m));
+    const l = new FBXLoader(m); l.done = m.done; return l;
+  }
+  /** texture image → canvas at ≤ MAX px (TGA arrives as raw pixel data) */
+  function toCanvas(tex, flip) {
+    const img = tex?.image; if (!img || !img.width) return null;
+    const w = img.width, h = img.height;
+    const src = document.createElement('canvas'); src.width = w; src.height = h; const sg = src.getContext('2d');
+    if (img.data) sg.putImageData(new ImageData(new Uint8ClampedArray(img.data.buffer, img.data.byteOffset, w * h * 4), w, h), 0, 0); else sg.drawImage(img, 0, 0);
+    const k = Math.min(1, MAX / Math.max(w, h)), c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+    const g = c.getContext('2d'); if (flip) { g.translate(0, c.height); g.scale(1, -1); } g.drawImage(src, 0, 0, c.width, c.height);
+    return c;
+  }
+  function canvasTex(c, srgb, jpeg) { const t = new THREE.CanvasTexture(c); t.flipY = false; if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.userData.mimeType = jpeg ? 'image/jpeg' : 'image/png'; return t; }
+  const needsFlip = (t) => !!t?.image?.data && !t.flipY;   // raw TGA data is bottom-up
+
+  function toStandard(mat) {
+    const out = new THREE.MeshStandardMaterial({ name: mat.name, color: 0xffffff, roughness: 0.72, metalness: 0, side: mat.side });
+    const c = mat.map && toCanvas(mat.map, needsFlip(mat.map));
+    if (c) {
+      if (mat.alphaMap && toCanvas(mat.alphaMap)) {   // glTF has no separate alpha map: bake it into the colour texture's alpha
+        const a = toCanvas(mat.alphaMap, needsFlip(mat.alphaMap)), g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height);
+        const ad = a.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+        for (let i = 0; i < d.data.length; i += 4) d.data[i + 3] = ad[i];
+        g.putImageData(d, 0, 0); out.alphaTest = 0.5; out.side = THREE.DoubleSide;
+      }
+      out.map = canvasTex(c, true, !mat.alphaMap);
+    } else if (mat.color) out.color.copy(mat.color);
+    const nc = mat.normalMap && toCanvas(mat.normalMap, needsFlip(mat.normalMap));
+    if (nc) out.normalMap = canvasTex(nc, false, true);
+    return out;
+  }
+  const exportGlb = (obj, animations) => new GLTFExporter().parseAsync(obj, { binary: true, animations, onlyVisible: false, maxTextureSize: MAX });
+  const b64 = (buf) => { let s = ''; const u = new Uint8Array(buf); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
+
+  /** a character: mesh + skeleton, materials converted, scaled cm → m */
+  window.convertModel = async ({ url, textures, scale = 0.01 }) => {
+    const loader = loaderFor(textures), fbx = await loader.loadAsync(url);
+    await loader.done;
+    fbx.traverse((o) => { if (o.isMesh) { o.material = Array.isArray(o.material) ? o.material.map(toStandard) : toStandard(o.material); } });
+    const root = new THREE.Group(); root.name = fbx.name || 'root'; root.scale.setScalar(scale); root.add(fbx);
+    return b64(await exportGlb(root, []));
+  };
+
+  /** an animation library: several FBX clips on one skeleton → one GLB; root motion removed (speed reported) */
+  window.convertAnims = async ({ items, rootBone = 'Bip01', scale = 0.01 }) => {
+    let skeletonScene = null; const clips = []; const speeds = {};
+    for (const it of items) {
+      const fbx = await loaderFor({}).loadAsync(it.url);
+      if (!skeletonScene) { skeletonScene = fbx; fbx.traverse((o) => { if (o.isMesh) o.visible = false; }); }
+      const clip = fbx.animations[0]; if (!clip) continue;
+      clip.name = it.name;
+      clip.tracks = clip.tracks.filter((t) => !t.name.startsWith('MotionExtractionHelper'));
+      const pos = clip.tracks.find((t) => t.name === `${rootBone}.position`);
+      if (pos && it.inPlace) {
+        // remove the linear drift on the ground plane (x, z) but keep the bob (y): an in-place loop
+        const v = pos.values, n = pos.times.length, T = pos.times[n - 1] - pos.times[0] || 1;
+        const dx = v[(n - 1) * 3] - v[0], dz = v[(n - 1) * 3 + 2] - v[2];
+        speeds[it.name] = +((Math.hypot(dx, dz) * scale) / T).toFixed(3);
+        for (let i = 0; i < n; i++) { const f = (pos.times[i] - pos.times[0]) / T; v[i * 3] -= dx * f; v[i * 3 + 2] -= dz * f; }
+      }
+      clips.push(clip);
+    }
+    const root = new THREE.Group(); root.name = 'anims'; root.scale.setScalar(scale); root.add(skeletonScene);
+    skeletonScene.traverse((o) => { if (o.isMesh) o.parent?.remove(o); });
+    return { glb: b64(await exportGlb(root, clips)), speeds };
+  };
+  window.ready = true;
+</script>

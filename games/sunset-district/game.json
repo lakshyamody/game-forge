@@ -1,0 +1,7 @@
+{
+  "title": "Sunset District",
+  "tagline": "Drive a living city at golden hour — pick up fares, beat the clock",
+  "controls": "WASD walk/drive · Shift run · mouse look · E get in/out · Space handbrake · H horn",
+  "color": "#ffb347",
+  "engine": "three"
+}

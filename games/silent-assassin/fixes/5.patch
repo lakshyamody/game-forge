@@ -1,0 +1,13 @@
+diff --git a/games/silent-assassin/main.ts b/games/silent-assassin/main.ts
+index a929a13..256df22 100644
+--- a/games/silent-assassin/main.ts
++++ b/games/silent-assassin/main.ts
+@@ -414,6 +414,8 @@ function takeDown(v: Npc) {
+   else pop(v.x, v.z, `${silent ? 'SILENT ' : ''}+${pts}`, silent ? '#9dffb0' : '#ffd34d', v.kind === 'target');
+   hitstop = v.kind === 'target' ? 0.12 : 0.07; shake(v.kind === 'target' ? 0.35 : 0.2);
+   debris.burst(v.x, 1.1, v.z, [0xb01020, 0x5a0810, 0x222222], v.kind === 'target' ? 22 : 12, 4, 4, 0.13);
++  const puddle = new THREE.Mesh(new THREE.CircleGeometry(0.85, 20), new THREE.MeshBasicMaterial({ color: 0x8a0a18, transparent: true, opacity: 0.85, depthWrite: false }));
++  puddle.rotation.x = -Math.PI / 2; puddle.position.y = 0.03; puddle.scale.set(1.3, 0.9, 1); v.root.add(puddle);
+   sound.play('rpg-audio/knifeslice', { volume: 0.8 }); sound.play('impact-sounds/impactsoft_heavy_*', { volume: 0.5 });
+   if (v.kind === 'target') {
+     const left = npcs.filter((n) => n.kind === 'target' && n.state !== 'dead').length;

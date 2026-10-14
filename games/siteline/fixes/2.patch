@@ -1,0 +1,13 @@
+diff --git a/games/siteline/main.ts b/games/siteline/main.ts
+index 30c6732..ef2bd8d 100644
+--- a/games/siteline/main.ts
++++ b/games/siteline/main.ts
+@@ -123,7 +123,7 @@ function nextRound() {
+   active().forEach((d, i) => { const p = posts[i]; d.spawn(p.x, p.z); });
+   state = 'buy'; M.postT = ROUND.buy;
+   renderCards(); $('buy').classList.remove('hidden');
+-  banner(`<small>ROUND ${M.round}</small>${M.score[0] === ROUND.toWin - 1 || M.score[1] === ROUND.toWin - 1 ? 'MATCH POINT' : 'BUY PHASE'}`, 1.6);
++  banner(`<small>ROUND ${M.round}</small>${M.score[0] === ROUND.toWin - 1 || M.score[1] === ROUND.toWin - 1 ? 'MATCH POINT' : ''}`, 1.6);   // the buy panel already says BUY PHASE
+   voice(M.round === 1 ? 'ready' : 'round');
+ }
+ function goLive() { state = 'live'; $('buy').classList.add('hidden'); banner('GO', 0.8); voice('go'); sfx.play('select'); }

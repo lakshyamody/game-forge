@@ -1,0 +1,7 @@
+{
+  "title": "Siteline",
+  "tagline": "Tactical 1v3 shooter: plant the spike or clear the site",
+  "controls": "WASD · Shift walk · Click shoot · RMB zoom · Q dash · E smoke · C recon · hold 4 to plant",
+  "color": "#ff4655",
+  "engine": "three"
+}

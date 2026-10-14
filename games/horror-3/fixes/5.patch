@@ -1,0 +1,13 @@
+diff --git a/games/horror-3/main.ts b/games/horror-3/main.ts
+index 921edb2..cacf8dc 100644
+--- a/games/horror-3/main.ts
++++ b/games/horror-3/main.ts
+@@ -224,7 +224,7 @@ hud.innerHTML = `
+     #danger { position:absolute; left:50%; bottom:22px; transform:translateX(-50%); font-size:12px; color:#9fdc7a; text-shadow:0 0 8px #000; }
+   </style>
+   <div id="vig"></div><div id="flash"></div>
+-  <div class="stat" style="left:24px;color:#ffd84a">🪙 <span id="coins">0</span></div>
++  <div class="stat" style="left:24px;color:#ffd84a;display:flex;align-items:center;gap:10px;font-size:22px"><i style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6b0,#ffc21a 45%,#b87400);border:2px solid #7a4a00;box-shadow:0 0 12px #ffb000"></i><span id="coins">0</span></div>
+   <div class="stat" style="right:24px;color:#e8e2ff"><span id="dist">0</span>m</div>
+   <div id="danger"></div>
+   <div class="overlay" id="menu"><h1>HORROR 3</h1><p>Jack has to escape Slenderina and her zombies.<br>Hold on to your teddy and RUN.</p>

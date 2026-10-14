@@ -1,0 +1,13 @@
+diff --git a/games/sunset-district/main.ts b/games/sunset-district/main.ts
+index b8765a2..3727a44 100644
+--- a/games/sunset-district/main.ts
++++ b/games/sunset-district/main.ts
+@@ -44,6 +44,8 @@ const meAnim = animate(me, male); meAnim.play('idle');
+ const [ox, oz] = city.origin, P = city.pitch;
+ const startX = ox + P + city.road + 3, startZ = oz + P + city.road + 10;
+ const taxi = buildCar('taxi'); scene.add(taxi.root);
++// car glass reflects the sky instead of reading as a black box (shared material: every car)
++taxi.body.traverse((o) => { const m = (o as THREE.Mesh).material as THREE.MeshPhysicalMaterial; if (m?.isMeshPhysicalMaterial && m.clearcoat === 1 && m.metalness === 0.9) { m.color.set(0x34414f); m.metalness = 0.35; m.roughness = 0.03; } });
+ // headlight beams (player car only — real light on the road, cars and people at night)
+ const beams = [-0.55, 0.55].map((x) => { const l = new THREE.SpotLight(0xfff1d8, 0, 45, 0.5, 0.5, 1.2); l.position.set(x, 0.75, -2.2); l.target.position.set(x * 2, 0, -18); taxi.root.add(l, l.target); return l; });
+ const C = { x: ox + P + city.road * 0.75, z: startZ + 6, yaw: 0,   // northbound lane, facing north (with the traffic)

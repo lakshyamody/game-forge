@@ -1,0 +1,16 @@
+diff --git a/games/siteline/defender.ts b/games/siteline/defender.ts
+index fe80ce8..c6e00b3 100644
+--- a/games/siteline/defender.ts
++++ b/games/siteline/defender.ts
+@@ -30,9 +30,9 @@ export class Defender {
+   constructor(scene: THREE.Scene, public id: number) {
+     scene.add(this.root);
+     const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d')!;
+-    g.fillStyle = '#ff4655'; g.beginPath(); g.moveTo(32, 60); g.lineTo(8, 20); g.lineTo(56, 20); g.closePath(); g.fill();
++    g.fillStyle = '#ff2a3d'; g.strokeStyle = '#fff'; g.lineWidth = 5; g.beginPath(); g.moveTo(32, 60); g.lineTo(6, 14); g.lineTo(58, 14); g.closePath(); g.fill(); g.stroke();   // bold red arrow with a white edge
+     this.marker = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, transparent: true }));
+-    this.marker.scale.setScalar(0.6); this.marker.position.y = 2.4; this.marker.renderOrder = 10; this.marker.visible = false;
++    this.marker.scale.setScalar(1.1); this.marker.position.y = 2.5; this.marker.renderOrder = 10; this.marker.visible = false;
+     this.root.add(this.marker);
+     this.ready = (async () => {
+       const m = await loadModel(`mini-characters/${LOOKS[id % LOOKS.length]}`, { height: 1.8 });

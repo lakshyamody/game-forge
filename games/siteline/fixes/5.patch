@@ -1,0 +1,12 @@
+diff --git a/games/siteline/main.ts b/games/siteline/main.ts
+index 30c6732..e0a2e65 100644
+--- a/games/siteline/main.ts
++++ b/games/siteline/main.ts
+@@ -138,6 +138,7 @@ function endRound(won: boolean, why: string) {
+ }
+ function endMatch() {
+   state = 'over'; document.exitPointerLock?.(); hud.classList.remove('playing');
++  view.visible = false;   // no gun floating behind the end screen
+   const won = M.score[0] > M.score[1];
+   save.set(won ? 'wins' : 'losses', save.get(won ? 'wins' : 'losses') + 1);
+   save.set('bestKills', Math.max(save.get('bestKills'), M.kills));

@@ -1,0 +1,17 @@
+diff --git a/games/blast-ball/pitch.ts b/games/blast-ball/pitch.ts
+index 845e085..9278a44 100644
+--- a/games/blast-ball/pitch.ts
++++ b/games/blast-ball/pitch.ts
+@@ -127,7 +127,11 @@ export class Stadium {
+     for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+       const tx = x * (HALF_W + 18), tz = z * (HALF_L + 16);
+       const pole = new THREE.Mesh(new THREE.BoxGeometry(0.8, 26, 0.8), standMat); pole.position.set(tx, 13, tz); scene.add(pole);
+-      const head = new THREE.Mesh(new THREE.BoxGeometry(5, 2.5, 0.6), new THREE.MeshBasicMaterial({ color: 0xfffbe0 })); head.position.set(tx, 26, tz); head.lookAt(0, 0, 0); scene.add(head);
++      const head = new THREE.Mesh(new THREE.BoxGeometry(5.4, 2.9, 0.6), standMat); head.position.set(tx, 26, tz); head.lookAt(0, 0, 0); scene.add(head);
++      // a 4×2 grid of lamps on the pitch-facing side, so they read as lights, not blank boxes
++      for (let c = 0; c < 4; c++) for (let r = 0; r < 2; r++) {
++        const lamp = new THREE.Mesh(new THREE.CircleGeometry(0.5, 12), new THREE.MeshBasicMaterial({ color: 0xfff6c8 })); lamp.position.set(-1.95 + c * 1.3, -0.65 + r * 1.3, 0.31); head.add(lamp);
++      }
+     }
+ 
+     // zone walls: blue storm closing in from the sidelines

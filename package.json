@@ -13,28 +13,37 @@
     "shot": "node scripts/shot.mjs",
     "play": "node scripts/play.mjs",
     "ship": "node scripts/ship.mjs",
-    "assets": "node scripts/assets.mjs"
-  },
-  "dependencies": {
-    "@fontsource/orbitron": "^5.3.0",
-    "@fontsource/press-start-2p": "^5.3.0",
-    "phaser": "^4.2.1",
-    "three": "^0.186.1",
-    "tweakpane": "^4.0.5",
-    "zzfx": "^1.4.0"
+    "assets": "node scripts/assets.mjs",
+    "fixes": "node scripts/fixes.mjs",
+    "studio": "node studio/launch.mjs",
+    "studio:build": "node scripts/build-studio.mjs",
+    "studio:dev": "node studio/launch.mjs --dev",
+    "thumbs": "node scripts/thumbs.mjs"
   },
   "devDependencies": {
+    "@fontsource/orbitron": "^5.3.0",
+    "@fontsource/press-start-2p": "^5.3.0",
     "@gltf-transform/core": "^4.5.1",
     "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
     "@tweakpane/core": "^2.0.5",
     "@types/three": "^0.186.0",
+    "diff": "^8.0.4",
+    "electron": "^44.7.0",
+    "n8ao": "^2.0.1",
+    "phaser": "^4.2.1",
     "playwright": "^1.63.0",
+    "postprocessing": "6.39",
+    "three": "^0.186.1",
+    "tweakpane": "^4.0.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.3"
+    "vite": "^8.3.3",
+    "zzfx": "^1.4.0"
   },
   "description": "Vibe-code browser games with Claude Code: shared game kit, genre templates, headless playtesting.",
   "license": "MIT",
   "engines": {
     "node": ">=20.19"
-  }
+  },
+  "main": "studio/main.mjs"
 }

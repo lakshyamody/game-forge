@@ -1,0 +1,668 @@
+{
+ "the_sky_is_on_fire": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "urban",
+   "sunrise-sunset",
+   "partly cloudy",
+   "medium contrast",
+   "natural light"
+  ]
+ },
+ "canary_wharf": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "partly cloudy",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "wide_street_01": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "midday",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "shanghai_bund": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "night",
+   "partly cloudy",
+   "high contrast",
+   "artificial light"
+  ]
+ },
+ "venice_sunset": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "urban",
+   "sunrise-sunset",
+   "clear",
+   "medium contrast",
+   "natural light"
+  ]
+ },
+ "preller_drive": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "nature",
+   "partly cloudy",
+   "night",
+   "high contrast",
+   "artificial light"
+  ]
+ },
+ "buikslotermeerplein": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "partly cloudy",
+   "natural light",
+   "low contrast",
+   "morning-afternoon"
+  ]
+ },
+ "sunset_jhbcentral": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "sunrise-sunset",
+   "urban",
+   "low contrast",
+   "partly cloudy"
+  ]
+ },
+ "wide_street_02": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "studio_garden": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "nature",
+   "midday",
+   "clear",
+   "natural light",
+   "high contrast",
+   "urban"
+  ]
+ },
+ "hansaplatz": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "night",
+   "clear",
+   "high contrast",
+   "artificial light"
+  ]
+ },
+ "rooftop_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "urban",
+   "sunrise-sunset",
+   "partly cloudy",
+   "high contrast",
+   "artificial light",
+   "night"
+  ]
+ },
+ "urban_street_04": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "high contrast",
+   "natural light",
+   "partly cloudy"
+  ]
+ },
+ "solitude_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "night",
+   "partly cloudy",
+   "high contrast",
+   "artificial light",
+   "natural light"
+  ]
+ },
+ "urban_street_01": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "driving_school": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "urban",
+   "morning-afternoon",
+   "partly cloudy",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "neuer_zollhof": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "night",
+   "partly cloudy",
+   "high contrast",
+   "artificial light"
+  ]
+ },
+ "pond_bridge_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "nature",
+   "urban",
+   "partly cloudy",
+   "night",
+   "low contrast",
+   "natural light",
+   "artificial light"
+  ]
+ },
+ "vignaioli_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "night",
+   "partly cloudy",
+   "high contrast",
+   "artificial light"
+  ]
+ },
+ "shanghai_riverside": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "medium contrast",
+   "sunrise-sunset",
+   "clear",
+   "natural light",
+   "skies"
+  ]
+ },
+ "cobblestone_street_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "night",
+   "urban",
+   "artificial light",
+   "high contrast",
+   "clear"
+  ]
+ },
+ "quattro_canti": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "sunrise-sunset",
+   "partly cloudy",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "ulmer_muenster": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "potsdamer_platz": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "morning-afternoon",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "tears_of_steel_bridge": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "sunrise-sunset",
+   "partly cloudy",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "docklands_02": {
+  "source": "Poly Haven",
+  "categories": [
+   "high contrast",
+   "clear",
+   "urban",
+   "outdoor",
+   "natural light",
+   "morning-afternoon"
+  ]
+ },
+ "modern_buildings_2": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "urban",
+   "high contrast",
+   "morning-afternoon",
+   "partly cloudy"
+  ]
+ },
+ "derelict_overpass": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "urban",
+   "morning-afternoon",
+   "partly cloudy",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "suburban_garden": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "nature",
+   "high contrast",
+   "clear",
+   "midday",
+   "urban"
+  ]
+ },
+ "schadowplatz": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "urban",
+   "midday",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "lilienstein": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "medium contrast",
+   "natural light"
+  ]
+ },
+ "spruit_sunrise": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "kloppenheim_06_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "low contrast",
+   "natural light",
+   "pure skies"
+  ]
+ },
+ "kiara_1_dawn": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "medium contrast",
+   "natural light"
+  ]
+ },
+ "kloppenheim_06": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "rooitou_park": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "citrus_orchard_road_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "nature",
+   "partly cloudy",
+   "sunrise-sunset",
+   "skies",
+   "low contrast",
+   "pure skies"
+  ]
+ },
+ "scythian_tombs_2": {
+  "source": "Poly Haven",
+  "categories": [
+   "natural light",
+   "outdoor",
+   "nature",
+   "partly cloudy",
+   "sunrise-sunset",
+   "medium contrast",
+   "skies"
+  ]
+ },
+ "industrial_sunset_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "low contrast",
+   "natural light",
+   "pure skies"
+  ]
+ },
+ "umhlanga_sunrise": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "natural light",
+   "low contrast",
+   "collection: smugglers_cove"
+  ]
+ },
+ "moonless_golf": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "night",
+   "clear",
+   "medium contrast",
+   "natural light",
+   "artificial light"
+  ]
+ },
+ "dikhololo_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "nature",
+   "night",
+   "clear",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "kloppenheim_02": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "night",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "satara_night_no_lamps": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "clear",
+   "night",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "rogland_clear_night": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "nature",
+   "skies",
+   "clear",
+   "low contrast",
+   "night",
+   "collection: namaqualand"
+  ]
+ },
+ "moonlit_golf": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "night",
+   "clear",
+   "high contrast",
+   "natural light"
+  ]
+ },
+ "autumn_field_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "nature",
+   "skies",
+   "high contrast",
+   "clear",
+   "morning-afternoon",
+   "pure skies"
+  ]
+ },
+ "overcast_soil_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "natural light",
+   "nature",
+   "low contrast",
+   "overcast",
+   "morning-afternoon",
+   "pure skies"
+  ]
+ },
+ "sunflowers_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "midday",
+   "partly cloudy",
+   "high contrast",
+   "natural light",
+   "pure skies"
+  ]
+ },
+ "mud_road_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "midday",
+   "overcast",
+   "low contrast",
+   "natural light",
+   "pure skies"
+  ]
+ },
+ "evening_road_01_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "sunrise-sunset",
+   "partly cloudy",
+   "medium contrast",
+   "natural light",
+   "pure skies"
+  ]
+ },
+ "kloofendal_43d_clear_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "natural light",
+   "nature",
+   "partly cloudy",
+   "clear",
+   "skies",
+   "high contrast",
+   "midday",
+   "pure skies"
+  ]
+ },
+ "industrial_sunset_02_puresky": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "natural light",
+   "partly cloudy",
+   "medium contrast",
+   "sunrise-sunset",
+   "pure skies"
+  ]
+ },
+ "cannon": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "skies",
+   "nature",
+   "midday",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "snowy_park_01": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "nature",
+   "midday",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ },
+ "tiergarten": {
+  "source": "Poly Haven",
+  "categories": [
+   "outdoor",
+   "nature",
+   "midday",
+   "overcast",
+   "low contrast",
+   "natural light"
+  ]
+ }
+}

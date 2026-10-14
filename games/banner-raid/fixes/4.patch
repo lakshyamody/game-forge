@@ -1,0 +1,56 @@
+diff --git a/games/banner-raid/index.html b/games/banner-raid/index.html
+index 73fca07..0e23706 100644
+--- a/games/banner-raid/index.html
++++ b/games/banner-raid/index.html
+@@ -40,6 +40,7 @@
+     #capLine { font-size: 11px; }
+     .starsBig i { font-style: normal; font-size: 64px; color: #4a3a2a; display: inline-block; } .starsBig i.on { color: #ffd34d; animation: star .5s backwards; } @keyframes star { from { transform: scale(3) rotate(-30deg); opacity: 0; } }
+     #resInfo { font-size: 12px; line-height: 2; }
++    .coin { display: inline-block; width: .95em; height: .95em; border-radius: 50%; vertical-align: -.1em; background: radial-gradient(circle at 35% 35%, #fff3b0, #ffd34d 40%, #c98a12); box-shadow: inset 0 0 0 2px #a8690a; }
+     .hidden { display: none !important; }
+   </style>
+ </head>
+diff --git a/games/banner-raid/main.ts b/games/banner-raid/main.ts
+index 348464c..ddce74e 100644
+--- a/games/banner-raid/main.ts
++++ b/games/banner-raid/main.ts
+@@ -17,6 +17,7 @@ import { Village, isDefense, worldToCell, cellToWorld, type Building } from './v
+ const q = new URLSearchParams(location.search);
+ const AUTO = q.has('auto');
+ const IDS = Object.keys(TROOPS) as TroopId[];
++const COIN = '<i class="coin"></i>';   // CSS gold coin (the 🪙 emoji renders grey)
+ const save = store('banner-raid', {
+   gold: Number(q.get('gold') ?? ECON.startGold), level: Number(q.get('level') ?? 1), cap: ARMY.startCap, stars: 0,
+   lvl: { barbarian: 1, archer: 1, giant: 1, wizard: 1 } as Record<TroopId, number>,
+@@ -190,7 +191,7 @@ hud.innerHTML = `
+   <div id="banner"></div><div id="msg"></div><div id="pops"></div><div id="hpbars"></div>
+   <div class="ov" id="menu"><h1>BANNER <span>RAID</span></h1><p class="tag">Drop your troops. Smash the village. Steal the gold.</p>
+     <p class="keys">Pick a troop (1–4 or click its card) · click / hold outside the red zone to deploy · drag right mouse or WASD to pan · wheel to zoom</p><p class="go">CLICK TO PLAY</p></div>
+-  <div class="ov hidden" id="camp"><h2>ARMY CAMP</h2><p class="gold">🪙 <span id="gold">0</span></p>
++  <div class="ov hidden" id="camp"><h2>ARMY CAMP</h2><p class="gold"><i class="coin"></i> <span id="gold">0</span></p>
+     <div id="campCards"></div><p id="capLine"></p><div class="row"><button id="capBtn"></button><button id="attackBtn" class="big"></button></div></div>
+   <div class="ov hidden" id="result"><h1 id="resT"></h1><p id="resStars" class="starsBig"></p><p id="resInfo"></p><button id="homeBtn" class="big">RETURN HOME</button></div>`;
+ const $ = (id: string) => hud.querySelector<HTMLElement>('#' + id)!;
+@@ -223,11 +224,11 @@ function renderCamp() {
+     const d = TROOPS[id];
+     return `<div class="tcard" style="--c:${d.color}"><h3>${d.name} <small>Lv ${lvl[id]}</small></h3><p>${d.space} space · ${Math.round(d.hp * mul(id))} hp · ${Math.round(d.dps * mul(id))} dps${d.prefers === 'defense' ? ' · hits defenses' : ''}${d.splash ? ' · splash' : ''}</p>
+       <div class="row"><button data-minus="${id}">−</button><b>${army[id]}</b><button data-plus="${id}">+</button></div>
+-      <button data-up="${id}" ${lvl[id] >= 6 || save.get('gold') < upCost(id) ? 'disabled' : ''}>${lvl[id] >= 6 ? 'MAX' : `UPGRADE 🪙 ${upCost(id)}`}</button></div>`;
++      <button data-up="${id}" ${lvl[id] >= 6 || save.get('gold') < upCost(id) ? 'disabled' : ''}>${lvl[id] >= 6 ? 'MAX' : `UPGRADE ${COIN} ${upCost(id)}`}</button></div>`;
+   }).join('');
+   $('capLine').textContent = `Army ${space()} / ${save.get('cap')} space`;
+   const capFull = save.get('cap') >= ARMY.maxCap;
+-  $('capBtn').textContent = capFull ? 'CAMP MAXED' : `BIGGER CAMP +${ARMY.capPerUpgrade} · 🪙 ${ECON.capCost * (save.get('cap') / 5 - 3)}`;
++  $('capBtn').innerHTML = capFull ? 'CAMP MAXED' : `BIGGER CAMP +${ARMY.capPerUpgrade} · ${COIN} ${ECON.capCost * (save.get('cap') / 5 - 3)}`;
+   ($('capBtn') as HTMLButtonElement).disabled = capFull || save.get('gold') < ECON.capCost * (save.get('cap') / 5 - 3);
+   $('attackBtn').textContent = `⚔ ATTACK · Village Lv ${save.get('level')}`;
+   ($('attackBtn') as HTMLButtonElement).disabled = space() === 0;
+@@ -267,7 +268,7 @@ function endBattle() {
+   if (st > 0) save.set('level', save.get('level') + 1);
+   $('resT').textContent = st ? 'VICTORY' : 'DEFEAT'; $('resT').style.color = st ? '#ffd34d' : '#ff5a5a';
+   $('resStars').innerHTML = [0, 1, 2].map((i) => `<i class="${i < st ? 'on' : ''}" style="animation-delay:${i * 0.35}s">★</i>`).join('');
+-  $('resInfo').innerHTML = `${Math.round(village.destruction() * 100)}% destroyed<br>Loot 🪙 ${loot} + star bonus 🪙 ${bonus}${st ? `<br>Next: Village Lv ${save.get('level')}` : '<br>Upgrade your troops and try again'}`;
++  $('resInfo').innerHTML = `${Math.round(village.destruction() * 100)}% destroyed<br>Loot ${COIN} ${loot} + star bonus ${COIN} ${bonus}${st ? `<br>Next: Village Lv ${save.get('level')}` : '<br>Upgrade your troops and try again'}`;
+   $('result').classList.remove('hidden');
+   sound.play(`voiceover-pack/${st ? 'you_win' : 'you_lose'}`, { volume: 0.8 });
+ }

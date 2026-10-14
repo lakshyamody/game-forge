@@ -1,0 +1,13 @@
+diff --git a/games/blast-ball/pitch.ts b/games/blast-ball/pitch.ts
+index 845e085..53bfdeb 100644
+--- a/games/blast-ball/pitch.ts
++++ b/games/blast-ball/pitch.ts
+@@ -150,7 +150,7 @@ export class Stadium {
+     this.pitchMat.normalMap = g.normalMap ?? null; this.pitchMat.normalScale.set(0.7, 0.7);
+     this.pitchMat.roughnessMap = g.roughnessMap ?? null; this.pitchMat.needsUpdate = true;
+     const out = await loadTexture('leafy_grass', { repeat: 60 });
+-    Object.assign(this.groundMat, out, { color: new THREE.Color(0x9ab08a) }); this.groundMat.needsUpdate = true;
++    Object.assign(this.groundMat, out, { color: new THREE.Color(0x5f9a48) });   // fresh green, not mud this.groundMat.needsUpdate = true;
+   }
+ 
+   setZone(halfWidth: number, time: number) {

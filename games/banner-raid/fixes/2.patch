@@ -1,0 +1,19 @@
+diff --git a/games/banner-raid/config.ts b/games/banner-raid/config.ts
+index c155ab9..c42a47e 100644
+--- a/games/banner-raid/config.ts
++++ b/games/banner-raid/config.ts
+@@ -5,10 +5,10 @@ export const N = 48;   // village grid is N×N cells, 1 cell = 1 m (the outer ~6
+ export type TroopId = 'barbarian' | 'archer' | 'giant' | 'wizard';
+ export interface TroopDef { name: string; model: string; keep: string[]; height: number; space: number; hp: number; dps: number; range: number; speed: number; prefers: 'any' | 'defense'; splash: number; attack: string; run: string; color: string }
+ export const TROOPS: Record<TroopId, TroopDef> = {
+-  barbarian: { name: 'Barbarian', model: 'kaykit-adventurers/barbarian', keep: ['1H_Axe', 'Barbarian_Round_Shield'], height: 0.95, space: 1, hp: 95, dps: 20, range: 0.6, speed: 2.3, prefers: 'any', splash: 0, attack: '1H_Melee_Attack_Chop', run: 'Running_A', color: '#ffb340' },
+-  archer: { name: 'Archer', model: 'kaykit-adventurers/rogue', keep: ['1H_Crossbow'], height: 0.9, space: 1, hp: 45, dps: 13, range: 3.6, speed: 2.4, prefers: 'any', splash: 0, attack: '1H_Ranged_Shoot', run: 'Running_A', color: '#7dff9a' },
+-  giant: { name: 'Giant', model: 'kaykit-adventurers/knight', keep: ['1H_Sword', 'Badge_Shield'], height: 1.5, space: 5, hp: 520, dps: 22, range: 0.8, speed: 1.4, prefers: 'defense', splash: 0, attack: '1H_Melee_Attack_Slice_Diagonal', run: 'Walking_A', color: '#66b3ff' },
+-  wizard: { name: 'Wizard', model: 'kaykit-adventurers/mage', keep: ['2H_Staff', 'Mage_Hat', 'Mage_Cape'], height: 1.0, space: 4, hp: 80, dps: 34, range: 3.2, speed: 1.9, prefers: 'any', splash: 1.3, attack: 'Spellcast_Shoot', run: 'Running_A', color: '#c58cff' },
++  barbarian: { name: 'Barbarian', model: 'kaykit-adventurers/barbarian', keep: ['1H_Axe', 'Barbarian_Round_Shield'], height: 1.45, space: 1, hp: 95, dps: 20, range: 0.6, speed: 2.3, prefers: 'any', splash: 0, attack: '1H_Melee_Attack_Chop', run: 'Running_A', color: '#ffb340' },
++  archer: { name: 'Archer', model: 'kaykit-adventurers/rogue', keep: ['1H_Crossbow'], height: 1.4, space: 1, hp: 45, dps: 13, range: 3.6, speed: 2.4, prefers: 'any', splash: 0, attack: '1H_Ranged_Shoot', run: 'Running_A', color: '#7dff9a' },
++  giant: { name: 'Giant', model: 'kaykit-adventurers/knight', keep: ['1H_Sword', 'Badge_Shield'], height: 2.3, space: 5, hp: 520, dps: 22, range: 0.8, speed: 1.4, prefers: 'defense', splash: 0, attack: '1H_Melee_Attack_Slice_Diagonal', run: 'Walking_A', color: '#66b3ff' },
++  wizard: { name: 'Wizard', model: 'kaykit-adventurers/mage', keep: ['2H_Staff', 'Mage_Hat', 'Mage_Cape'], height: 1.55, space: 4, hp: 80, dps: 34, range: 3.2, speed: 1.9, prefers: 'any', splash: 1.3, attack: 'Spellcast_Shoot', run: 'Running_A', color: '#c58cff' },
+ };
+ export const ARMY = { startCap: 20, capPerUpgrade: 5, maxCap: 60, battleSeconds: 150, deployEvery: 0.11, levelMul: 0.18 };
+ export const ECON = { startGold: 600, upgradeBase: 250, capCost: 400 };

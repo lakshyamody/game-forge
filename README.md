@@ -10,18 +10,33 @@ Everything is set up for an AI agent to work fast: a shared game kit (juice, pro
 | **Neon Swarm** — twin-stick roguelite (2D, Phaser) | **Block Racer** — voxel drift racer (3D, Three.js) |
 | ![Hollow House](docs/screenshots/hollow-house.jpg) | ![Arcade](docs/screenshots/arcade.jpg) |
 | **Hollow House** — first-person horror (3D, Three.js) | **The arcade** — every game you make shows up here |
+| ![Sunset District](docs/screenshots/sunset-district.jpg) | |
+| **Sunset District** — realistic GTA-style city: traffic, people, golden hour → night (3D, Three.js) | |
 
 All games were built by Claude in this repo from short prompts, using the shared kit and the CC0 asset library below.
+
+## Game Forge Studio (desktop app, no setup)
+
+For people who don't use a terminal: a desktop app for **macOS and Windows**, clean and light: describe a game on the home page, watch Claude Code build it, then play it in a tab with a live preview, one-click suggested fixes and a chat for changes.
+
+- **One download, nothing to set up:** `npm run studio:build` makes the app for the computer you run it on. It bundles the game tools, a light asset library (every stylised model pack, sprites and sounds; the realistic photoscanned textures, HDRIs, Poly Haven props and Rocketbox people stay in the repo), every library and the playtest browser (Chromium). About 400 MB (Mac) / 500 MB (Windows), and runs on its own built-in Node, so the person you send it to doesn't install Node, npm, git or a browser. On first launch it installs Claude Code by itself in the background (Anthropic's official installer). The only step left is signing in to Claude.
+  - **Mac:** `dist-studio/Game-Forge-Studio.dmg`
+  - **Windows:** `dist-studio/Game-Forge-Studio-win-x64.zip`: unzip it and run `Game Forge Studio.exe`. You can build it on Windows, or cross-build it from a Mac with `npm run studio:build -- --win`. CI also builds it on every push (the `platforms` workflow's artifacts).
+- **Uses their own Claude Code:** Claude Code is installed with Anthropic's official installer (`install.sh` on Mac, `install.ps1` on Windows) rather than shipped inside the app, so it stays licensed to them and keeps auto-updating. Sign-in goes through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max). On Windows, [Git for Windows](https://git-scm.com/downloads/win) is optional: with it, Claude Code uses Git Bash; without it, PowerShell.
+- **Making games:** "New game" → describe it → Claude Code builds it and the preview appears. Ask for changes in plain words; apply a suggested fix with one click; "Export" makes the itch.io zip.
+- Games live in `~/Game Forge/games` (`C:\Users\<you>\Game Forge\games` on Windows). Try the app from this repo with `npm run studio`.
+- **Sharing with your team (free):** the app isn't code-signed, so put the `.dmg` / zip on Google Drive (or any file share) and send the link. Each one contains a `How to open.txt` with the one-time step: on Mac, System Settings > Privacy & Security > "Open Anyway" (or `xattr -dr com.apple.quarantine "/Applications/Game Forge Studio.app"`); on Windows, SmartScreen > "More info" > "Run anyway". The app ships one example game (Blast Ball); everyone's own games go in their `Game Forge/games` folder.
 
 ## Asset library
 
 ![Asset library](docs/screenshots/asset-library.jpg)
 
-**~1,700 3D models · ~1,900 sprites · ~670 sounds · 16 photoreal textures · 6 HDRI skies**, all CC0 (free for commercial use, no attribution required) — from [Kenney](https://kenney.nl) and [Poly Haven](https://polyhaven.com). Animated characters (walk, run, shoot, kick, die…), zombies and skeletons, cars, guns, furniture, nature, castles, space, food, dungeons, platformer tiles, UI, icons, footsteps, impacts, lasers, explosions, door creaks, an announcer voice, and more.
+**Thousands of 3D models, hundreds of photoscanned PBR materials and HDRI skies, realistic people with motion capture, ~1,900 sprites, ~670 sounds** — free for commercial use, from [Kenney](https://kenney.nl), [KayKit](https://kaylousberg.com), [Poly Haven](https://polyhaven.com), [ambientCG](https://ambientcg.com) (CC0) and [Microsoft Rocketbox](https://github.com/microsoft/Microsoft-Rocketbox) (MIT). Exact counts: `assets/CATALOG.md`.
 
 - Browse it at **`/assets.html`** (link on the arcade page): search, spin models in 3D, play their animations, listen to sounds, copy names.
 - Claude reads `assets/CATALOG.md` and uses the library automatically when it builds a game.
-- Need something else? `npm run assets -- add <kenney-pack>` or `npm run assets -- texture <polyhaven-id>` pulls it in, ready to use.
+- **Realistic games:** a built-in realism stack (sky + sun, soft shadows, ambient occlusion, bloom, filmic tone mapping, day/night), a procedural city and procedural cars — see `games/sunset-district`, a GTA-style city demo.
+- Need something else? `npm run assets -- add <kenney-pack>`, `kaykit <pack>`, `model|texture|hdri <polyhaven-id>`, `ambientcg <id>`, `rocketbox`, or `npm run assets -- texture <polyhaven-id>` pulls it in, ready to use.
 
 ## Quick start
 
@@ -39,6 +54,8 @@ Then open the folder in Claude Code and say what you want:
 > *make a game where you're a bee defending a hive from wasps, with roguelite upgrades*
 
 Claude picks the closest template, scaffolds `games/<your-game>/`, builds it, bot-playtests it, reads the screenshots, fixes what's broken, and tells you how to play it.
+
+Then it runs a **kid check**: it plays the game the way a kid would, lists the **5 things anyone would say look wrong** (*"the sky is just one boring blue"*, *"the lights are just white boxes"*), and has a small, tested fix for each one staged as a patch. Say *"fix 2"* or *"fix all"* and it lands instantly — see [games/blast-ball/FIXES.md](games/blast-ball/FIXES.md) for an example.
 
 ## The vibe-coding loop
 
@@ -58,6 +75,7 @@ Each game keeps a `GAME.md` design doc that Claude reads and updates, so you can
 | `/playtest <slug>` | bot-plays the game, reads screenshots, fixes what's broken |
 | `/polish <slug>` | walks the game-feel checklist and adds missing juice |
 | `/ship <slug>` | checks, builds, and zips the game for itch.io |
+| *"fix 2"* / *"fix all"* | applies the staged kid-check fixes (`games/<slug>/FIXES.md`) |
 
 A hook type-checks after every edit Claude makes and feeds errors straight back, so broken code never piles up.
 
@@ -73,6 +91,7 @@ A hook type-checks after every edit Claude makes and feeds errors straight back,
 | `npm run check` | type-check everything (~1 s) |
 | `npm run ship -- my-game` | standalone build + `ship/my-game.zip` |
 | `npm run assets -- add castle-kit` | import any Kenney pack (also `texture` / `hdri <polyhaven-id>`) |
+| `npm run fixes -- apply my-game 2` | apply a staged kid-check fix (`undo`, `list`, `all` too) |
 | `npm run build` | the whole arcade as a static site in `dist/` |
 
 VS Code users: **Tasks: Run Task** has all of these, and **F5** debugs a game in Chrome with breakpoints.
@@ -105,8 +124,12 @@ kit/            shared game kit — every file's header comment is its docs
   assets.ts       load library models/animations/textures/skies/sounds by name
 templates/      six genre starters
 games/          your games (each: index.html, main.ts, game.json, GAME.md)
-scripts/        new-game, play, shot (headless playtest), ship, assets (importer)
-.claude/        skills (make-game, playtest, polish, ship, phaser4) + type-check hook
+scripts/        new-game, play, shot (headless playtest), fixes (staged patches), ship, assets (importer CLI)
+  importers/      one module per asset source (Kenney, KayKit, Poly Haven, ambientCG, Rocketbox) + catalog
+  lib/            shared helpers (paths, CLI flags, type-check, Vite + Chromium)
+studio/         Game Forge Studio desktop app (main.mjs + main/: env, workspace, games, Claude chat runner, ui)
+  ui/             its Next.js interface (tabs, browser preview, agent panel)
+.claude/        skills (make-game, kid-check, playtest, polish, ship, phaser4) + type-check hook
 AGENTS.md       instructions for any coding agent (CLAUDE.md imports it)
 ```
 

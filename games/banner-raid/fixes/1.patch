@@ -1,0 +1,13 @@
+diff --git a/games/banner-raid/village.ts b/games/banner-raid/village.ts
+index b02e7b1..08b55c9 100644
+--- a/games/banner-raid/village.ts
++++ b/games/banner-raid/village.ts
+@@ -87,7 +87,7 @@ export class Village {
+     const m = await loadModel(SPEC[b.kind].model);
+     const sz = sizeOf(m), fit = (b.size * (b.kind === 'wall' ? 1.02 : 0.92)) / Math.max(sz.x, sz.z);
+     m.scale.multiplyScalar(b.kind === 'wall' ? 1 : fit);
+-    if (b.kind === 'wall') { m.scale.set(fit, fit * 1.6, fit * 1.4); if (b.vertical) m.rotation.y = Math.PI / 2; }
++    if (b.kind === 'wall') { m.scale.set(fit, fit * 1.6, fit); if (!b.vertical) m.rotation.y = Math.PI / 2; }   // the fence model runs along z
+     const box = new THREE.Box3().setFromObject(m); m.position.y = -box.min.y;
+     b.root.add(m); b.root.position.set(b.x, 0, b.z); this.group.add(b.root);
+     b.root.userData.mats = [] as THREE.MeshStandardMaterial[];

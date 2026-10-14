@@ -1,0 +1,13 @@
+diff --git a/games/banner-raid/village.ts b/games/banner-raid/village.ts
+index b02e7b1..fe344ff 100644
+--- a/games/banner-raid/village.ts
++++ b/games/banner-raid/village.ts
+@@ -102,6 +102,8 @@ export class Village {
+     if (b.kind === 'wall') return;
+     const r = await loadModel('kaykit-medieval-hexagon/building-destroyed');
+     const sz = sizeOf(r); r.scale.multiplyScalar((b.size * 0.85) / Math.max(sz.x, sz.z));
++    r.scale.y *= 0.45;   // squash + darken so it reads as a smashed pile, not a building site
++    r.traverse((o) => { const mesh = o as THREE.Mesh; if (mesh.isMesh) { const m = (mesh.material as THREE.MeshStandardMaterial).clone(); m.color.multiplyScalar(0.55); mesh.material = m; } });
+     b.root.add(r);
+   }
+ 

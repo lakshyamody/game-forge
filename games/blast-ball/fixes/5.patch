@@ -1,0 +1,26 @@
+diff --git a/games/blast-ball/index.html b/games/blast-ball/index.html
+index 986e1ca..d77b22e 100644
+--- a/games/blast-ball/index.html
++++ b/games/blast-ball/index.html
+@@ -16,7 +16,7 @@
+     .score .o { background: #ff7a1a; } .score .b { background: #2a7fff; }
+     #clock { min-width: 64px; text-align: center; } #clock.low { color: #ff5050; }
+     #sub { top: 62px; left: 0; right: 0; text-align: center; color: #9fd8ff; font-size: 12px; }
+-    #map { top: 14px; left: 14px; border: 2px solid #fff5; image-rendering: pixelated; }
++    #map { top: 14px; left: 14px; border: 3px solid #fff; border-radius: 6px; box-shadow: 0 3px 0 #0006; image-rendering: pixelated; }
+     #feed { top: 14px; right: 14px; text-align: right; font-size: 9px; line-height: 2.2; font-family: system-ui, sans-serif; font-size: 13px; }
+     #feed div { background: #0008; padding: 2px 8px; margin-bottom: 4px; transition: opacity .6s; } #feed .fade { opacity: 0; } #feed .w { color: #ffd060; font-size: 11px; }
+     #cross { left: 50%; top: 50%; width: 22px; height: 22px; transform: translate(-50%, -50%); }
+diff --git a/games/blast-ball/main.ts b/games/blast-ball/main.ts
+index 434bb7b..0b141bf 100644
+--- a/games/blast-ball/main.ts
++++ b/games/blast-ball/main.ts
+@@ -545,7 +545,7 @@ function drawMap() {
+   const c = mapCtx, W = 138, H = 210, sx = W / PITCH.width, sz = H / PITCH.length;
+   const X = (x: number) => (x + HALF_W) * sx, Z = (z: number) => (z + HALF_L) * sz;
+   c.clearRect(0, 0, W, H);
+-  c.fillStyle = 'rgba(30,90,40,.75)'; c.fillRect(0, 0, W, H);
++  c.fillStyle = '#1e5a28'; c.fillRect(0, 0, W, H);   // solid, so the crowd doesn't show through
+   c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 1;
+   c.strokeRect(0.5, 0.5, W - 1, H - 1); c.beginPath(); c.moveTo(0, H / 2); c.lineTo(W, H / 2); c.stroke();
+   c.fillStyle = '#fff'; c.fillRect(X(-PITCH.goalWidth / 2), 0, PITCH.goalWidth * sx, 3); c.fillRect(X(-PITCH.goalWidth / 2), H - 3, PITCH.goalWidth * sx, 3);

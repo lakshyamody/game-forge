@@ -1,0 +1,13 @@
+diff --git a/games/silent-assassin/main.ts b/games/silent-assassin/main.ts
+index a929a13..538e623 100644
+--- a/games/silent-assassin/main.ts
++++ b/games/silent-assassin/main.ts
+@@ -211,6 +211,8 @@ const player = { x: 0, z: 0, yaw: 0, hp: P.hp, crouch: false, sprint: false, att
+ {
+   const m = await loadModel('mini-characters/character-male-d', { height: 1.6, tint: 0x4a4458 });
+   player.root.add(m); player.anim = animate(m); player.anim.play('idle');
++  const ring = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.7, 32), new THREE.MeshBasicMaterial({ color: 0x3ff0ff, transparent: true, opacity: 0.9 }));
++  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.03; player.root.add(ring);
+   const dagger = await loadModel('kaykit-adventurers/dagger', { height: 0.5 });
+   dagger.position.set(-0.3, 0.7, 0.2); dagger.rotation.x = Math.PI / 2; player.root.add(dagger);
+   scene.add(player.root);

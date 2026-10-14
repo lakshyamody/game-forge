@@ -35,6 +35,9 @@ Pistol (∞), SMG, Shotgun (8 pellets), Rocket launcher (splash + launches the b
 ## Assets used
 Kenney `mini-characters` (animated players: idle/walk/sprint/holding-both-shoot/attack-kick-right/die), `blaster-kit` (guns + crates), Poly Haven `stadium_01` HDRI lighting + `leafy_grass` normals on the pitch, sounds from `sci-fi-sounds` (lasers, explosions), `digital-audio` (SMG), `impact-sounds` (kicks, hits, glass, crates), `voiceover-pack` (ready/go/hurry up/final round/you win…). Crowd, whistle and gloo zap stay procedural.
 
+## Kid check
+5 staged fixes in `FIXES.md` / `fixes/` (muddy ground, rainbow boards, blank floodlights, flat sky, see-through minimap). Not applied yet — `npm run fixes -- apply blast-ball <n|all>`.
+
 ## Status
 - [x] Match flow, ball physics, dribble/tackle/keepers, guns, rockets, gloo, loot, airdrops, zone, crowd, HUD, minimap, attract mode
 - [ ] Not verified by a human: mouse feel, kick power curve, audio mix

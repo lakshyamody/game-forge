@@ -1,0 +1,13 @@
+diff --git a/games/sunset-district/main.ts b/games/sunset-district/main.ts
+index b8765a2..7ecfdb3 100644
+--- a/games/sunset-district/main.ts
++++ b/games/sunset-district/main.ts
+@@ -90,6 +90,8 @@ document.addEventListener('mousemove', (e) => {
+   cam.yaw -= e.movementX * 0.0025; cam.pitch = clamp(cam.pitch - e.movementY * 0.0022, -0.7, 0.35);
+ });
+ 
++// street-lamp light pools: smaller and softer, so they don't look like flat discs painted on the road
++city.group.traverse((o) => { const g = (o as THREE.Mesh).geometry as THREE.PlaneGeometry; if (g?.parameters?.width === 9 && g.parameters.height === 9) o.scale.setScalar(0.62); });
+ // ---------------------------------------------------------------- driving
+ const tmp = new THREE.Vector3();
+ function drive(dt: number) {

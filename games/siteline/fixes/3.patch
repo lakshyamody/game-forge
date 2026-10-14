@@ -1,0 +1,13 @@
+diff --git a/games/siteline/main.ts b/games/siteline/main.ts
+index 30c6732..563c8db 100644
+--- a/games/siteline/main.ts
++++ b/games/siteline/main.ts
+@@ -31,7 +31,7 @@ scene.add(sun, new THREE.HemisphereLight(0xffe0c0, 0x6a4a30, 0.5));
+ const debris = new Debris(scene);
+ const defenders = [0, 1, 2, 3].map((i) => new Defender(scene, i));
+ const [labels] = await Promise.all([
+-  buildMap(scene), loadHdri(scene, 'belfast_sunset_puresky', { background: true, intensity: 0.45 }),
++  buildMap(scene), loadHdri(scene, 'kloofendal_48d_partly_cloudy_puresky', { background: true, intensity: 0.45 }),
+   ...defenders.map((d) => d.ready),
+   sound.load('impact-sounds/footstep_concrete_*', 'sci-fi-sounds/laserlarge_*', 'impact-sounds/impactmetal_light_*'),
+ ]);

@@ -5,6 +5,7 @@
  *   const car = await loadModel('car-kit/race');                    // THREE.Group (clone — use as many as you like)
  *   const hero = await loadModel('mini-characters/character-male-b');
  *   const anim = animate(hero);  anim.play('walk');  each frame: anim.update(dt)
+ *   const anim = animate(person, await loadClips('rocketbox/anims-male'));   // shared clip library (Rocketbox people)
  *   const floor = await loadTexture('wood_floor_worn', { repeat: 8 });  // { map, normalMap, roughnessMap } → spread into a material
  *   await loadHdri(scene, 'stadium_01', { background: true });        // image-based lighting + optional sky
  * Sound (any engine):
@@ -62,7 +63,8 @@ export async function loadModel(id: string, o: ModelOpts = {}): Promise<THREE.Gr
     m.castShadow = m.receiveShadow = o.shadows ?? true;
     if (o.tint !== undefined) { m.material = (m.material as THREE.MeshStandardMaterial).clone(); (m.material as THREE.MeshStandardMaterial).color.multiply(new THREE.Color(o.tint)); }
   });
-  if (o.height) { const b = new THREE.Box3().setFromObject(obj); obj.scale.setScalar(o.height / Math.max(1e-6, b.max.y - b.min.y)); }
+  // measure posed geometry: skinned meshes need their bones' world matrices first, and `precise` bounds them by the skinned vertices
+  if (o.height) { obj.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(obj, true); obj.scale.setScalar(o.height / Math.max(1e-6, b.max.y - b.min.y)); }
   else if (o.scale) obj.scale.setScalar(o.scale);
   return obj;
 }
@@ -70,12 +72,15 @@ export async function loadModel(id: string, o: ModelOpts = {}): Promise<THREE.Gr
 export const preloadModels = (ids: string[]) => Promise.all(ids.map(gltf));
 
 /** Bounding size of a model (after scale). */
-export function sizeOf(obj: THREE.Object3D) { return new THREE.Box3().setFromObject(obj).getSize(new THREE.Vector3()); }
+export function sizeOf(obj: THREE.Object3D) { obj.updateMatrixWorld(true); return new THREE.Box3().setFromObject(obj, true).getSize(new THREE.Vector3()); }
 
 /** Animation helper for rigged models (Kenney characters share one rig: idle, walk, sprint, jump, die, attack-*, holding-*…). */
-export function animate(obj: THREE.Object3D) {
+/** Animation clips from a library GLB (e.g. `loadClips('rocketbox/anims-female')`), playable on any model with the same skeleton. */
+export const loadClips = async (id: string) => (await gltf(id)).animations as THREE.AnimationClip[];
+
+export function animate(obj: THREE.Object3D, extraClips: THREE.AnimationClip[] = []) {
   const mixer = new THREE.AnimationMixer(obj);
-  const clips = (obj.userData.animations ?? []) as THREE.AnimationClip[];
+  const clips = [...((obj.userData.animations ?? []) as THREE.AnimationClip[]), ...extraClips];
   let current: THREE.AnimationAction | null = null, currentName = '';
   return {
     mixer,

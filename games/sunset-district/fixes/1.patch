@@ -1,0 +1,13 @@
+diff --git a/games/sunset-district/main.ts b/games/sunset-district/main.ts
+index b8765a2..658d6b7 100644
+--- a/games/sunset-district/main.ts
++++ b/games/sunset-district/main.ts
+@@ -37,7 +37,7 @@ const peds = await spawnPeople(scene, city, WORLD.pedestrians, CAST, { male, fem
+ const bots = spawnTraffic(scene, city, WORLD.traffic);
+ 
+ // ---------------------------------------------------------------- player: on foot + the taxi
+-const me = await loadModel('rocketbox/male-adult-01', { height: 1.8 });
++const me = await loadModel('rocketbox/male-adult-07', { height: 1.8 });   // leather jacket + jeans
+ const meRoot = new THREE.Group(); meRoot.add(me); scene.add(meRoot);
+ fx.prepare(meRoot); peds.forEach((p) => fx.prepare(p.root, true, false));
+ const meAnim = animate(me, male); meAnim.play('idle');

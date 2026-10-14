@@ -1,0 +1,26 @@
+diff --git a/games/siteline/main.ts b/games/siteline/main.ts
+index 30c6732..75ec695 100644
+--- a/games/siteline/main.ts
++++ b/games/siteline/main.ts
+@@ -52,7 +52,7 @@ const flashSprite = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0xffd080,
+ flashSprite.scale.setScalar(0.18); flashSprite.renderOrder = 20; camera.add(flashSprite);
+ const gunModels: Partial<Record<GunId, THREE.Object3D>> = {};
+ for (const id of Object.keys(GUNS) as GunId[]) {
+-  const m = await loadModel(`blaster-kit/${GUNS[id].model}`, { scale: 1.2, shadows: false });
++  const m = await loadModel(`blaster-kit/${GUNS[id].model}`, { scale: 0.6, shadows: false });
+   m.traverse((o) => { const mesh = o as THREE.Mesh; if (mesh.isMesh) { (mesh.material as THREE.Material).depthTest = true; mesh.renderOrder = 5; } });
+   m.visible = false; view.add(m); gunModels[id] = m;
+ }
+@@ -466,9 +466,9 @@ loop((rawDt) => {
+     if (Math.abs(camera.fov - fov) > 0.05) { camera.fov = damp(camera.fov, fov, 18, dt); camera.updateProjectionMatrix(); }
+     view.visible = P.alive && !(P.ads && P.gun === 'sniper');
+     const bob = speed > 0.5 ? Math.sin(elapsed * 9) : 0;
+-    view.position.x = damp(view.position.x, (P.ads ? 0.0 : 0.26) + bob * 0.012, 14, dt);
+-    view.position.y = damp(view.position.y, (P.ads ? -0.17 : -0.27) + Math.abs(bob) * 0.01 - (P.reloadT > 0 ? 0.2 : 0), 14, dt);
+-    view.position.z = damp(view.position.z, P.ads ? -0.42 : -0.55, 20, dt);
++    view.position.x = damp(view.position.x, (P.ads ? 0.0 : 0.2) + bob * 0.012, 14, dt);
++    view.position.y = damp(view.position.y, (P.ads ? -0.13 : -0.2) + Math.abs(bob) * 0.01 - (P.reloadT > 0 ? 0.2 : 0), 14, dt);
++    view.position.z = damp(view.position.z, P.ads ? -0.36 : -0.42, 20, dt);
+     view.rotation.x = damp(view.rotation.x, P.reloadT > 0 ? -0.6 : 0, 12, dt);
+     flash.intensity = damp(flash.intensity, 0, 40, dt);
+     (flashSprite.material as THREE.SpriteMaterial).opacity = damp((flashSprite.material as THREE.SpriteMaterial).opacity, 0, 40, dt);

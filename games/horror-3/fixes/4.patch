@@ -1,0 +1,15 @@
+diff --git a/games/horror-3/main.ts b/games/horror-3/main.ts
+index 327f990..875cac5 100644
+--- a/games/horror-3/main.ts
++++ b/games/horror-3/main.ts
+@@ -55,8 +55,8 @@ const make = (id: string) => proto.get(id)!.clone();
+ 
+ const STONES = ['graveyard-kit/gravestone-round', 'graveyard-kit/gravestone-cross', 'graveyard-kit/gravestone-wide', 'graveyard-kit/gravestone-bevel', 'kaykit-halloween-bits/pumpkin-orange-jackolantern'];
+ const BLOCKS = ['graveyard-kit/crypt-small', 'graveyard-kit/pillar-obelisk', 'graveyard-kit/column-large'];
+-const DECOR = ['graveyard-kit/gravestone-round', 'graveyard-kit/gravestone-cross-large', 'graveyard-kit/gravestone-broken', 'graveyard-kit/gravestone-decorative', 'graveyard-kit/cross', 'graveyard-kit/pine-crooked', 'graveyard-kit/pine', 'kaykit-halloween-bits/tree-dead-large', 'kaykit-halloween-bits/tree-dead-medium', 'graveyard-kit/crypt', 'graveyard-kit/urn-round', 'kaykit-halloween-bits/skull-candle', 'graveyard-kit/grave'];
+-const DECOR_H: Record<string, number> = { 'graveyard-kit/pine-crooked': 6, 'graveyard-kit/pine': 7, 'kaykit-halloween-bits/tree-dead-large': 6.5, 'kaykit-halloween-bits/tree-dead-medium': 4.5, 'graveyard-kit/crypt': 4, 'graveyard-kit/gravestone-cross-large': 2, 'kaykit-halloween-bits/skull-candle': 0.6, 'graveyard-kit/urn-round': 0.9, 'graveyard-kit/grave': 0.5 };
++const DECOR = ['graveyard-kit/gravestone-round', 'graveyard-kit/gravestone-cross-large', 'graveyard-kit/gravestone-broken', 'graveyard-kit/gravestone-decorative', 'graveyard-kit/cross', 'graveyard-kit/pine-crooked', 'graveyard-kit/pine', 'kaykit-halloween-bits/tree-dead-large', 'kaykit-halloween-bits/tree-dead-medium', 'graveyard-kit/crypt', 'graveyard-kit/urn-round', 'kaykit-halloween-bits/skull-candle', 'graveyard-kit/gravestone-roof', 'kaykit-halloween-bits/grave-a'];
++const DECOR_H: Record<string, number> = { 'graveyard-kit/pine-crooked': 6, 'graveyard-kit/pine': 7, 'kaykit-halloween-bits/tree-dead-large': 6.5, 'kaykit-halloween-bits/tree-dead-medium': 4.5, 'graveyard-kit/crypt': 4, 'graveyard-kit/gravestone-cross-large': 2, 'kaykit-halloween-bits/skull-candle': 0.6, 'graveyard-kit/urn-round': 0.9, 'kaykit-halloween-bits/grave-a': 1.2 };
+ 
+ const jack = new THREE.Group();
+ let jackAnim: ReturnType<typeof animate>;

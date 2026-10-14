@@ -1,0 +1,30 @@
+diff --git a/games/horror-3/main.ts b/games/horror-3/main.ts
+index 327f990..e9018c3 100644
+--- a/games/horror-3/main.ts
++++ b/games/horror-3/main.ts
+@@ -95,11 +95,11 @@ async function loadAll() {
+     zombies.push({ obj: z, anim, ox: (i % 3 - 1) * 1.7 + rng.range(-0.4, 0.4), oz: Math.floor(i / 3) * 1.1 + rng.range(0, 0.4) });
+   }
+   // Slenderina: a tall, thin, near-black figure (vampire rig stretched and darkened) with glowing white eyes
+-  slender = await loadModel('graveyard-kit/character-vampire', { height: 2.9, tint: 0x2a2630 });
++  slender = await loadModel('graveyard-kit/character-vampire', { height: 2.9, tint: 0x6a5f78 });
+   slender.scale.x *= 0.7; slender.scale.z *= 0.7;
+-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
++  const eyeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(4, 0.4, 0.4) }); // HDR red so the eyes bloom
+   for (const sx of [-0.09, 0.09]) {
+-    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), eyeMat);
++    const eye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), eyeMat);
+     eye.position.set(sx, 2.55, 0.24);
+     slender.add(eye); eye.scale.setScalar(1 / slender.scale.y); eye.position.divide(slender.scale);
+   }
+@@ -324,8 +324,8 @@ function updateSlender(dt: number) {
+     if (d > 1.2) { sl = 'chase'; slT = 0; slender.rotation.y = Math.PI; dodged++; sfx.play('powerup', { volume: 0.3 }); }
+   } else if (sl === 'chase') {
+     // she turns and hunts Jack from behind for a few seconds: stumble now and she has you
+-    slZ = pz + damp(slZ - pz, 1.7, 3, dt);
+-    slX = damp(slX, px + 0.9, 3, dt);
++    slZ = pz + damp(slZ - pz, 0.6, 3, dt);
++    slX = damp(slX, px + (px > 0 ? -1.6 : 1.6), 3, dt); // beside Jack, not blocking the view
+     if (slT > 3.5) { sl = 'vanish'; slT = 0; burst(new THREE.Vector3(slX, 1.2, slZ), 0x111111, 30, 3); }
+   } else if (sl === 'vanish') {
+     slZ = pz + 1.7 + slT * 6; slY -= dt * 6;
