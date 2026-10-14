@@ -19,7 +19,8 @@ import { cpSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeF
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { createRequire } from 'node:module';
-import { root, cli } from './lib/common.mjs';
+import { root, cli, walk } from './lib/common.mjs';
+import { catalog } from './importers/catalog.mjs';
 import { IS_WIN, npmSync, zipDir } from './lib/platform.mjs';
 
 const o = cli(['_', ...process.argv.slice(2)]);
@@ -72,10 +73,34 @@ function fillResources(R, nodeModules, target) {
   const F = join(R, 'forge'); mkdirSync(join(F, 'games'), { recursive: true });
   for (const f of ENGINE) if (existsSync(join(root, f))) cpSync(join(root, f), join(F, f), { recursive: true });
   for (const g of SHOWCASE) if (existsSync(join(root, 'games', g))) cpSync(join(root, 'games', g), join(F, 'games', g), { recursive: true });
-  cpSync(join(root, 'assets'), join(F, 'assets'), { recursive: true });
+  liteAssets(join(F, 'assets'));
+  noteLiteLibrary(join(F, 'AGENTS.md'));
   // Windows: no .bin (its POSIX symlinks don't survive a zip; the app's own shims call each package's bin directly)
   for (const d of readdirSync(nodeModules)) if (!NOT_NEEDED.has(d) && !(target === 'win' && d === '.bin')) cpSync(join(nodeModules, d), join(F, 'node_modules', d), { recursive: true, verbatimSymlinks: true });
   bundleChromium(join(F, 'ms-playwright'), target);
+}
+
+/**
+ * The asset library without the realistic packs (photoscanned PBR textures, HDRI skies, Poly Haven props, Rocketbox
+ * people: ~1.8 GB of the 2 GB). Files the showcase games use are kept, and the catalog is rebuilt for what ships.
+ */
+const REALISTIC = ['textures', 'hdri', 'models/polyhaven', 'models/rocketbox'];
+function liteAssets(dest) {
+  step('asset library (light: no photoscanned textures, HDRIs, Poly Haven props or Rocketbox people)');
+  const A = join(root, 'assets');
+  cpSync(A, dest, { recursive: true, filter: (src) => !REALISTIC.some((d) => src.split('\\').join('/') === `${A.split('\\').join('/')}/${d}`) });
+  const used = SHOWCASE.flatMap((g) => walk(join(root, 'games', g))).filter((f) => /\.(ts|patch)$/.test(f)).map((f) => readFileSync(f, 'utf8')).join('\n');
+  const keep = (rel) => { if (existsSync(join(A, rel))) cpSync(join(A, rel), join(dest, rel), { recursive: true }); };
+  for (const [, id] of used.matchAll(/loadTexture\(\s*['"`]([\w-]+)/g)) keep(`textures/${id}`);
+  for (const [, id] of used.matchAll(/(?:loadHdri\([^,]+,\s*|hdri:\s*)['"`]([\w-]+)/g)) keep(`hdri/${id}.hdr`);
+  for (const [, pack, id] of used.matchAll(/['"`](polyhaven|rocketbox)\/([\w-]+)/g)) { keep(`models/${pack}/${id}.glb`); if (pack === 'rocketbox') keep('models/rocketbox/LICENSE.md'); }
+  catalog(dest);
+}
+/** tell Claude (inside the app) which library it has */
+function noteLiteLibrary(agents) {
+  const note = `\n> **In Game Forge Studio the asset library is the light version.** It has every Kenney / KayKit / Quaternius model pack, sprites and sounds, but not the realistic packs: photoscanned PBR textures, HDRI skies, Poly Haven props or Rocketbox people (only the few the example game uses). \`assets/CATALOG.md\` lists exactly what is here. For realistic-looking games use the procedural tools (\`kit/three/realism.ts\` sky + lighting, \`city.ts\`, \`cars.ts\`) with the stylised packs.\n`;
+  const md = readFileSync(agents, 'utf8');
+  writeFileSync(agents, md.replace(/\n/, `\n${note}`));
 }
 
 /**
@@ -121,7 +146,7 @@ function buildMac() {
   const stage = join(out, 'dmg'); rmSync(stage, { recursive: true, force: true }); mkdirSync(stage);
   sh('cp', ['-R', appPath, stage]); symlinkSync('/Applications', join(stage, 'Applications'));
   writeFileSync(join(stage, 'How to open.txt'), HOW_TO_OPEN.mac);
-  sh('hdiutil', ['create', '-volname', name, '-srcfolder', stage, '-ov', '-format', 'UDZO', join(out, 'Game-Forge-Studio.dmg')], { stdio: 'ignore' });
+  sh('hdiutil', ['create', '-volname', name, '-srcfolder', stage, '-ov', '-format', 'ULMO', join(out, 'Game-Forge-Studio.dmg')], { stdio: 'ignore' });
   rmSync(stage, { recursive: true, force: true });
   return [appPath, join(out, 'Game-Forge-Studio.dmg')];
 }

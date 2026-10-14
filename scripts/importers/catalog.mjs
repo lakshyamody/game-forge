@@ -2,7 +2,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { walk } from '../lib/common.mjs';
-import { A } from './shared.mjs';
+import { A as LIBRARY } from './shared.mjs';
 
 /** clip names stored in a GLB's JSON chunk, without loading the whole model */
 function glbAnimations(file) {
@@ -11,8 +11,8 @@ function glbAnimations(file) {
   try { return (JSON.parse(b.subarray(20, 20 + len).toString()).animations ?? []).map((a) => a.name); } catch { return []; }
 }
 
-/** rebuild assets/catalog.json (asset browser) and assets/CATALOG.md (compact list for agents) */
-export function catalog() {
+/** rebuild <dir>/catalog.json (asset browser) and <dir>/CATALOG.md (compact list for agents); dir defaults to assets/ */
+export function catalog(A = LIBRARY) {
   const cat = { models: {}, sprites: {}, sounds: {}, textures: [], hdri: [] };
   for (const pack of existsSync(join(A, 'models')) ? readdirSync(join(A, 'models')).sort() : []) {
     const dir = join(A, 'models', pack);
