@@ -10,7 +10,7 @@
  */
 import { _electron as electron } from 'playwright';
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { root, cli } from '../lib/common.mjs';
@@ -38,6 +38,9 @@ try {
   const ready = await page.locator('main button', { hasText: /^Account$/ }).count() > 0;
   const envNow = await page.evaluate(() => window.studio.checkEnv());
   if (envNow.installError) step(`Claude Code background install failed: ${envNow.installError}`);
+  // --require-claude (a blank machine): the download promises Claude Code installs itself
+  if (o.flag('require-claude') && (!envNow.claude || envNow.installError)) errs.push(`Claude Code did not install itself: ${envNow.installError || 'not found after install'}`);
+  else if (envNow.claude) step(`Claude Code found: ${envNow.claude} (${envNow.version})`);
   step(`Claude Code: ${ready ? 'installed and signed in' : (await page.locator('main .rounded-full', { hasText: 'Set up' }).first().textContent())?.replace('Set up', '').trim()}`);
   await page.keyboard.press('Escape');   // not signed in (CI): the setup sheet opens on launch; it can be dismissed
   const game = page.locator('aside button', { hasText: 'Blast Ball' }).first();
@@ -54,13 +57,31 @@ try {
   await page.waitForSelector('text=Reverted fix 1', { timeout: 120000 }); step('reverted fix 1');
 } catch (e) { errs.push(`step failed: ${e.message.split('\n')[0]}`); }
 const shot = o.opt('shot'); if (shot) await page.screenshot({ path: shot }).catch(() => {});
+const userData = await app.evaluate(({ app }) => app.getPath('userData')).catch(() => null);
 closing = true;
 await app.close();
+if (o.flag('packaged')) {
+  // the node / npm / npx stand-ins Claude Code's shell gets on a machine without Node, through the OS shell the way
+  // Claude Code calls them: a new game with a quoted title and an apostrophe, then a type-check of the workspace
+  step('npm stand-ins: npm run new + npm run check on the app\'s own Node');
+  const ws = join(homedir(), 'Game Forge'), bin = join(userData ?? '', 'bin');
+  const shEnv = { ...process.env, PATH: [bin, ...(process.platform === 'win32' ? ['C:\\Windows\\system32', 'C:\\Windows'] : ['/usr/bin', '/bin'])].join(process.platform === 'win32' ? ';' : ':') };
+  for (const k of Object.keys(shEnv)) if (k !== 'PATH' && k.toLowerCase() === 'path') delete shEnv[k];
+  delete shEnv.ELECTRON_RUN_AS_NODE;
+  const npm = (line) => execFileSync(process.platform === 'win32' ? 'cmd.exe' : '/bin/sh', process.platform === 'win32' ? ['/d', '/s', '/c', `npm ${line}`] : ['-c', `npm ${line}`], { cwd: ws, env: shEnv, encoding: 'utf8', timeout: 240000, windowsHide: true, windowsVerbatimArguments: process.platform === 'win32' });
+  try {
+    npm('run new -- zz-smoke --template blank --title "Smoke Test" --tagline "Don\'t panic"');
+    const meta = JSON.parse(readFileSync(join(ws, 'games/zz-smoke/game.json'), 'utf8'));
+    if (meta.title !== 'Smoke Test' || meta.tagline !== "Don't panic") errs.push(`npm run new mangled the title/tagline: ${JSON.stringify([meta.title, meta.tagline])}`);
+    npm('run check'); step('the new game type-checks');
+  } catch (e) { errs.push(`npm stand-ins failed: ${`${e.stdout ?? ''}\n${e.stderr ?? ''}`.trim().slice(-800) || e.message}`); }
+  rmSync(join(ws, 'games/zz-smoke'), { recursive: true, force: true });
+}
 if (o.flag('packaged')) {
   step('playtest on the app\'s own Node + bundled Chromium');
   try {
     const out = execFileSync(exe, [join(homedir(), 'Game Forge/scripts/shot.mjs'), 'blast-ball', '--seconds', '3'], {
-      cwd: join(homedir(), 'Game Forge'), encoding: 'utf8', timeout: 240000,
+      cwd: join(homedir(), 'Game Forge'), encoding: 'utf8', timeout: 480000,
       env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PLAYWRIGHT_BROWSERS_PATH: join(resources, 'forge/ms-playwright') },
     });
     if (!/no runtime errors/.test(out)) errs.push(`bundled playtest: ${out.slice(-400)}`); else step('bundled playtest ran clean');

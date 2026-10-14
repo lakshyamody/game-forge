@@ -43,6 +43,20 @@ jobs:
         run: npm run studio:build
       - name: Studio packaged
         run: node scripts/test/studio-smoke.mjs --packaged --shot studio-packaged.png
+      # Last on Windows, because it takes the runner's tools away: a PC with no Node, Git or Python, no Claude Code and
+      # no workspace yet. The app must install Claude Code itself and run everything on its own Node + Chromium;
+      # the test itself runs on the app's Node too.
+      - name: Studio packaged on a blank Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($d in 'C:\Program Files\Git', 'C:\Program Files\nodejs', "$env:LOCALAPPDATA\Programs\nodejs") { if (Test-Path $d) { Rename-Item $d "$d.off" } }
+          Remove-Item -Recurse -Force "$HOME\Game Forge", "$HOME\.local\bin\claude.exe", "$HOME\.claude", "$HOME\.claude.json", "$env:APPDATA\Game Forge Studio" -ErrorAction SilentlyContinue
+          $env:Path = 'C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0'
+          if (Get-Command node, git, python -ErrorAction SilentlyContinue) { throw 'the runner still has node/git/python on PATH' }
+          $env:ELECTRON_RUN_AS_NODE = '1'
+          & "$PWD\dist-studio\win\Game Forge Studio\Game Forge Studio.exe" scripts/test/studio-smoke.mjs --packaged --require-claude --shot studio-blank.png
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
