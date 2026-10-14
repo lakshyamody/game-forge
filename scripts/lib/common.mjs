@@ -27,7 +27,7 @@ export const usageOf = (src) => src.split('*/')[0];
 export function typecheck({ only } = {}) {
   const tsc = join(root, 'node_modules/typescript/bin/tsc');
   if (!existsSync(tsc)) return null;
-  const r = spawnSync(process.execPath, [tsc, '--noEmit', '-p', root], { cwd: root, encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [tsc, '--noEmit', '-p', root], { cwd: root, encoding: 'utf8', windowsHide: true });
   if (r.status === 0) return [];
   const lines = `${r.stdout}${r.stderr}`.split('\n').filter(Boolean);
   return only ? lines.filter((l) => /error TS/.test(l) && only(l)) : lines;

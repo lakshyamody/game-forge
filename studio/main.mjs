@@ -20,10 +20,10 @@ import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 // tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
 if (process.env.STUDIO_USER_DATA) app.setPath('userData', process.env.STUDIO_USER_DATA);
-import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, INSTALL_CMD, loginCmd } from './main/env.mjs';
+import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, updateClaude, INSTALL_CMD, loginCmd } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
 import { listGames } from './main/games.mjs';
-import { jobs, sendChat } from './main/claude.mjs';
+import { jobs, resetChat, sendChat } from './main/claude.mjs';
 import { serveUi, setMenu, uiUrl } from './main/ui.mjs';
 
 let win = null, vite = null, port = 0;
@@ -40,7 +40,7 @@ function wire() {
   ipcMain.handle('games:list', listGames);
   ipcMain.handle('chat:send', (_e, { key, text, slug }) => sendChat(key, text, slug, (ev) => send('chat:event', ev)));
   ipcMain.handle('chat:stop', (_e, key) => killTree(jobs.get(key)));
-  ipcMain.handle('chat:reset', (_e, key) => { delete state.sessions[key]; saveState(); });
+  ipcMain.handle('chat:reset', (_e, key) => resetChat(key));
   ipcMain.handle('perm:allow', (_e, rule) => { if (!state.allowed.includes(rule)) state.allowed.push(rule); saveState(); });
   ipcMain.handle('fixes:apply', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['apply', slug, String(n)]));
   ipcMain.handle('fixes:undo', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['undo', slug, String(n)]));
@@ -66,6 +66,12 @@ app.whenReady().then(async () => {
   loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu((action) => send('menu', action)); ensurePlaywright((status) => send('tools:status', status));
   // packaged app: install Claude Code on first launch, so only signing in is left
   if (app.isPackaged || process.env.STUDIO_AUTO_INSTALL) installClaude(() => send('env:changed'));
+  // …and keep it up to date: now, then daily (skipped while Claude is working, so a running claude.exe isn't swapped out;
+  // not in dev or tests, which use the developer's own CLI)
+  if (app.isPackaged && !process.env.STUDIO_HIDDEN) {
+    const update = () => { if (!jobs.size) updateClaude(() => send('env:changed')); };
+    update(); setInterval(update, 24 * 60 * 60 * 1000).unref();
+  }
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
     show: !process.env.STUDIO_HIDDEN,   // tests: render without putting a window on screen (stray clicks)

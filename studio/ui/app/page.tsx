@@ -35,7 +35,7 @@ export default function Studio() {
   useEffect(() => {
     return s.api?.onMenu((action) => {
       const st = sRef.current, i = st.tabs.indexOf(st.active);
-      if (action === 'new') st.open(NEW);
+      if (action === 'new') st.newGame();
       else if (action === 'close') st.close(st.active);
       else if (action === 'reload') { if (st.active !== NEW) st.reload(st.active); }
       else if (action === 'sidebar') setSidebar((x) => !x);

@@ -36,6 +36,8 @@ export function useStudio() {
   const setRecents = useCallback((f: (r: Recent[]) => Recent[]) => setRecentsState((r) => { const n = f(r).slice(0, 8); saveRecents(n); return n; }), []);
   useEffect(() => setRecentsState(loadRecents()), []);
   const activeRef = useRef(active); activeRef.current = active;
+  const chatsRef = useRef(chats); chatsRef.current = chats;
+  const busyRef = useRef(busy); busyRef.current = busy;
   const [queued, setQueued] = useState<Record<string, string>>({});   // typed while Claude Code was working: sent when it finishes
   const queuedRef = useRef(queued); queuedRef.current = queued;
   const queue = useCallback((key: string, text: string) => setQueued((q) => ({ ...q, [key]: q[key] ? `${q[key]}\n\n${text}` : text })), []);
@@ -91,7 +93,20 @@ export function useStudio() {
 
   const stop = useCallback(async (key: string) => { stopped.current.add(key); await api?.stop(key); }, [api]);
 
-  const resetChat = useCallback(async (key: string) => { await api?.resetChat(key); setChats((c) => ({ ...c, [key]: [] })); }, [api]);
+  // "New chat": clear the conversation here and in the main process (which also stops a run in progress;
+  // that run sends no end event, so it's no longer busy from here on)
+  const resetChat = useCallback(async (key: string) => {
+    stopped.current.delete(key);
+    setBusy((b) => { const n = new Map(b); n.delete(key); return n; });
+    setQueued(({ [key]: _, ...rest }) => rest);
+    setChats((c) => ({ ...c, [key]: [] }));
+    await api?.resetChat(key);
+  }, [api]);
+  // "New game" (sidebar, File menu): a fresh start, unless the last new-game chat is still working
+  const newGame = useCallback(() => {
+    if (chatsRef.current[NEW]?.length && !busyRef.current.has(NEW)) void resetChat(NEW);
+    open(NEW);
+  }, [open, resetChat]);
 
   // ---- events from the main process
   useEffect(() => {
@@ -146,7 +161,7 @@ export function useStudio() {
   const game = games.find((g) => g.slug === active) ?? null;
   return {
     api, env, ready: ready(env), games, game, tabs, active, chats, busy, reloads, setupOpen, recents,
-    drafts, setDraft, queued, queue, setActive, open, close, send, stop, runFix, exportGame, resetChat, reload, check, setSetupOpen, push, patch,
+    drafts, setDraft, queued, queue, setActive, open, close, send, stop, runFix, exportGame, resetChat, newGame, reload, check, setSetupOpen, push, patch,
     previewUrl: (slug: string) => (env?.port ? `http://localhost:${env.port}/games/${slug}/` : ''),
     thumbUrl: (g: Game) => (env?.port && g.thumb ? `http://localhost:${env.port}/games/${g.slug}/thumb.jpg` : ''),
   };
