@@ -1,0 +1,15 @@
+diff --git a/games/silent-assassin/main.ts b/games/silent-assassin/main.ts
+index a929a13..e144fee 100644
+--- a/games/silent-assassin/main.ts
++++ b/games/silent-assassin/main.ts
+@@ -31,8 +31,8 @@ sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -30
+ scene.add(sun, sun.target, new THREE.HemisphereLight(0xb0a0ff, 0x403040, 0.7));
+ await loadHdri(scene, 'belfast_sunset_puresky', { background: true, intensity: 0.45 });
+ 
+-const asphalt = await loadTexture('asphalt_02', { repeat: 24 });
+-const ground = new THREE.Mesh(new THREE.PlaneGeometry(EDGE * 2 + 40, EDGE * 2 + 40), new THREE.MeshStandardMaterial({ ...asphalt, color: 0x77727a }));
++const asphalt = await loadTexture('asphalt_02', { repeat: 70 });
++const ground = new THREE.Mesh(new THREE.PlaneGeometry(EDGE * 2 + 40, EDGE * 2 + 40), new THREE.MeshStandardMaterial({ ...asphalt, color: 0x5c5862 }));
+ ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+ 
+ /** Building blocks: collision AABBs (centre + half size) */

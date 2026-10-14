@@ -1,0 +1,19 @@
+diff --git a/games/horror-3/main.ts b/games/horror-3/main.ts
+index 327f990..718d5be 100644
+--- a/games/horror-3/main.ts
++++ b/games/horror-3/main.ts
+@@ -31,6 +31,14 @@ moon.castShadow = true;
+ moon.shadow.mapSize.set(2048, 2048);
+ Object.assign(moon.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 60 });
+ scene.add(moon, moon.target);
++// a big glowing moon + stars, parented to the camera so they hang in the sky
++const sky = new THREE.Group();
++const moonBall = new THREE.Mesh(new THREE.SphereGeometry(6, 32, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.4, 2.4, 2.1), fog: false }));
++moonBall.position.set(-32, 30, -110); sky.add(moonBall);
++const starPos = Array.from({ length: 900 }, (_, i) => (i % 3 === 1 ? rng.range(8, 70) : i % 3 === 0 ? rng.range(-160, 160) : -120));
++const starGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
++sky.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xcfd8ff, size: 0.5, fog: false })));
++camera.add(sky); scene.add(camera);
+ loadHdri(scene, 'satara_night', { intensity: 0.35 }).catch(() => {});
+ 
+ // ------------------------------------------------------------------ ground (follows Jack; textures scroll so the world feels fixed)

@@ -1,0 +1,15 @@
+diff --git a/games/silent-assassin/main.ts b/games/silent-assassin/main.ts
+index a929a13..4290265 100644
+--- a/games/silent-assassin/main.ts
++++ b/games/silent-assassin/main.ts
+@@ -39,8 +39,8 @@ ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground)
+ interface Block { x: number; z: number; h: number; height: number; mats: THREE.Material[] }
+ const blocks: Block[] = [];
+ const COLL = 4.6;   // collision half-size of a block (building footprint + a little)
+-const concrete = await loadTexture('concrete_wall_003', { repeat: 3 });
+-const walkMat = new THREE.MeshStandardMaterial({ ...concrete, color: 0xb8b0a8 });
++const concrete = await loadTexture('painted_plaster_wall', { repeat: 3 });
++const walkMat = new THREE.MeshStandardMaterial({ ...concrete, color: 0xc4c0ba });
+ const BUILDINGS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+ await preloadModels(BUILDINGS.map((b) => `kaykit-city-builder/building-${b}-withoutbase`));
+ for (let i = 0; i < CITY.BLOCKS; i++) for (let j = 0; j < CITY.BLOCKS; j++) {

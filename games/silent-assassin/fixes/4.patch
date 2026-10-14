@@ -1,0 +1,15 @@
+diff --git a/games/silent-assassin/main.ts b/games/silent-assassin/main.ts
+index a929a13..e9400ea 100644
+--- a/games/silent-assassin/main.ts
++++ b/games/silent-assassin/main.ts
+@@ -92,6 +92,10 @@ function neighbours(n: number) {
+ for (let n = 0; n < NN * NN; n++) {
+   if (n % 2) continue;
+   loadModel('kaykit-city-builder/streetlight', { height: 4.2 }).then((l) => { l.position.set(nodeX(n) + 3.6, 0.2, nodeZ(n) + 3.6); l.rotation.y = -Math.PI / 4; scene.add(l); });
++  const pool = new THREE.Mesh(new THREE.CircleGeometry(3.6, 32), new THREE.MeshBasicMaterial({ color: 0xffc870, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
++  pool.rotation.x = -Math.PI / 2; pool.position.set(nodeX(n) + 1.8, 0.23, nodeZ(n) + 1.8); scene.add(pool);
++  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 8), new THREE.MeshBasicMaterial({ color: 0xfff0c0 }));
++  bulb.position.set(nodeX(n) + 2.9, 4.0, nodeZ(n) + 2.9); scene.add(bulb);
+ }
+ /** parked cars: low cover. Crouch behind them and guards can't see you. */
+ interface Car { x: number; z: number; hx: number; hz: number }

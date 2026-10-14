@@ -1,0 +1,7 @@
+{
+  "title": "Granny Rush",
+  "tagline": "Run the haunted hallway. Don't let her catch you.",
+  "controls": "WASD move · Space dash · Esc pause · M mute",
+  "color": "#ff4dd2",
+  "engine": "three"
+}
