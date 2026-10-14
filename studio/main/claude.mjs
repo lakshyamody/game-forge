@@ -13,10 +13,14 @@ const STUDIO_PROMPT = `You are running inside Game Forge Studio, a desktop app f
 - Reply in short, friendly plain language. Do not paste code unless the user asks for it. Say what changed in the game, not which functions changed.
 - The app already runs the game dev server and shows a live preview that reloads on save. Never run \`npm run dev\` or \`npm run play\`, and never open a browser.
 - Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged. Read the screenshots \`npm run shot\` lists (exact paths) and look at every one before saying a game looks right. For a scripted playtest, import \`devServer\` and \`launchChromium\` from scripts/lib/browser.mjs instead of starting vite yourself.
-- Keep scratch files (logs, scripts) in .scratch/ inside the workspace, never /tmp or other folders outside it: there is no one to approve writes out there, so they fail.
-- When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done.
+- Keep scratch files (logs, scripts) in .scratch/ inside the workspace, not /tmp or other folders outside it.
+- If \`npm run shot\` reports a SwiftShader or "Basic Render" renderer, this computer has no usable GPU: the fps it shows is not the game's real speed, so don't chase the fps target; judge the screenshots and mention it.
+- When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done. The user plays it in the app: tell them to open its tab, never to run npm commands (they have no terminal).
 - Only the games in games/ exist in this workspace: skip reference games that AGENTS.md names but aren't there.
-- The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.`;
+- The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.${IS_WIN ? `
+- This is Windows. The workspace path has a space in it: quote paths. The PowerShell tool runs Windows PowerShell 5.1 (no \`&&\`, \`head\`, \`tail\`, \`grep\` or \`sed\`), so prefer the Read, Grep, Glob and Edit tools for files. Git, Python and unzip may not be installed; node, npm and npx always are.
+- Windows won't recreate a folder right after deleting it while the preview server watches it (EPERM on mkdir): change files in place instead of deleting and recreating folders, and if a mkdir fails with EPERM, wait a second and retry.
+- In \`npm run shot -- … --query\`, separate URL params with \`;\` instead of \`&\` (cmd.exe treats \`&\` as a second command).` : ''}`;
 const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill', 'TodoWrite', 'WebSearch', 'WebFetch',
   'Bash(npm run *)', 'Bash(npm install *)', 'Bash(npx tsc *)', 'Bash(node scripts/*)', 'Bash(node .scratch/*)', 'Bash(ls *)', 'Bash(cat *)', 'Bash(head *)', 'Bash(tail *)',
   'Bash(grep *)', 'Bash(wc *)', 'Bash(mkdir *)', 'Bash(date*)', 'Bash(cp *)', 'Bash(git status*)', 'Bash(git diff*)', 'Bash(git log*)', 'Bash(sed -n *)', 'Bash(find *)', 'Bash(python3 *)',
@@ -69,15 +73,22 @@ export async function sendChat(key, text, slug, emit) {
   if (!claude) return fail('Claude Code is not installed yet.');
   if (jobs.has(key)) return fail('Still working on the last request — wait for it or press Stop.');
   const prompt = slug ? `[Working on the game in games/${slug}/ — read its GAME.md first if you haven't this session.]\n\n${text}` : text;
-  const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', PERMISSION_MODE, ...ISOLATION,
+  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', PERMISSION_MODE, ...ISOLATION,
     '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed,
     // packaged app: assets/ and node_modules/ are links into the app bundle; without this Claude Code may not read them
     ...(RES !== ROOT ? ['--add-dir', RES] : [])];
   if (state.sessions[key]) args.push('--resume', state.sessions[key]);
   const before = new Set(listGames().map((g) => g.slug));
-  const child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true,
-    // stdin closed: with an open pipe, claude -p waits 3 s for piped input on every message ("no stdin data received")
-    stdio: ['ignore', 'pipe', 'pipe'] });
+  // the prompt goes in on stdin: no command-line length limit (Windows: 32,767 chars, so a pasted log made spawn throw
+  // and the message just vanished) and nothing for a shell to re-parse. Ending stdin also spares claude -p its 3 s wait
+  // for more piped input on every message.
+  let child;
+  try { child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true }); }
+  catch (e) { return fail(`Couldn't start Claude Code: ${e.message}`); }
+  child.stdin.on('error', () => {});   // it exited before reading: 'close' reports why
+  child.stdin.end(prompt);
+  // couldn't start at all (ENOENT/EACCES: missing, quarantined, or mid-update): say so instead of an Electron error dialog
+  child.on('error', (e) => { if (child.pid || jobs.get(key) !== child) return; jobs.delete(key); emit({ key, type: 'error', text: `Couldn't start Claude Code: ${e.message}` }); emit({ key, type: 'end', code: 1, newGame: null, error: '', auth: false }); });
   jobs.set(key, child);
   emit({ key, type: 'start' });
   let buf = '', errText = '';
@@ -123,11 +134,13 @@ function handleLine(line, key, emit) {
 
 /** a tool call in plain words, for the progress lines under a message */
 function describeTool(name, i) {
-  const f = (p) => String(p ?? '').replace(ROOT + '/', '');
+  // workspace-relative, with / (Windows paths arrive as C:\Users\…\Game Forge\games\…, in any case)
+  const root = ROOT.replace(/\\/g, '/').replace(/\/?$/, '/').toLowerCase();
+  const f = (p) => { const s = String(p ?? '').replace(/\\/g, '/'); return s.toLowerCase().startsWith(root) ? s.slice(root.length) : s; };
   if (name === 'Write') return `✏️ Writing ${f(i.file_path)}`;
   if (name === 'Edit' || name === 'MultiEdit') return `✏️ Editing ${f(i.file_path)}`;
   if (name === 'Read') return `📖 Reading ${f(i.file_path)}`;
-  if (name === 'Bash') return `⚙️ ${i.description || String(i.command).slice(0, 80)}`;
+  if (name === 'Bash' || name === 'PowerShell') return `⚙️ ${i.description || String(i.command).slice(0, 80)}`;
   if (name === 'Grep' || name === 'Glob') return '🔎 Looking through the code';
   if (name === 'Skill') return `📘 Following the ${i.skill ?? ''} guide`;
   if (name === 'WebSearch' || name === 'WebFetch') return '🌐 Searching the web';
