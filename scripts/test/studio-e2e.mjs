@@ -18,6 +18,7 @@ import { root, cli } from '../lib/common.mjs';
 const o = cli(['_', ...process.argv.slice(2)]);
 const shots = o.opt('shots'); if (shots) mkdirSync(shots, { recursive: true });
 const GAME = 'blast-ball', OTHER = 'neon-swarm';
+if (!process.argv.includes('--packaged') && !existsSync(join(root, 'studio/ui/out/index.html'))) { console.error('✖ the Studio UI isn\'t built: run  npm ci --prefix studio/ui && npm run build --prefix studio/ui  (or npm run studio once)'); process.exit(1); }
 const env = { ...process.env, STUDIO_HIDDEN: '1', STUDIO_USER_DATA: mkdtempSync(join(tmpdir(), 'studio-e2e-')) }; delete env.ELECTRON_RUN_AS_NODE;
 const app = await electron.launch({ args: [join(root, 'studio/main.mjs')], env, cwd: root });
 let mainLog = '';
