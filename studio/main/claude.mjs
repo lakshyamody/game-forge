@@ -122,6 +122,8 @@ export function resetChat(key) {
 }
 
 /** one stream-json line → page events */
+// with full access the only denials left are Claude Code's own guards (e.g. rm -rf with a glob): no allow rule lifts them,
+// so no "Allow" card for them (Claude works around them itself)
 function handleLine(line, key, emit) {
   let ev; try { ev = JSON.parse(line); } catch { return; }
   if (ev.session_id) state.sessions[key] = ev.session_id;
@@ -129,7 +131,7 @@ function handleLine(line, key, emit) {
     if (b.type === 'text' && b.text.trim()) emit({ key, type: 'text', text: b.text });
     if (b.type === 'tool_use') emit({ key, type: 'tool', text: describeTool(b.name, b.input ?? {}) });
   }
-  if (ev.type === 'result') emit({ key, type: 'result', ok: !ev.is_error, text: ev.is_error ? (ev.result || (ev.errors ?? []).join('\n')) : '', denials: (ev.permission_denials ?? []).map((p) => ({ tool: p.tool_name, input: p.tool_input })) });
+  if (ev.type === 'result') emit({ key, type: 'result', ok: !ev.is_error, text: ev.is_error ? (ev.result || (ev.errors ?? []).join('\n')) : '', denials: (PERMISSION_MODE === 'bypassPermissions' ? [] : ev.permission_denials ?? []).map((p) => ({ tool: p.tool_name, input: p.tool_input })) });
 }
 
 /** a tool call in plain words, for the progress lines under a message */
