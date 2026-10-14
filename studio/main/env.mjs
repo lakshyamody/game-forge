@@ -108,7 +108,7 @@ export function installClaude(onDone = () => {}) {
   installer.on('error', (e) => finish(1, e.message));
 }
 
-let updater = null;
+let updater = null, updated = Promise.resolve();
 /**
  * Keep Claude Code current. Its own auto-updater only runs in interactive sessions, and the app only ever runs
  * `claude -p`, so without this an installed CLI stays on whatever version it had. Runs `claude update` in the
@@ -118,12 +118,16 @@ export function updateClaude(onDone = () => {}) {
   if (updater || installer || process.env.DISABLE_AUTOUPDATER) return;
   const c = claudeCommand();
   if (!c) return;
+  let done; updated = new Promise((r) => (done = r));
   updater = spawn(c.file, [...c.args, 'update'], { cwd: H, env: { ...childEnv(), ...c.env }, shell: c.shell, windowsHide: true, stdio: 'ignore' });
   const timer = setTimeout(() => updater?.kill(), 5 * 60 * 1000);
-  const finish = (code) => { if (!updater) return; clearTimeout(timer); updater = null; onDone(code === 0); };
+  const finish = (code) => { if (!updater) return; clearTimeout(timer); updater = null; done(); onDone(code === 0); };
   updater.on('close', (code) => finish(code));
   updater.on('error', () => finish(1));
 }
+/** wait for a `claude update` in progress, so a chat never starts claude.exe while it is being replaced */
+export const claudeUpdating = () => !!updater;
+export const claudeUpdated = () => updated;
 export const loginCmd = () => (IS_WIN ? `& '${(findClaude() ?? 'claude').replace(/'/g, "''")}' auth login` : 'claude auth login');   // full path: a fresh install may not be on PATH yet
 
 /** stop a process and everything it started (Claude Code runs shells, Vite, Chromium…) */

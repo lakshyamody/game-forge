@@ -5,7 +5,7 @@
 import { spawn } from 'node:child_process';
 import { ROOT } from './paths.mjs';
 import { state, saveState } from './state.mjs';
-import { childEnv, claudeCommand, killTree } from './env.mjs';
+import { childEnv, claudeCommand, claudeUpdated, claudeUpdating, killTree } from './env.mjs';
 import { listGames } from './games.mjs';
 
 export const NEW = '__new__';   // chat key for "make a new game" before the game exists
@@ -20,9 +20,15 @@ const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill
   'Bash(npm run *)', 'Bash(npm install *)', 'Bash(npx tsc *)', 'Bash(node scripts/*)', 'Bash(node .scratch/*)', 'Bash(ls *)', 'Bash(cat *)', 'Bash(head *)', 'Bash(tail *)',
   'Bash(grep *)', 'Bash(wc *)', 'Bash(mkdir *)', 'Bash(date*)', 'Bash(cp *)', 'Bash(git status*)', 'Bash(git diff*)', 'Bash(git log*)', 'Bash(sed -n *)', 'Bash(find *)', 'Bash(python3 *)'];
 export const jobs = new Map();   // chat key → running claude process
+const resets = new Map();   // chat key → how many times it was reset ("New chat")
 
 /** `emit(event)` delivers { key, type, … } to the page */
-export function sendChat(key, text, slug, emit) {
+export async function sendChat(key, text, slug, emit) {
+  if (claudeUpdating()) {
+    const gen = resets.get(key);
+    emit({ key, type: 'tool', text: '⬆️ Updating Claude Code first' }); await claudeUpdated();
+    if (resets.get(key) !== gen) return;   // the chat was reset while waiting: drop this message
+  }
   const claude = claudeCommand();
   if (!claude) return emit({ key, type: 'error', text: 'Claude Code is not installed yet.' });
   if (jobs.has(key)) return emit({ key, type: 'error', text: 'Still working on the last request — wait for it or press Stop.' });
@@ -46,7 +52,7 @@ export function sendChat(key, text, slug, emit) {
   });
   child.stderr.on('data', (d) => (errText += d));
   child.on('close', (code) => {
-    if (jobs.get(key) !== child) return emit({ key, type: 'end', code: 0, newGame: null, error: '', auth: false });   // reset: that chat is gone
+    if (jobs.get(key) !== child) return;   // reset ("New chat"): that conversation is gone, and the page already moved on
     jobs.delete(key); saveState();
     // a brand-new game appeared during a "new game" chat → hand the session to that game
     const fresh = listGames().map((g) => g.slug).filter((s) => !before.has(s));
@@ -60,6 +66,7 @@ export function sendChat(key, text, slug, emit) {
 export function resetChat(key) {
   const child = jobs.get(key);
   jobs.delete(key); killTree(child);
+  resets.set(key, (resets.get(key) ?? 0) + 1);
   delete state.sessions[key]; saveState();
 }
 

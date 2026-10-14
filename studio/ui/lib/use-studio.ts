@@ -93,8 +93,11 @@ export function useStudio() {
 
   const stop = useCallback(async (key: string) => { stopped.current.add(key); await api?.stop(key); }, [api]);
 
-  // "New chat": clear the conversation here and in the main process (which also stops a run in progress)
+  // "New chat": clear the conversation here and in the main process (which also stops a run in progress;
+  // that run sends no end event, so it's no longer busy from here on)
   const resetChat = useCallback(async (key: string) => {
+    stopped.current.delete(key);
+    setBusy((b) => { const n = new Map(b); n.delete(key); return n; });
     setQueued(({ [key]: _, ...rest }) => rest);
     setChats((c) => ({ ...c, [key]: [] }));
     await api?.resetChat(key);

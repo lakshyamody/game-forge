@@ -66,9 +66,12 @@ app.whenReady().then(async () => {
   loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu((action) => send('menu', action)); ensurePlaywright((status) => send('tools:status', status));
   // packaged app: install Claude Code on first launch, so only signing in is left
   if (app.isPackaged || process.env.STUDIO_AUTO_INSTALL) installClaude(() => send('env:changed'));
-  // …and keep it up to date: now, then daily (skipped while Claude is working, so a running claude.exe isn't swapped out)
-  const update = () => { if (!jobs.size) updateClaude(() => send('env:changed')); };
-  update(); setInterval(update, 24 * 60 * 60 * 1000).unref();
+  // …and keep it up to date: now, then daily (skipped while Claude is working, so a running claude.exe isn't swapped out;
+  // not in dev or tests, which use the developer's own CLI)
+  if (app.isPackaged && !process.env.STUDIO_HIDDEN) {
+    const update = () => { if (!jobs.size) updateClaude(() => send('env:changed')); };
+    update(); setInterval(update, 24 * 60 * 60 * 1000).unref();
+  }
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
     show: !process.env.STUDIO_HIDDEN,   // tests: render without putting a window on screen (stray clicks)
