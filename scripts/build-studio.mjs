@@ -29,9 +29,32 @@ const out = join(root, 'dist-studio'), name = 'Game Forge Studio';
 const require = createRequire(import.meta.url);
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const electronVersion = require('electron/package.json').version;
-const SHOWCASE = ['neon-swarm', 'block-racer', 'hollow-house', 'blast-ball', 'siteline', 'banner-raid', 'sunset-district'];
+const SHOWCASE = ['blast-ball'];   // one example game; people make their own (games are ~100 KB, the asset library is the size)
 const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', '.claude/settings.json', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'README.md'];
 const NOT_NEEDED = new Set(['electron', '@electron', 'electron-builder', 'app-builder-lib', 'app-builder-bin', 'dmg-builder', '7zip-bin', '.cache', '.vite']);
+/** shipped beside the app: the app isn't code-signed (free, internal), so the first launch needs one extra step */
+const HOW_TO_OPEN = {
+  mac: `How to open Game Forge Studio (first time only)
+
+1. Drag "Game Forge Studio" into Applications.
+2. Double-click it. macOS says it can't check the app: click Done.
+3. Open System Settings > Privacy & Security, scroll down, click "Open Anyway" next to Game Forge Studio, and confirm.
+
+Or, instead of steps 2 and 3, paste this into Terminal once:
+   xattr -dr com.apple.quarantine "/Applications/Game Forge Studio.app"
+
+After that it opens normally. On first launch it installs Claude Code by itself; then sign in with your Claude account.
+`,
+  win: `How to open Game Forge Studio (first time only)
+
+1. Right-click the zip > Extract All, and keep the "Game Forge Studio" folder somewhere permanent (for example Documents).
+2. Open the folder and double-click "Game Forge Studio.exe".
+3. Windows SmartScreen says it protected your PC: click "More info", then "Run anyway".
+
+After that it opens normally. On first launch it installs Claude Code by itself; then sign in with your Claude account.
+Tip: right-click the .exe > Send to > Desktop (create shortcut).
+`,
+};
 const sh = (cmd, args, opts = {}) => execFileSync(cmd, args, { stdio: 'inherit', ...opts });
 const step = (s) => console.log(`▸ ${s}`);
 
@@ -97,6 +120,7 @@ function buildMac() {
   step('dmg');
   const stage = join(out, 'dmg'); rmSync(stage, { recursive: true, force: true }); mkdirSync(stage);
   sh('cp', ['-R', appPath, stage]); symlinkSync('/Applications', join(stage, 'Applications'));
+  writeFileSync(join(stage, 'How to open.txt'), HOW_TO_OPEN.mac);
   sh('hdiutil', ['create', '-volname', name, '-srcfolder', stage, '-ov', '-format', 'UDZO', join(out, 'Game-Forge-Studio.dmg')], { stdio: 'ignore' });
   rmSync(stage, { recursive: true, force: true });
   return [appPath, join(out, 'Game-Forge-Studio.dmg')];
@@ -128,6 +152,7 @@ async function buildWin() {
     nodeModules = join(stage, 'node_modules');
   }
   fillResources(R, nodeModules, 'win');
+  writeFileSync(join(out, 'win', 'How to open.txt'), HOW_TO_OPEN.win.replace(/\n/g, '\r\n'));
   step('zip');
   const zip = join(out, 'Game-Forge-Studio-win-x64.zip'); rmSync(zip, { force: true });
   zipDir(join(out, 'win'), zip);

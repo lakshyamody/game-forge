@@ -13,7 +13,8 @@
  */
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { existsSync, watch, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 // tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
@@ -57,6 +58,9 @@ async function startVite() {
 }
 
 app.whenReady().then(async () => {
+  // macOS, unsigned app: once the user has allowed it, clear the download quarantine from the whole bundle so the
+  // tools inside (Chromium for playtests, native modules) aren't blocked by Gatekeeper one by one
+  if (IS_MAC && app.isPackaged) try { execFileSync('xattr', ['-dr', 'com.apple.quarantine', resolve(process.execPath, '../../..')], { stdio: 'ignore', timeout: 30000 }); } catch { /* read-only (translocated) or already clear */ }
   loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu((action) => send('menu', action)); ensurePlaywright((status) => send('tools:status', status));
   // packaged app: install Claude Code on first launch, so only signing in is left
   if (app.isPackaged || process.env.STUDIO_AUTO_INSTALL) installClaude(() => send('env:changed'));

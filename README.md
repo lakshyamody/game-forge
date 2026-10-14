@@ -25,7 +25,7 @@ For people who don't use a terminal: a desktop app for **macOS and Windows**, cl
 - **Uses their own Claude Code:** Claude Code is installed with Anthropic's official installer (`install.sh` on Mac, `install.ps1` on Windows) rather than shipped inside the app, so it stays licensed to them and keeps auto-updating. Sign-in goes through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max). On Windows, [Git for Windows](https://git-scm.com/downloads/win) is optional: with it, Claude Code uses Git Bash; without it, PowerShell.
 - **Making games:** "New game" → describe it → Claude Code builds it and the preview appears. Ask for changes in plain words; apply a suggested fix with one click; "Export" makes the itch.io zip.
 - Games live in `~/Game Forge/games` (`C:\Users\<you>\Game Forge\games` on Windows). Try the app from this repo with `npm run studio`.
-- Not signed yet. Mac: right-click the app → Open the first time. Windows: SmartScreen → "More info" → "Run anyway".
+- **Sharing with your team (free):** the app isn't code-signed, so put the `.dmg` / zip on Google Drive (or any file share; GitHub Releases caps files at 2 GB) and send the link. Each one contains a `How to open.txt` with the one-time step: on Mac, System Settings > Privacy & Security > "Open Anyway" (or `xattr -dr com.apple.quarantine "/Applications/Game Forge Studio.app"`); on Windows, SmartScreen > "More info" > "Run anyway". The app ships one example game (Blast Ball); everyone's own games go in their `Game Forge/games` folder.
 
 ## Asset library
 

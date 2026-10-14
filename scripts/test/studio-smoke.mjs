@@ -51,7 +51,7 @@ await app.close();
 if (o.flag('packaged')) {
   step('playtest on the app\'s own Node + bundled Chromium');
   try {
-    const out = execFileSync(exe, [join(homedir(), 'Game Forge/scripts/shot.mjs'), 'neon-swarm', '--seconds', '3'], {
+    const out = execFileSync(exe, [join(homedir(), 'Game Forge/scripts/shot.mjs'), 'blast-ball', '--seconds', '3'], {
       cwd: join(homedir(), 'Game Forge'), encoding: 'utf8', timeout: 240000,
       env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PLAYWRIGHT_BROWSERS_PATH: join(resources, 'forge/ms-playwright') },
     });

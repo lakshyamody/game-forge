@@ -14,6 +14,7 @@ const STUDIO_PROMPT = `You are running inside Game Forge Studio, a desktop app f
 - The app already runs the game dev server and shows a live preview that reloads on save. Never run \`npm run dev\` or \`npm run play\`, and never open a browser.
 - Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged.
 - When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done.
+- Only the games in games/ exist in this workspace: skip reference games that AGENTS.md names but aren't there.
 - The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.`;
 const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill', 'TodoWrite', 'WebSearch', 'WebFetch',
   'Bash(npm run *)', 'Bash(npm install *)', 'Bash(npx tsc *)', 'Bash(node scripts/*)', 'Bash(node .scratch/*)', 'Bash(ls *)', 'Bash(cat *)', 'Bash(head *)', 'Bash(tail *)',
