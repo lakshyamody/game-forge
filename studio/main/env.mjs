@@ -23,7 +23,14 @@ const BROWSERS = join(RES, 'ms-playwright');
 /** process.env with our PATH and without API keys. Windows env keys are case-insensitive ("Path"), so rebuild PATH once. */
 export function childEnv() {
   const env = {}; let path = '';
-  for (const [k, v] of Object.entries(process.env)) { if (k.toLowerCase() === 'path') path = v ?? ''; else env[k] = v; }
+  for (const [k, v] of Object.entries(process.env)) {
+    if (k.toLowerCase() === 'path') path = v ?? '';
+    // Windows: a PSModulePath inherited from PowerShell 7 (the app started from a pwsh terminal, or CI) makes Windows
+    // PowerShell 5.1 load PS7's modules and lose its own Utility cmdlets: the Claude Code installer died on Get-FileHash
+    // ("not recognized"), and Claude Code's PowerShell tool would lose Select-String, Sort-Object, ConvertFrom-Json…
+    // Without the variable, each PowerShell builds its own default.
+    else if (!(IS_WIN && k.toLowerCase() === 'psmodulepath')) env[k] = v;
+  }
   // Windows: drop the Store's app-alias folder (WindowsApps). Its pwsh.exe alias breaks Claude Code's PowerShell tool
   // ("pwsh exited with code 1: The command line is too long" on every command); without it Claude Code falls back to
   // the built-in Windows PowerShell, which works. The folder only holds Store app launchers.
