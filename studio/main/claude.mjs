@@ -35,7 +35,11 @@ const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill
     'Select-String *', 'Select-Object *', 'Where-Object *', 'ForEach-Object *', 'Sort-Object *', 'Measure-Object*', 'Group-Object *', 'Compare-Object *',
     'Format-List*', 'Format-Table*', 'Out-String*', 'ConvertFrom-Json*', 'ConvertTo-Json*', 'Write-Output *', 'Write-Host *', 'Get-Date*', 'Start-Sleep *', 'Get-Command *',
     'New-Item *', 'Copy-Item *', 'Move-Item *', 'Rename-Item *', 'Remove-Item .scratch*', 'Remove-Item -Recurse -Force .scratch*', 'Remove-Item -Force -Recurse .scratch*',
-  ].map((c) => `PowerShell(${c})`) : [])];
+  ].map((c) => `PowerShell(${c})`) : []),
+  // Windows: full shell access (both shells, every command). Windows sessions lean on commands no prefix list
+  // anticipates (compound commands, redirects, edits after cd), and claude -p can't ask, so anything missing was
+  // just denied. Trade-off: Claude Code can run any command as the user without an approval step.
+  ...(IS_WIN ? ['Bash', 'PowerShell'] : [])];
 export const jobs = new Map();   // chat key → running claude process
 const resets = new Map();   // chat key → how many times it was reset ("New chat")
 
