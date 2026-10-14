@@ -1,12 +1,12 @@
 # Kid check — Banner Raid
 Apply with `npm run fixes -- apply banner-raid <n>` (or `all`); undo with `npm run fixes -- undo banner-raid <n>`. Each patch was made against the same base and all five were tested applied together.
 
-## ⬜ 1. "The walls are just broken sticks with gaps!"
+## ✅ 1. "The walls are just broken sticks with gaps!"
 - **What you see:** the wall rings look like rows of separate pickets standing sideways, with gaps between them.
 - **Why:** the stone-fence model runs along z, so the rotation for top/bottom vs side walls is swapped (and it's stretched sideways).
 - **Fix (staged):** swap the rotation, scale it evenly: solid continuous wall lines. 1 line.
 
-## ⬜ 2. "The soldiers are so tiny I can't see them!"
+## ✅ 2. "The soldiers are so tiny I can't see them!"
 - **What you see:** troops are little dots next to the buildings; you can barely tell a barbarian from an archer.
 - **Why:** troop heights are 0.9–1.5 m on a 48 m map viewed from far out.
 - **Fix (staged):** ~1.5× bigger (barbarian 1.45, archer 1.4, giant 2.3, wizard 1.55). 4 lines.
