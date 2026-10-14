@@ -31,6 +31,10 @@ jobs:
         run: npm run shot -- neon-swarm --seconds 4
       - name: itch.io export
         run: npm run ship -- neon-swarm
+      - name: Build Studio UI
+        run: |
+          npm ci --prefix studio/ui
+          npm run build --prefix studio/ui
       - name: Studio from the repo
         run: node scripts/test/studio-smoke.mjs --shot studio-dev.png
       - name: Studio end-to-end (UI, without Claude Code)

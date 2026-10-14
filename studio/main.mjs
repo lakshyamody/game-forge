@@ -15,6 +15,7 @@ import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 // tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
@@ -50,7 +51,8 @@ function wire() {
 
 /** the game preview server — Vite running inside the app's own Node */
 async function startVite() {
-  const { createServer } = await import(join(ROOT, 'node_modules/vite/dist/node/index.js'));
+  // import() needs a file:// URL: a bare C:\… path fails on Windows
+  const { createServer } = await import(pathToFileURL(join(ROOT, 'node_modules/vite/dist/node/index.js')).href);
   // packaged: node_modules/assets are links into the app bundle (RES) — let Vite serve files from there too
   vite = await createServer({ root: ROOT, configFile: join(ROOT, 'vite.config.ts'), server: { port: 5199, strictPort: false, open: false, fs: { allow: [ROOT, RES] } }, logLevel: 'error' });
   await vite.listen();
