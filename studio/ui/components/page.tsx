@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { RotateCw, ExternalLink, Smartphone, Maximize2, Minimize2, Download, FolderOpen, Undo2, Plus } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { NEW, PAGE_ARCADE, PAGE_ASSETS, FILE_MANAGER, kbd, type Game } from '@/lib/studio';
+import { NEW, PAGE_ARCADE, PAGE_ASSETS, FILE_MANAGER, IS_MAC, kbd, type Game } from '@/lib/studio';
 import type { Studio } from '@/lib/use-studio';
 import { Chip, Dot, IconButton, Spinner, Square } from './ui';
 import { Home } from './home';
@@ -94,7 +94,7 @@ function Preview({ s, tab, url: page, addressRef, full, onFocus, page: webPage }
         <IconButton label={`Reload (${kbd('R')})`} onClick={() => s.reload(tab)}><RotateCw size={14} strokeWidth={2} /></IconButton>
         <form className="mx-1 flex h-7 min-w-0 flex-1 items-center rounded-lg bg-raised px-2.5" onSubmit={(e) => { e.preventDefault(); setQuery(draft.split('?')[1] ?? ''); s.reload(tab); }}>
           <input ref={full || onFocus ? addressRef : undefined} value={draft.replace(/^http:\/\//, '')} onChange={(e) => setDraft(e.target.value)} spellCheck={false} aria-label="Address"
-            title="Add ?god, ?tune or other debug flags, then press Return" className="min-w-0 flex-1 bg-transparent font-mono text-[12.5px] text-muted outline-none focus:text-fg" />
+            title={`Add ?god, ?tune or other debug flags, then press ${IS_MAC ? 'Return' : 'Enter'}`} className="min-w-0 flex-1 bg-transparent font-mono text-[12.5px] text-muted outline-none focus:text-fg" />
         </form>
         <IconButton label={mobile ? 'Fit' : 'Phone size'} active={mobile} onClick={() => setMobile((m) => !m)}><Smartphone size={14} strokeWidth={2} /></IconButton>
         {onFocus && <IconButton label={full ? 'Back to details' : 'Expand'} onClick={onFocus}>{full ? <Minimize2 size={14} strokeWidth={2} /> : <Maximize2 size={14} strokeWidth={2} />}</IconButton>}

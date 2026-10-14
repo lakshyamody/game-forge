@@ -11,7 +11,7 @@
  * This file: window, IPC and the game server. The rest lives in main/: paths, state, env (Claude + shims),
  * workspace (packaged setup), games (sidebar list), claude (chat runner), ui (serves the Next.js UI in studio/ui).
  */
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
 import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -20,6 +20,10 @@ import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 // tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
 if (process.env.STUDIO_USER_DATA) app.setPath('userData', process.env.STUDIO_USER_DATA);
+// one Studio per profile (must come after setPath: the lock is per userData): the first start takes ~24 s before the window shows, and a second
+// double-click would run a second Vite, a second asset download into the same .part file, and clobber state
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) app.quit();
 import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, updateClaude, INSTALL_CMD, loginCmd } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
 import { downloadRealistic } from './main/library.mjs';
@@ -29,6 +33,8 @@ import { serveUi, setMenu, uiUrl } from './main/ui.mjs';
 
 let win = null, vite = null, port = 0;
 const send = (channel, payload) => win?.webContents.send(channel, payload);
+// launched again: bring the running window forward (before it exists, the first start's window is about to appear anyway)
+app.on('second-instance', () => { if (!win) return; if (win.isMinimized()) win.restore(); win.show(); win.focus(); });
 
 function wire() {
   ipcMain.handle('env:check', () => checkEnv(port));
@@ -55,12 +61,16 @@ async function startVite() {
   // import() needs a file:// URL: a bare C:\… path fails on Windows
   const { createServer } = await import(pathToFileURL(join(ROOT, 'node_modules/vite/dist/node/index.js')).href);
   // packaged: node_modules/assets are links into the app bundle (RES) — let Vite serve files from there too
-  vite = await createServer({ root: ROOT, configFile: join(ROOT, 'vite.config.ts'), server: { port: 5199, strictPort: false, open: false, fs: { allow: [ROOT, RES] } }, logLevel: 'error' });
-  await vite.listen();
+  const make = (port) => createServer({ root: ROOT, configFile: join(ROOT, 'vite.config.ts'), server: { port, strictPort: false, open: false, fs: { allow: [ROOT, RES] } }, logLevel: 'error' });
+  vite = await make(5199);
+  // Vite only moves on to the next port when it's in use (EADDRINUSE); Windows' reserved ranges (Hyper-V, WSL, Docker) fail with EACCES,
+  // which would leave every game preview blank — so on any listen error ask the OS for a free port instead
+  try { await vite.listen(); } catch (e) { console.error('vite listen failed, retrying on a free port', e); await vite.close().catch(() => {}); vite = await make(0); await vite.listen(); }
   port = vite.httpServer.address().port;
 }
 
 app.whenReady().then(async () => {
+  if (!gotLock) return;   // a second instance: quitting (see above), set nothing up
   // macOS, unsigned app: once the user has allowed it, clear the download quarantine from the whole bundle so the
   // tools inside (Chromium for playtests, native modules) aren't blocked by Gatekeeper one by one
   if (IS_MAC && app.isPackaged) try { execFileSync('xattr', ['-dr', 'com.apple.quarantine', resolve(process.execPath, '../../..')], { stdio: 'ignore', timeout: 30000 }); } catch { /* read-only (translocated) or already clear */ }
@@ -74,18 +84,31 @@ app.whenReady().then(async () => {
     update(); setInterval(update, 24 * 60 * 60 * 1000).unref();
   }
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
+  // never taller/wider than the screen's work area: at 125-150 % scaling on a 1080p laptop it is ~1536x816 or 1280x680, and the composer would sit under the taskbar
+  const { width: aw, height: ah } = screen.getPrimaryDisplay().workAreaSize;
   win = new BrowserWindow({
     show: !process.env.STUDIO_HIDDEN,   // tests: render without putting a window on screen (stray clicks)
-    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#ffffff',
+    width: Math.min(1560, aw), height: Math.min(960, ah), minWidth: Math.min(1100, aw), minHeight: Math.min(680, ah), title: 'Game Forge Studio', backgroundColor: '#ffffff',
     // the window buttons sit inside the app's own top row: traffic lights on macOS, caption buttons on Windows
     ...(IS_MAC ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 20, y: 21 } } : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#ffffff', symbolColor: '#1b1b1b', height: 56 } }),
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });
   if (process.env.STUDIO_HIDDEN) win.webContents.setAudioMuted(true);   // tests: no game music out of the speakers
+  // Electron has no right-click menu of its own: without this the chat composer and address bar offer no Cut/Copy/Paste
+  win.webContents.on('context-menu', (_e, p) => {
+    const f = p.editFlags, t = [];
+    if (p.isEditable) t.push({ role: 'undo', enabled: f.canUndo }, { role: 'redo', enabled: f.canRedo }, { type: 'separator' }, { role: 'cut', enabled: f.canCut });
+    if (p.isEditable || p.selectionText) t.push({ role: 'copy', enabled: f.canCopy });
+    if (p.isEditable) t.push({ role: 'paste', enabled: f.canPaste }, { type: 'separator' }, { role: 'selectAll', enabled: f.canSelectAll });
+    if (t.length) Menu.buildFromTemplate(t).popup({ window: win });
+  });
   win.loadURL(uiUrl());
   // packaged app: fetch the realistic asset packs in the background (progress shows in the sidebar)
   if (app.isPackaged && !process.env.STUDIO_SKIP_ASSET_DOWNLOAD) void downloadRealistic((t) => send('tools:status', t));
-  if (existsSync(GAMES)) watch(GAMES, { recursive: true }, (_t, f) => { if (f && /game\.json|FIXES\.md/.test(f)) send('games:changed'); });
+  if (existsSync(GAMES)) {
+    const w = watch(GAMES, { recursive: true }, (_t, f) => { if (f && /game\.json|FIXES\.md/.test(f)) send('games:changed'); });
+    w.on('error', () => w.close());   // Windows: if the folder is deleted or renamed an unhandled watcher keeps firing and pegs the main thread
+  }
   // debug: STUDIO_SCREENSHOT=out.png [STUDIO_QUIT=1] [STUDIO_DELAY=ms] captures the window after load
   if (process.env.STUDIO_SCREENSHOT) setTimeout(async () => { const img = await win.webContents.capturePage(); writeFileSync(process.env.STUDIO_SCREENSHOT, img.toPNG()); if (process.env.STUDIO_QUIT) app.quit(); }, Number(process.env.STUDIO_DELAY ?? 6000));
 });
