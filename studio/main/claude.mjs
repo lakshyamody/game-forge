@@ -5,7 +5,7 @@
 import { spawn } from 'node:child_process';
 import { ROOT } from './paths.mjs';
 import { state, saveState } from './state.mjs';
-import { childEnv, claudeCommand } from './env.mjs';
+import { childEnv, claudeCommand, killTree } from './env.mjs';
 import { listGames } from './games.mjs';
 
 export const NEW = '__new__';   // chat key for "make a new game" before the game exists
@@ -40,11 +40,13 @@ export function sendChat(key, text, slug, emit) {
     let i;
     while ((i = buf.indexOf('\n')) >= 0) {
       const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
-      if (line) handleLine(line, key, emit);
+      // a chat reset while this run was going: keep its session id from coming back
+      if (line && jobs.get(key) === child) handleLine(line, key, emit);
     }
   });
   child.stderr.on('data', (d) => (errText += d));
   child.on('close', (code) => {
+    if (jobs.get(key) !== child) return emit({ key, type: 'end', code: 0, newGame: null, error: '', auth: false });   // reset: that chat is gone
     jobs.delete(key); saveState();
     // a brand-new game appeared during a "new game" chat → hand the session to that game
     const fresh = listGames().map((g) => g.slug).filter((s) => !before.has(s));
@@ -52,6 +54,13 @@ export function sendChat(key, text, slug, emit) {
     const auth = /not logged in|login expired|run \/login|invalid api key|authentication/i.test(errText);
     emit({ key, type: 'end', code, newGame: fresh[0] ?? null, error: code && !auth ? errText.trim().slice(-600) : '', auth });
   });
+}
+
+/** "New chat": stop any run on this chat and forget its session, so the next message starts a fresh conversation */
+export function resetChat(key) {
+  const child = jobs.get(key);
+  jobs.delete(key); killTree(child);
+  delete state.sessions[key]; saveState();
 }
 
 /** one stream-json line → page events */

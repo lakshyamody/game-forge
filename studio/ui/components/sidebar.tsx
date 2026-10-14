@@ -34,7 +34,7 @@ export function Sidebar({ s, theme, setTheme }: { s: Studio; theme: ThemePref; s
     <aside className="flex w-[260px] shrink-0 flex-col border-r border-line">
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pt-3 pb-4">
         <nav className="space-y-px">
-          <Item on={s.active === NEW} icon={<Plus size={17} strokeWidth={1.8} />} label="New game" end={s.busy.has(NEW) ? <Spinner className="text-accent" /> : null} onClick={() => s.open(NEW)} />
+          <Item on={s.active === NEW} icon={<Plus size={17} strokeWidth={1.8} />} label="New game" end={s.busy.has(NEW) ? <Spinner className="text-accent" /> : null} onClick={s.newGame} />
           <Item on={s.active === PAGE_ARCADE} icon={<LayoutGrid size={16} strokeWidth={1.8} />} label="Arcade" onClick={() => s.open(PAGE_ARCADE)} />
           <Item on={s.active === PAGE_ASSETS} icon={<Boxes size={17} strokeWidth={1.8} />} label="Asset library" onClick={() => s.open(PAGE_ASSETS)} />
         </nav>

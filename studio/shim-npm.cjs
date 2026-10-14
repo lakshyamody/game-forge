@@ -14,6 +14,8 @@ const env = {}; let path = '';
 for (const [k, v] of Object.entries(process.env)) { if (k.toLowerCase() === 'path') path = v || ''; else env[k] = v; }
 env.PATH = [bin, path].filter(Boolean).join(delimiter);
 delete env.SHIM_MODE;
+// windowsHide on every spawn: Studio starts Claude Code without a console, so any console child that isn't hidden
+// (cmd.exe for `npm run`, node for tools) would pop up a terminal window of its own
 const done = (p) => p.on('exit', (c) => process.exit(c ?? 0));
 
 /** find a tool's JS entry from the packages' "bin" fields (node_modules/.bin may be flattened by packagers) */
@@ -29,7 +31,7 @@ function resolveBin(name) {
 function runBin(name, args) {
   const p = resolveBin(name);
   if (!p) { console.error(`${name}: not available in Game Forge Studio`); process.exit(127); }
-  done(spawn(process.execPath, [realpathSync(p), ...args], { stdio: 'inherit', env: { ...env, ELECTRON_RUN_AS_NODE: '1' } }));
+  done(spawn(process.execPath, [realpathSync(p), ...args], { stdio: 'inherit', env: { ...env, ELECTRON_RUN_AS_NODE: '1' }, windowsHide: true }));
 }
 
 if (mode === 'npx') {
@@ -49,6 +51,6 @@ if (mode === 'npx') {
     const quoted = extra.map((a) => (/^[\w./:=@%+,-]+$/.test(a) ? a : `'${a.replace(/'/g, `'\\''`)}'`)).join(' ');
     const line = `${scripts[name]} ${quoted}`.trim();
     console.log(`\n> ${name}\n> ${line}\n`);
-    done(process.platform === 'win32' ? spawn(line, { stdio: 'inherit', env, shell: true }) : spawn('/bin/sh', ['-c', line], { stdio: 'inherit', env }));
+    done(process.platform === 'win32' ? spawn(line, { stdio: 'inherit', env, shell: true, windowsHide: true }) : spawn('/bin/sh', ['-c', line], { stdio: 'inherit', env }));
   } else { console.error(`npm ${cmd ?? ''}: not supported in Game Forge Studio (try: npm run <script>)`); process.exit(1); }
 }
