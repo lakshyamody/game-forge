@@ -14,7 +14,7 @@
  *
  * Exit code 1 if the page threw any errors. Screenshots land in .shots/<name>/.
  */
-import { mkdirSync, rmSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import { root } from './lib/common.mjs';
 import { devServer, launchChromium } from './lib/browser.mjs';
@@ -32,8 +32,10 @@ const isRoot = target === '.' || target === '/' || target === 'arcade';
 const path = isRoot ? '' : target.includes('/') ? target.replace(/\/?$/, '/') : `games/${target}/`;
 const name = isRoot ? 'arcade' : basename(target);
 const out = resolve(root, '.shots', name);
-rmSync(out, { recursive: true, force: true });
+// empty the folder instead of deleting it: on Windows a just-deleted folder (still open in a viewer, being indexed or
+// scanned) can't be created again for a moment, and every second run failed with "EPERM … mkdir .shots/<name>"
 mkdirSync(out, { recursive: true });
+for (const f of readdirSync(out)) rmSync(resolve(out, f), { recursive: true, force: true, maxRetries: 5 });
 
 const dev = await devServer();
 const base = dev.base;
