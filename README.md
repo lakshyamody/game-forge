@@ -15,11 +15,28 @@ Everything is set up for an AI agent to work fast: a shared game kit (juice, pro
 
 All games were built by Claude in this repo from short prompts, using the shared kit and the CC0 asset library below.
 
+## Download the app
+
+Make games by describing them. No coding, no setup: download, open, sign in with your Claude account.
+
+| | |
+|---|---|
+| **Mac** (Apple Silicon) | [**Download Game-Forge-Studio.dmg**](https://github.com/npmiaman/game-forge/releases/latest/download/Game-Forge-Studio.dmg) · ~400 MB |
+| **Windows** (64-bit) | [**Download Game-Forge-Studio-win-x64.zip**](https://github.com/npmiaman/game-forge/releases/latest/download/Game-Forge-Studio-win-x64.zip) · ~500 MB |
+
+You need a **Claude Pro or Max** plan. The app installs Claude Code by itself on first launch.
+
+**First time opening it** (the app isn't code-signed, so your computer asks once):
+- **Mac:** open the .dmg and drag Game Forge Studio into Applications. Double-click it, click **Done** on the warning, then go to **System Settings → Privacy & Security** and click **Open Anyway**. (Or paste `xattr -dr com.apple.quarantine "/Applications/Game Forge Studio.app"` into Terminal once.)
+- **Windows:** right-click the zip → **Extract All**, keep the folder somewhere permanent (e.g. Documents), open it and double-click **Game Forge Studio.exe**. On the blue SmartScreen box click **More info → Run anyway**.
+
+Then: **New game** → describe it → Claude Code builds and playtests it, and it appears in a live preview. Ask for changes in plain words. Your games are in the `Game Forge/games` folder in your home folder.
+
 ## Game Forge Studio (desktop app, no setup)
 
 For people who don't use a terminal: a desktop app for **macOS and Windows**, clean and light: describe a game on the home page, watch Claude Code build it, then play it in a tab with a live preview, one-click suggested fixes and a chat for changes.
 
-- **One download, nothing to set up:** `npm run studio:build` makes the app for the computer you run it on. It bundles the game tools, a light asset library (every stylised model pack, sprites and sounds; the realistic photoscanned textures, HDRIs, Poly Haven props and Rocketbox people stay in the repo), every library and the playtest browser (Chromium). About 400 MB (Mac) / 500 MB (Windows), and runs on its own built-in Node, so the person you send it to doesn't install Node, npm, git or a browser. On first launch it installs Claude Code by itself in the background (Anthropic's official installer). The only step left is signing in to Claude.
+- **One download, nothing to set up** (see [Download the app](#download-the-app)). To build it yourself: `npm run studio:build` makes the app for the computer you run it on. It bundles the game tools, a light asset library (every stylised model pack, sprites and sounds; the realistic photoscanned textures, HDRIs, Poly Haven props and Rocketbox people stay in the repo), every library and the playtest browser (Chromium). About 400 MB (Mac) / 500 MB (Windows), and runs on its own built-in Node, so the person you send it to doesn't install Node, npm, git or a browser. On first launch it installs Claude Code by itself in the background (Anthropic's official installer). The only step left is signing in to Claude.
   - **Mac:** `dist-studio/Game-Forge-Studio.dmg`
   - **Windows:** `dist-studio/Game-Forge-Studio-win-x64.zip`: unzip it and run `Game Forge Studio.exe`. You can build it on Windows, or cross-build it from a Mac with `npm run studio:build -- --win`. CI also builds it on every push (the `platforms` workflow's artifacts).
 - **Uses their own Claude Code:** Claude Code is installed with Anthropic's official installer (`install.sh` on Mac, `install.ps1` on Windows) rather than shipped inside the app, so it stays licensed to them and keeps auto-updating. Sign-in goes through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max). On Windows, [Git for Windows](https://git-scm.com/downloads/win) is optional: with it, Claude Code uses Git Bash; without it, PowerShell.
