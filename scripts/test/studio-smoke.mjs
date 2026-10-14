@@ -9,8 +9,8 @@
  *                  runs on the app's own Node + bundled Chromium (no Node or browser on the machine needed).
  */
 import { _electron as electron } from 'playwright';
-import { join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { root, cli } from '../lib/common.mjs';
@@ -59,10 +59,17 @@ await app.close();
 if (o.flag('packaged')) {
   step('playtest on the app\'s own Node + bundled Chromium');
   try {
-    const out = execFileSync(exe, [join(homedir(), 'Game Forge/scripts/shot.mjs'), 'blast-ball', '--seconds', '3'], {
-      cwd: join(homedir(), 'Game Forge'), encoding: 'utf8', timeout: 240000,
-      env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PLAYWRIGHT_BROWSERS_PATH: join(resources, 'forge/ms-playwright') },
-    });
+    // output goes to a file, not a pipe: on Windows, piped stdout from a process that dies early can come back empty
+    const logFile = join(homedir(), 'Game Forge', '.scratch', 'smoke-playtest.log'); mkdirSync(dirname(logFile), { recursive: true });
+    const fd = openSync(logFile, 'w');
+    try {
+      execFileSync(exe, [join(homedir(), 'Game Forge/scripts/shot.mjs'), 'blast-ball', '--seconds', '3'], {
+        cwd: join(homedir(), 'Game Forge'), stdio: ['ignore', fd, fd], timeout: 240000,
+        env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PLAYWRIGHT_BROWSERS_PATH: join(resources, 'forge/ms-playwright') },
+      });
+    } catch (e) { closeSync(fd); throw Object.assign(e, { stdout: readFileSync(logFile, 'utf8') }); }
+    closeSync(fd);
+    const out = readFileSync(logFile, 'utf8');
     if (!/no runtime errors/.test(out)) errs.push(`bundled playtest: ${out.slice(-400)}`); else step('bundled playtest ran clean');
   } catch (e) { errs.push(`bundled playtest failed (exit ${e.status ?? '-'}, signal ${e.signal ?? '-'}${e.signal === 'SIGTERM' ? ', timed out' : ''}):\n${`${e.stdout ?? ''}\n${e.stderr ?? ''}`.trim().slice(-1500) || e.message}`); }
 }

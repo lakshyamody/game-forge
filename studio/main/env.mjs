@@ -28,6 +28,9 @@ export function childEnv() {
   // ("pwsh exited with code 1: The command line is too long" on every command); without it Claude Code falls back to
   // the built-in Windows PowerShell, which works. The folder only holds Store app launchers.
   if (IS_WIN) path = path.split(delimiter).filter((d) => !/[\\/]Microsoft[\\/]WindowsApps[\\/]?$/i.test(d)).join(delimiter);
+  // Windows: a PSModulePath inherited from PowerShell 7 (pwsh) hides Windows PowerShell 5.1's own modules, so built-in
+  // cmdlets go missing ("Get-FileHash is not recognized" in the Claude Code installer). Unset, each shell uses its defaults.
+  if (IS_WIN) for (const k of Object.keys(env)) if (k.toLowerCase() === 'psmodulepath') delete env[k];
   env.PATH = [shimBin, ...EXTRA_PATH, path].filter(Boolean).join(delimiter);
   env.FORCE_COLOR = '0';
   if (app.isPackaged && existsSync(BROWSERS)) env.PLAYWRIGHT_BROWSERS_PATH = BROWSERS;
