@@ -17,7 +17,7 @@ All games were built by Claude in this repo from short prompts, using the shared
 
 ## Game Forge Studio (desktop app, no setup)
 
-For people who don't use a terminal: a desktop app for **macOS and Windows**, laid out like Linear — games on the left, the live game in browser-style tabs in the middle, and the Claude Code agent on the right.
+For people who don't use a terminal: a desktop app for **macOS and Windows**, clean and light: describe a game on the home page, watch Claude Code build it, then play it in a tab with a live preview, one-click suggested fixes and a chat for changes.
 
 - **One download, nothing to set up:** `npm run studio:build` makes the app for the computer you run it on. It bundles the game tools, the asset library, every library and the playtest browser (Chromium), and runs on its own built-in Node, so the person you send it to doesn't install Node, npm, git or a browser. On first launch it installs Claude Code by itself in the background (Anthropic's official installer). The only step left is signing in to Claude.
   - **Mac:** `dist-studio/Game-Forge-Studio.dmg`

@@ -1,31 +1,37 @@
 @import "tailwindcss";
 
-/* Two themes from one set of tokens. The window is a dark (or light) backdrop; panels float on it as cards. */
-:root, [data-theme="dark"] {
-  --c-window: #0e0e0f; --c-panel: #19191b; --c-raised: #242427; --c-hover: #2c2c30; --c-line: #29292d; --c-line-strong: #38383d;
-  --c-fg: #ececee; --c-muted: #a1a1a9; --c-subtle: #6f6f77; --c-accent: #6b9cff; --c-ok: #4cc38a; --c-warn: #f2a53d; --c-bad: #ef5a5a;
-  --c-bubble: #242427; color-scheme: dark;
+/* Light by default: a white window, hairline borders, soft grey for selection and trays. Dark mirrors the same roles. */
+:root, [data-theme="light"] {
+  --c-window: #ffffff; --c-panel: #ffffff; --c-raised: #f6f6f6; --c-hover: #f0f0f0; --c-line: #ececec; --c-line-strong: #dedede;
+  --c-fg: #1b1b1b; --c-muted: #5f5f63; --c-subtle: #9a9a9f; --c-accent: #1f6feb; --c-ok: #1f9d55; --c-warn: #c27407; --c-bad: #e5484d;
+  --c-bubble: #f4f4f5; --c-badge: #fdeced; --c-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 2px 8px rgb(0 0 0 / 0.04);
+  color-scheme: light;
 }
-[data-theme="light"] {
-  --c-window: #f1f1f2; --c-panel: #ffffff; --c-raised: #f3f3f4; --c-hover: #ebebed; --c-line: #e7e7e9; --c-line-strong: #d7d7db;
-  --c-fg: #18181b; --c-muted: #5e5e66; --c-subtle: #90909a; --c-accent: #2563eb; --c-ok: #16a34a; --c-warn: #c2730a; --c-bad: #dc2626;
-  --c-bubble: #f1f1f3; color-scheme: light;
+[data-theme="dark"] {
+  --c-window: #161617; --c-panel: #161617; --c-raised: #1f1f21; --c-hover: #27272a; --c-line: #27272a; --c-line-strong: #34343a;
+  --c-fg: #ececed; --c-muted: #a3a3a9; --c-subtle: #6e6e75; --c-accent: #5b9bff; --c-ok: #46c389; --c-warn: #f0a43c; --c-bad: #f0676b;
+  --c-bubble: #222224; --c-badge: #3a1d20; --c-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 14px rgb(0 0 0 / 0.25);
+  color-scheme: dark;
 }
 @theme {
   --color-window: var(--c-window); --color-panel: var(--c-panel); --color-raised: var(--c-raised); --color-hover: var(--c-hover);
-  --color-line: var(--c-line); --color-line-strong: var(--c-line-strong); --color-bubble: var(--c-bubble);
+  --color-line: var(--c-line); --color-line-strong: var(--c-line-strong); --color-bubble: var(--c-bubble); --color-badge: var(--c-badge);
   --color-fg: var(--c-fg); --color-muted: var(--c-muted); --color-subtle: var(--c-subtle);
   --color-accent: var(--c-accent); --color-ok: var(--c-ok); --color-warn: var(--c-warn); --color-bad: var(--c-bad);
-  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  /* the platform's own UI font: SF Pro on macOS, Segoe UI on Windows */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Consolas, monospace;
+  --shadow-card: var(--c-shadow);
 }
 
 html, body { height: 100%; background: var(--c-window); color: var(--c-fg); overflow: hidden; }
-body { font-family: var(--font-sans); font-size: 13px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-sans); font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
 * { scrollbar-width: thin; scrollbar-color: var(--c-line-strong) transparent; }
-::selection { background: color-mix(in srgb, var(--c-accent) 35%, transparent); }
+::selection { background: color-mix(in srgb, var(--c-accent) 25%, transparent); }
 .drag { -webkit-app-region: drag; }
 .no-drag, .drag button, .drag input, .drag [role=tab] { -webkit-app-region: no-drag; }
-.md code { font-family: var(--font-mono); font-size: 12px; background: var(--c-hover); padding: 0 4px; border-radius: 4px; }
+.md code { font-family: var(--font-mono); font-size: 12.5px; background: var(--c-hover); padding: 0 4px; border-radius: 4px; }
 .md b { font-weight: 600; }
 .md a { color: var(--c-accent); }
+/* the faint dot field in the top corner of the home page */
+.dots { background-image: radial-gradient(var(--c-line-strong) 1px, transparent 1.2px); background-size: 9px 9px; mask-image: linear-gradient(to left, #000 10%, transparent), linear-gradient(to bottom, #000, transparent); mask-composite: intersect; }

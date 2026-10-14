@@ -23,6 +23,7 @@ export async function launchChromium({ gpu = false } = {}) {
     args: [
       ...(gpu ? [`--use-angle=${angle}`, '--enable-gpu', '--ignore-gpu-blocklist'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']),
       '--autoplay-policy=no-user-gesture-required',
+      '--mute-audio',   // games still run their audio code (errors still show); nothing comes out of the speakers
     ],
   });
   // the full chromium (not headless-shell) is needed for real-GPU rendering

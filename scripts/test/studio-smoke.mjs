@@ -26,9 +26,13 @@ const step = (s) => console.log(`▸ ${s}`);
 try {
   await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1440, 900));
   // first launch of the packaged app copies the game tools into ~/Game Forge (and may install Claude Code), so allow time
+  await page.waitForSelector('text=/What should we make/', { timeout: 120000 });
   if (await page.locator('text=Installing Claude Code').count()) step('installing Claude Code in the background…');
-  await page.waitForSelector('text=/Claude Code connected|Not signed in|Claude Code not installed/', { timeout: 300000 });
-  step(`Claude Code status: ${(await page.textContent('text=/Claude Code connected|Not signed in|Claude Code not installed/'))?.trim()}`);
+  // the top-right pill settles on "Account" (ready) or "Set up" (not installed / not signed in)
+  await page.waitForFunction(() => !/Checking…|Installing Claude Code/.test(document.body.innerText), null, { timeout: 300000 });
+  const ready = await page.locator('main button', { hasText: /^Account$/ }).count() > 0;
+  step(`Claude Code: ${ready ? 'installed and signed in' : (await page.locator('main .rounded-full', { hasText: 'Set up' }).first().textContent())?.replace('Set up', '').trim()}`);
+  await page.keyboard.press('Escape');   // not signed in (CI): the setup sheet opens on launch; it can be dismissed
   const game = page.locator('aside button', { hasText: 'Blast Ball' }).first();
   await game.waitFor({ timeout: 30000 }); await game.click();
   const frame = page.locator('iframe[title="Preview"]').first();

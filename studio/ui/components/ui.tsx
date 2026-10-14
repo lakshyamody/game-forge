@@ -2,43 +2,60 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost';
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-fg text-panel hover:opacity-90',
+  primary: 'bg-fg text-panel hover:opacity-85',
   secondary: 'bg-raised text-fg hover:bg-hover',
+  outline: 'border border-line bg-panel text-fg hover:bg-raised',
   ghost: 'text-muted hover:text-fg hover:bg-hover',
 };
 export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; size?: 'sm' | 'md' }>(
   ({ variant = 'secondary', size = 'md', className, ...p }, ref) => (
     <button ref={ref} {...p}
-      className={cn('inline-flex shrink-0 items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:cursor-default disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-accent',
-        size === 'sm' ? 'h-6 px-2 text-[12px]' : 'h-7 px-2.5 text-[12.5px]', VARIANTS[variant], className)} />
+      className={cn('inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg font-medium transition-colors disabled:cursor-default disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-accent',
+        size === 'sm' ? 'h-7 px-2.5 text-[13px]' : 'h-8 px-3 text-[13.5px]', VARIANTS[variant], className)} />
   ),
 );
 Button.displayName = 'Button';
 
-export function IconButton({ label, active, className, children, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string; active?: boolean; children: ReactNode }) {
+export function IconButton({ label, active, outline, className, children, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string; active?: boolean; outline?: boolean; children: ReactNode }) {
   return (
     <button aria-label={label} title={label} {...p}
-      className={cn('grid h-6 w-6 shrink-0 place-items-center rounded-md text-subtle transition-colors hover:bg-hover hover:text-fg disabled:opacity-40', active && 'bg-hover text-fg', className)}>
+      className={cn('grid h-7 w-7 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-hover hover:text-fg disabled:opacity-40',
+        outline && 'border border-line bg-panel hover:bg-raised', active && 'bg-hover text-fg', className)}>
       {children}
     </button>
   );
 }
 
-/** the small grey label pill used everywhere in the reference (status, labels, metadata, actions) */
+/** small grey label pill (status, metadata, actions) */
 export function Chip({ children, onClick, title, className, mono }: { children: ReactNode; onClick?: () => void; title?: string; className?: string; mono?: boolean }) {
-  const cls = cn('inline-flex h-[22px] max-w-full shrink-0 items-center gap-1.5 rounded-[5px] bg-raised px-1.5 text-[12px] text-fg', mono && 'font-mono text-[11.5px]', onClick && 'hover:bg-hover', className);
+  const cls = cn('inline-flex h-6 max-w-full shrink-0 items-center gap-1.5 rounded-md bg-raised px-2 text-[12.5px] text-fg', mono && 'font-mono text-[12px]', onClick && 'hover:bg-hover', className);
   return onClick ? <button type="button" title={title} onClick={onClick} className={cls}>{children}</button> : <span title={title} className={cls}>{children}</span>;
 }
 
+/** the soft red "New"-style badge */
+export const Badge = ({ children, title }: { children: ReactNode; title?: string }) => (
+  <span title={title} className="inline-flex h-5 shrink-0 items-center rounded-md bg-badge px-1.5 text-[12px] font-medium text-bad tabular-nums">{children}</span>
+);
+
+export const Kbd = ({ children }: { children: ReactNode }) => <kbd className="font-sans text-[12px] text-subtle">{children}</kbd>;
+
+/** the Game Forge mark: a spark on the brand yellow */
+export const Mark = ({ size = 22 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden className="shrink-0">
+    <rect width="24" height="24" rx="6" fill="#f5c518" />
+    <path d="M12 4.5c.5 3.9 3.6 7 7.5 7.5-3.9.5-7 3.6-7.5 7.5-.5-3.9-3.6-7-7.5-7.5 3.9-.5 7-3.6 7.5-7.5Z" fill="#1b1b1b" />
+  </svg>
+);
+
 export const Dot = ({ color, className }: { color: string; className?: string }) => <span className={cn('h-2 w-2 shrink-0 rounded-full', className)} style={{ background: color }} />;
-export const Square = ({ color, size = 10 }: { color: string; size?: number }) => <span className="shrink-0 rounded-[3px]" style={{ background: color, width: size, height: size }} />;
+export const Square = ({ color, size = 12 }: { color: string; size?: number }) => <span className="shrink-0 rounded-[3px]" style={{ background: color, width: size, height: size }} />;
 
 /** people get initials, the agent gets a glyph — both in a soft circle */
-export function Avatar({ label, glyph, tone = '#8b8b94', size = 22 }: { label?: string; glyph?: ReactNode; tone?: string; size?: number }) {
+export function Avatar({ label, glyph, tone = '#8b8b94', size = 24 }: { label?: string; glyph?: ReactNode; tone?: string; size?: number }) {
   return (
-    <span className="grid shrink-0 place-items-center rounded-full font-semibold" style={{ width: size, height: size, fontSize: size * 0.42, color: tone, background: `color-mix(in srgb, ${tone} 22%, transparent)` }}>
+    <span className="grid shrink-0 place-items-center rounded-full font-semibold" style={{ width: size, height: size, fontSize: size * 0.42, color: tone, background: `color-mix(in srgb, ${tone} 18%, transparent)` }}>
       {glyph ?? label?.slice(0, 1).toUpperCase()}
     </span>
   );

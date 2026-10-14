@@ -33,6 +33,8 @@ jobs:
         run: npm run ship -- neon-swarm
       - name: Studio from the repo
         run: node scripts/test/studio-smoke.mjs --shot studio-dev.png
+      - name: Studio end-to-end (UI, without Claude Code)
+        run: node scripts/test/studio-e2e.mjs --shots e2e-shots
       - name: Build Studio
         run: npm run studio:build
       - name: Studio packaged
@@ -43,6 +45,7 @@ jobs:
           name: studio-${{ matrix.os }}
           path: |
             studio-*.png
+            e2e-shots/*.png
             .shots/neon-swarm/*.png
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4

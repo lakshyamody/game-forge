@@ -31,11 +31,11 @@ export interface StudioApi {
   exportGame(slug: string): Promise<RunResult>;
   openExternal(url: string): Promise<void>;
   openFolder(slug: string | null): Promise<void>;
-  onChat(fn: (ev: ChatEvent) => void): void;
-  onTools(fn: (status: string) => void): void;
-  onEnvChanged(fn: () => void): void;
-  onMenu(fn: (action: string) => void): void;
-  onGamesChanged(fn: () => void): void;
+  onChat(fn: (ev: ChatEvent) => void): () => void;
+  onTools(fn: (status: string) => void): () => void;
+  onEnvChanged(fn: () => void): () => void;
+  onMenu(fn: (action: string) => void): () => void;
+  onGamesChanged(fn: () => void): () => void;
 }
 
 declare global { interface Window { studio?: StudioApi } }

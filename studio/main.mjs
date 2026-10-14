@@ -16,6 +16,8 @@ import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
+// tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
+if (process.env.STUDIO_USER_DATA) app.setPath('userData', process.env.STUDIO_USER_DATA);
 import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, INSTALL_CMD, loginCmd } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
 import { listGames } from './main/games.mjs';
@@ -32,7 +34,7 @@ function wire() {
   ipcMain.handle('claude:install', (_e, opts) => (opts?.terminal ? openTerminal(INSTALL_CMD) : installClaude(() => send('env:changed'))));
   ipcMain.handle('git:install', () => shell.openExternal('https://git-scm.com/downloads/win'));
   // Windows draws its own caption buttons over our title row: keep their colours in step with the theme
-  ipcMain.handle('theme:set', (_e, dark) => { if (!IS_MAC) win?.setTitleBarOverlay?.({ color: dark ? '#0e0e0f' : '#f1f1f2', symbolColor: dark ? '#ececee' : '#18181b', height: 40 }); });
+  ipcMain.handle('theme:set', (_e, dark) => { if (!IS_MAC) win?.setTitleBarOverlay?.({ color: dark ? '#161617' : '#ffffff', symbolColor: dark ? '#ececed' : '#1b1b1b', height: 56 }); });
   ipcMain.handle('games:list', listGames);
   ipcMain.handle('chat:send', (_e, { key, text, slug }) => sendChat(key, text, slug, (ev) => send('chat:event', ev)));
   ipcMain.handle('chat:stop', (_e, key) => killTree(jobs.get(key)));
@@ -42,7 +44,7 @@ function wire() {
   ipcMain.handle('fixes:undo', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['undo', slug, String(n)]));
   ipcMain.handle('game:export', async (_e, slug) => { const r = await nodeScript('scripts/ship.mjs', [slug]); if (r.code === 0) shell.showItemInFolder(join(ROOT, 'ship', `${slug}.zip`)); return r; });
   ipcMain.handle('open:external', (_e, url) => shell.openExternal(url));
-  ipcMain.handle('open:folder', (_e, slug) => shell.openPath(slug ? join(GAMES, slug) : ROOT));
+  ipcMain.handle('open:folder', (_e, slug) => shell.openPath(slug ? join(GAMES, slug) : GAMES));
 }
 
 /** the game preview server — Vite running inside the app's own Node */
@@ -61,11 +63,12 @@ app.whenReady().then(async () => {
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
     show: !process.env.STUDIO_HIDDEN,   // tests: render without putting a window on screen (stray clicks)
-    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#0e0e0f',
+    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#ffffff',
     // the window buttons sit inside the app's own top row: traffic lights on macOS, caption buttons on Windows
-    ...(IS_MAC ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 16 } } : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#0e0e0f', symbolColor: '#ececee', height: 40 } }),
+    ...(IS_MAC ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 20, y: 21 } } : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#ffffff', symbolColor: '#1b1b1b', height: 56 } }),
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });
+  if (process.env.STUDIO_HIDDEN) win.webContents.setAudioMuted(true);   // tests: no game music out of the speakers
   win.loadURL(uiUrl());
   if (existsSync(GAMES)) watch(GAMES, { recursive: true }, (_t, f) => { if (f && /game\.json|FIXES\.md/.test(f)) send('games:changed'); });
   // debug: STUDIO_SCREENSHOT=out.png [STUDIO_QUIT=1] [STUDIO_DELAY=ms] captures the window after load

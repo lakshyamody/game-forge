@@ -1,6 +1,13 @@
 // The only bridge between the page and the app: a small, explicit API (no Node in the page).
 const { contextBridge, ipcRenderer } = require('electron');
 
+/** subscribe to a channel from the main process; returns an unsubscribe (React effects call it on cleanup) */
+const on = (channel, map = (_e, x) => x) => (fn) => {
+  const handler = (e, x) => fn(map(e, x));
+  ipcRenderer.on(channel, handler);
+  return () => ipcRenderer.removeListener(channel, handler);
+};
+
 contextBridge.exposeInMainWorld('studio', {
   platform: process.platform,
   setTheme: (dark) => ipcRenderer.invoke('theme:set', dark),
@@ -18,9 +25,9 @@ contextBridge.exposeInMainWorld('studio', {
   exportGame: (slug) => ipcRenderer.invoke('game:export', slug),
   openExternal: (url) => ipcRenderer.invoke('open:external', url),
   openFolder: (slug) => ipcRenderer.invoke('open:folder', slug),
-  onChat: (fn) => ipcRenderer.on('chat:event', (_e, ev) => fn(ev)),
-  onMenu: (fn) => ipcRenderer.on('menu', (_e, action) => fn(action)),
-  onTools: (fn) => ipcRenderer.on('tools:status', (_e, t) => fn(t)),
-  onEnvChanged: (fn) => ipcRenderer.on('env:changed', () => fn()),
-  onGamesChanged: (fn) => ipcRenderer.on('games:changed', () => fn()),
+  onChat: on('chat:event'),
+  onMenu: on('menu'),
+  onTools: on('tools:status'),
+  onEnvChanged: on('env:changed', () => undefined),
+  onGamesChanged: on('games:changed', () => undefined),
 });
