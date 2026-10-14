@@ -23,7 +23,10 @@ if (!process.argv.includes('--packaged') && !existsSync(join(root, 'studio/ui/ou
 const env = { ...process.env, STUDIO_SKIP_ASSET_DOWNLOAD: '1', STUDIO_HIDDEN: '1' }; delete env.ELECTRON_RUN_AS_NODE;
 const app = await electron.launch(o.flag('packaged') ? { executablePath: exe, env } : { args: [join(root, 'studio/main.mjs')], env, cwd: root });
 const page = await app.firstWindow();
-const errs = []; page.on('pageerror', (e) => errs.push(e.message)); page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text().slice(0, 300)); });
+// closing: the game server stops before the window, and the preview's live-reload client logs "connection refused"
+// while it retries; that's shutdown noise, not a page error
+let closing = false;
+const errs = []; page.on('pageerror', (e) => { if (!closing) errs.push(e.message); }); page.on('console', (m) => { if (m.type() === 'error' && !closing) errs.push(m.text().slice(0, 300)); });
 const step = (s) => console.log(`▸ ${s}`);
 try {
   await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].setSize(1440, 900));
@@ -51,6 +54,7 @@ try {
   await page.waitForSelector('text=Reverted fix 1', { timeout: 120000 }); step('reverted fix 1');
 } catch (e) { errs.push(`step failed: ${e.message.split('\n')[0]}`); }
 const shot = o.opt('shot'); if (shot) await page.screenshot({ path: shot }).catch(() => {});
+closing = true;
 await app.close();
 if (o.flag('packaged')) {
   step('playtest on the app\'s own Node + bundled Chromium');
