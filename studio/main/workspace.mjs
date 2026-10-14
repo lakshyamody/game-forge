@@ -1,6 +1,6 @@
 /** Packaged app only: build ~/Game Forge from the bundled tools on every launch, never touching the user's games. */
 import { app } from 'electron';
-import { cpSync, existsSync, lstatSync, mkdirSync, readlinkSync, rmSync, symlinkSync, unlinkSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { RES, ROOT, GAMES, IS_WIN } from './paths.mjs';
 
@@ -23,7 +23,30 @@ export function ensureWorkspace() {
   for (const f of ENGINE) if (existsSync(join(RES, f))) cpSync(join(RES, f), join(ROOT, f), { recursive: true, force: true });
   if (existsSync(join(RES, '.claude/settings.json')) && !existsSync(join(ROOT, '.claude/settings.json'))) cpSync(join(RES, '.claude/settings.json'), join(ROOT, '.claude/settings.json'));
   if (fresh) cpSync(join(RES, 'games'), GAMES, { recursive: true });   // showcase games to start from
-  // the big read-only parts stay inside the app and are linked in
+  // node_modules stays inside the app and is linked in
   link(join(RES, 'node_modules'), join(ROOT, 'node_modules'));
-  link(join(RES, 'assets'), join(ROOT, 'assets'));
+  syncAssets();
+  if (realisticInstalled()) stripLiteNote();
+}
+
+/**
+ * assets/ is a real folder in the workspace: the app's light library, plus the realistic packs downloaded after install
+ * (main/library.mjs). The light part is copied again only when the app's version of it changes; downloads are kept.
+ */
+const A = () => join(ROOT, 'assets');
+const read = (p) => { try { return readFileSync(p, 'utf8').trim(); } catch { return ''; } };
+export const realisticInstalled = () => existsSync(join(A(), '.realistic'));
+function syncAssets() {
+  const st = (() => { try { return lstatSync(A()); } catch { return null; } })();
+  if (st?.isSymbolicLink()) unlinkSync(A());   // older versions linked it into the app bundle
+  const version = read(join(RES, 'assets', '.light-version')) || 'unknown';
+  if (existsSync(A()) && read(join(A(), '.light-version')) === version) return;
+  cpSync(join(RES, 'assets'), A(), { recursive: true, force: true });   // overlays: downloaded realistic files stay
+  writeFileSync(join(A(), '.light-version'), version);
+  if (realisticInstalled()) rmSync(join(A(), '.catalog-ok'), { force: true });   // the light catalog just replaced the full one
+}
+/** the note the build adds to AGENTS.md ("the library here is the light version") stops being true once the packs are in */
+export function stripLiteNote() {
+  const f = join(ROOT, 'AGENTS.md'), md = read(f);
+  if (md.includes('<!-- lite-library -->')) writeFileSync(f, md.replace(/\n?<!-- lite-library -->[\s\S]*?<!-- \/lite-library -->\n?/, '\n') + '\n');
 }

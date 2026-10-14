@@ -118,6 +118,9 @@ console.log('state:', JSON.stringify(state));
 if (warnings.length) console.log(`\nwarnings (${warnings.length}):\n  ` + [...new Set(warnings)].slice(0, 10).join('\n  '));
 if (errors.length) {
   console.log(`\n✖ ${errors.length} error(s):\n` + [...new Set(errors)].slice(0, 15).join('\n'));
-  process.exit(1);
+  // exitCode, not process.exit(): on Windows, piped stdout is asynchronous and exit() can drop the lines above
+  process.exitCode = 1;
+  setTimeout(() => process.exit(), 3000).unref();
+} else {
+  console.log("\n✔ no runtime errors");
 }
-console.log('\n✔ no runtime errors');

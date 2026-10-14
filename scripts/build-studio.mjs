@@ -95,10 +95,12 @@ function liteAssets(dest) {
   for (const [, id] of used.matchAll(/(?:loadHdri\([^,]+,\s*|hdri:\s*)['"`]([\w-]+)/g)) keep(`hdri/${id}.hdr`);
   for (const [, pack, id] of used.matchAll(/['"`](polyhaven|rocketbox)\/([\w-]+)/g)) { keep(`models/${pack}/${id}.glb`); if (pack === 'rocketbox') keep('models/rocketbox/LICENSE.md'); }
   catalog(dest);
+  writeFileSync(join(dest, '.light-version'), `${pkg.version}-${Date.now()}`);   // the app re-copies its light library into ~/Game Forge when this changes
 }
 /** tell Claude (inside the app) which library it has */
 function noteLiteLibrary(agents) {
-  const note = `\n> **In Game Forge Studio the asset library is the light version.** It has every Kenney / KayKit / Quaternius model pack, sprites and sounds, but not the realistic packs: photoscanned PBR textures, HDRI skies, Poly Haven props or Rocketbox people (only the few the example game uses). \`assets/CATALOG.md\` lists exactly what is here. For realistic-looking games use the procedural tools (\`kit/three/realism.ts\` sky + lighting, \`city.ts\`, \`cars.ts\`) with the stylised packs.\n`;
+  // wrapped in markers: the app removes the note once the realistic packs have downloaded (studio/main/workspace.mjs)
+  const note = `\n<!-- lite-library -->\n> **In Game Forge Studio the realistic asset packs download in the background after install** (photoscanned PBR textures, HDRI skies, Poly Haven props, Rocketbox people). Until they're in, \`assets/CATALOG.md\` lists exactly what is here; a missing texture or sky falls back to plain grey / a gradient instead of crashing. Everything else (every Kenney / KayKit / Quaternius pack, sprites, sounds) is here now.\n<!-- /lite-library -->\n`;
   const md = readFileSync(agents, 'utf8');
   writeFileSync(agents, md.replace(/\n/, `\n${note}`));
 }

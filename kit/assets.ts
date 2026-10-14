@@ -53,7 +53,9 @@ export interface ModelOpts {
 }
 /** Load a model by "pack/name" (no .glb). Returns a fresh clone each call; skinned rigs are cloned correctly. */
 export async function loadModel(id: string, o: ModelOpts = {}): Promise<THREE.Group> {
-  const g = await gltf(id);
+  let g: GLTF;
+  // a missing model logs an error (playtests catch typos) but the game keeps running with a grey stand-in box
+  try { g = await gltf(id); } catch (e) { console.error(`[assets] ${(e as Error).message}`); return placeholder(id, o); }
   const obj = SkeletonUtils.clone(g.scene) as THREE.Group;
   obj.userData.animations = g.animations;
   obj.userData.assetId = id;
@@ -67,6 +69,14 @@ export async function loadModel(id: string, o: ModelOpts = {}): Promise<THREE.Gr
   if (o.height) { obj.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(obj, true); obj.scale.setScalar(o.height / Math.max(1e-6, b.max.y - b.min.y)); }
   else if (o.scale) obj.scale.setScalar(o.scale);
   return obj;
+}
+/** grey box standing in for a model that isn't in the library (sized like the request) */
+function placeholder(id: string, o: ModelOpts): THREE.Group {
+  const h = o.height ?? o.scale ?? 1;
+  const box = new THREE.Mesh(new THREE.BoxGeometry(h * 0.5, h, h * 0.5).translate(0, h / 2, 0), new THREE.MeshStandardMaterial({ color: 0x8a8a8a, roughness: 0.8 }));
+  box.castShadow = box.receiveShadow = o.shadows ?? true;
+  const g = new THREE.Group(); g.add(box); g.userData.animations = []; g.userData.assetId = id; g.userData.missing = true;
+  return g;
 }
 /** Preload several models in parallel (cache only). */
 export const preloadModels = (ids: string[]) => Promise.all(ids.map(gltf));
@@ -115,7 +125,8 @@ function tex(url: string, srgb: boolean) {
 /** Poly Haven PBR set → material params: new THREE.MeshStandardMaterial({ ...(await loadTexture('brick_wall_001', { repeat: 4 })) }) */
 export async function loadTexture(id: string, o: { repeat?: number | [number, number] } = {}) {
   const [map, normalMap, roughnessMap] = await Promise.all([
-    tex(assetUrl(`textures/${id}/diff.jpg`), true),
+    // missing texture: a neutral grey map (the material's own colour shows through) instead of a crash
+    tex(assetUrl(`textures/${id}/diff.jpg`), true).catch(() => { console.warn(`[assets] texture '${id}' isn't in the library — using plain grey`); return flat(); }),
     tex(assetUrl(`textures/${id}/nor.jpg`), false).catch(() => null),
     tex(assetUrl(`textures/${id}/rough.jpg`), false).catch(() => null),
   ]);
@@ -126,17 +137,31 @@ export async function loadTexture(id: string, o: { repeat?: number | [number, nu
   for (const t of Object.values(out)) if (t) { t.repeat.set(rep[0], rep[1]); t.needsUpdate = true; }
   return out;
 }
+function flat() { const t = new THREE.DataTexture(new Uint8Array([200, 200, 200, 255]), 1, 1); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.needsUpdate = true; return t; }
 /** Load an image from the library as a texture (sprites, particles, UI). */
 export const loadImage = (path: string) => tex(assetUrl(path), true);
 
 /** HDRI sky: sets scene.environment (realistic lighting/reflections) and optionally the visible background. */
 export async function loadHdri(scene: THREE.Scene, id: string, o: { background?: boolean; renderer?: THREE.WebGLRenderer; intensity?: number; blur?: number } = {}) {
-  const hdr = await new HDRLoader().loadAsync(assetUrl(`hdri/${id}.hdr`));
+  // missing HDRI: a soft sky gradient keeps the scene lit (and has a sky) instead of a crash
+  const hdr = await new HDRLoader().loadAsync(assetUrl(`hdri/${id}.hdr`)).catch(() => { console.warn(`[assets] HDRI '${id}' isn't in the library — using a plain sky`); return skyGradient(); });
   hdr.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = hdr;
   scene.environmentIntensity = o.intensity ?? 1;
   if (o.background) { scene.background = hdr; scene.backgroundBlurriness = o.blur ?? 0; scene.backgroundIntensity = o.intensity ?? 1; }
   return hdr;
+}
+
+/** equirectangular sky → horizon → ground gradient, used when an HDRI is missing */
+function skyGradient() {
+  const w = 4, h = 32, d = new Float32Array(w * h * 4);
+  for (let y = 0; y < h; y++) {
+    const t = 1 - y / (h - 1);   // data row 0 is the bottom of the sphere: t 0 = top (sky) … 1 = bottom (ground)
+    const c = t < 0.5 ? new THREE.Color(0x9cc4ff).lerp(new THREE.Color(0xdfe9f5), t * 2) : new THREE.Color(0x8a8578).lerp(new THREE.Color(0x4a463e), (t - 0.5) * 2);
+    for (let x = 0; x < w; x++) d.set([c.r, c.g, c.b, 1], (y * w + x) * 4);
+  }
+  const tex = new THREE.DataTexture(d, w, h, THREE.RGBAFormat, THREE.FloatType); tex.needsUpdate = true;
+  return tex;
 }
 
 // ---------------------------------------------------------------- sound files

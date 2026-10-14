@@ -18,7 +18,7 @@ Target: a game that is **fun within 10 seconds of pressing play**, verified by p
 | 5. Verify | 4 min | 0:22 |
 | 6. Kid check | 6 min | 0:28 |
 | 7. Hand off | 1 min | 0:29 |
- Scope down before you polish up: one core verb done with great feel beats five half-done systems.
+ Scope down before you polish up: one core verb done with great feel beats five half-done systems. Scope means **features**, never looks: a 10-minute game is a smaller game that still clears the visual bar (step 5).
 
 ## 1. Design (~10 lines in your reply, then build)
 
@@ -62,7 +62,11 @@ Menu → play → game over → instant retry (R/Space). Score + persisted best.
 
 Done means all of:
 - `npm run check` passes (a hook also type-checks after every edit).
-- `npm run shot -- <slug> --gpu --seconds 20` exits clean, AND you read the screenshots and `__playtest` state shows the loop progressing (score rising, enemies dying, levels reached). Use `--eval` to force states the bot can't reach.
+- `npm run shot -- <slug> --gpu --seconds 20` exits clean, AND you open every screenshot it lists (exact paths, don't guess names) and `__playtest` state shows the loop progressing (score rising, enemies dying, levels reached). Use `--eval` to force states the bot can't reach.
+- **The visual bar.** Put your gameplay screenshot next to the reference (3D: `games/blast-ball`, 2D: `games/neon-swarm` if present; run `npm run shot` on it). If yours looks clearly worse, fix the look before the kid check. Every game needs:
+  - **3D:** a real sky and lighting: `realism(game, { sun })` from `kit/three/realism.ts`, or `bootThree` + `loadHdri(scene, '<id>', { background: true })`. Never a black or flat void above the world. Shadows on. Textured ground (`loadTexture`, tiled at ~1 repeat per 3 m), never one flat colour. Characters and props from the asset library (`loadModel`), never plain boxes. The world continues past what the camera can see (no edge or void at any camera angle the game uses, including the start).
+  - **2D:** sprites from a pack, or one deliberate procedural style with a palette; a background with depth (gradient, parallax or tiles), never a flat fill.
+  - **HUD:** readable over the scene and fits at 1280×720: no wrapped labels, overlapping panels or text off-screen. Check it in the screenshots.
 - Every item in [game-feel.md](game-feel.md) is present or consciously skipped.
 - fps ≥ 55 in the `--gpu` run.
 

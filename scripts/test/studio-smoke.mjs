@@ -20,7 +20,7 @@ const name = 'Game Forge Studio';
 const exe = process.platform === 'win32' ? join(root, 'dist-studio/win', name, `${name}.exe`) : join(root, `dist-studio/${name}.app/Contents/MacOS/${name}`);
 const resources = process.platform === 'win32' ? join(root, 'dist-studio/win', name, 'resources') : join(root, `dist-studio/${name}.app/Contents/Resources`);
 if (!process.argv.includes('--packaged') && !existsSync(join(root, 'studio/ui/out/index.html'))) { console.error('✖ the Studio UI isn\'t built: run  npm ci --prefix studio/ui && npm run build --prefix studio/ui  (or npm run studio once)'); process.exit(1); }
-const env = { ...process.env, STUDIO_HIDDEN: '1' }; delete env.ELECTRON_RUN_AS_NODE;
+const env = { ...process.env, STUDIO_SKIP_ASSET_DOWNLOAD: '1', STUDIO_HIDDEN: '1' }; delete env.ELECTRON_RUN_AS_NODE;
 const app = await electron.launch(o.flag('packaged') ? { executablePath: exe, env } : { args: [join(root, 'studio/main.mjs')], env, cwd: root });
 const page = await app.firstWindow();
 const errs = []; page.on('pageerror', (e) => errs.push(e.message)); page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text().slice(0, 300)); });

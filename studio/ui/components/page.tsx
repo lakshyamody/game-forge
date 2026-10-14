@@ -14,8 +14,8 @@ export function CenterPanel({ s, addressRef }: { s: Studio; addressRef: React.Re
   return (
     <main className="min-w-0 flex-1 overflow-hidden bg-panel">
       {s.active === NEW ? <Home s={s} />
-        : s.active === PAGE_ARCADE ? <Preview key={s.active} s={s} tab={s.active} url={base} addressRef={addressRef} full />
-        : s.active === PAGE_ASSETS ? <Preview key={s.active} s={s} tab={s.active} url={base && `${base}assets.html`} addressRef={addressRef} full />
+        : s.active === PAGE_ARCADE ? <Preview key={s.active} s={s} tab={s.active} url={base} addressRef={addressRef} full page />
+        : s.active === PAGE_ASSETS ? <Preview key={s.active} s={s} tab={s.active} url={base && `${base}assets.html`} addressRef={addressRef} full page />
         : g ? <GamePage key={g.slug} s={s} g={g} addressRef={addressRef} /> : null}
     </main>
   );
@@ -46,7 +46,7 @@ function GamePage({ s, g, addressRef }: { s: Studio; g: Game; addressRef: React.
         {g.controls && <p className="mt-3 text-[14px] leading-relaxed text-muted"><span className="text-subtle">Controls</span>&nbsp; {g.controls}</p>}
 
         <div className="mt-7 overflow-hidden rounded-xl border border-line shadow-card">
-          <div className="aspect-[16/10]"><Preview s={s} tab={g.slug} url={s.previewUrl(g.slug)} addressRef={addressRef} onFocus={() => setFocus(true)} /></div>
+          <div className="aspect-[16/10.4]"><Preview s={s} tab={g.slug} url={s.previewUrl(g.slug)} addressRef={addressRef} onFocus={() => setFocus(true)} /></div>
         </div>
 
         {g.fixes.length > 0 && <Fixes s={s} g={g} />}
@@ -83,7 +83,7 @@ function Fixes({ s, g }: { s: Studio; g: Game }) {
 }
 
 /** a live page with a slim toolbar: reload · address (?god, ?tune…) · phone size · expand · open outside */
-function Preview({ s, tab, url: page, addressRef, full, onFocus }: { s: Studio; tab: string; url: string; addressRef: React.RefObject<HTMLInputElement | null>; full?: boolean; onFocus?: () => void }) {
+function Preview({ s, tab, url: page, addressRef, full, onFocus, page: webPage }: { s: Studio; tab: string; url: string; addressRef: React.RefObject<HTMLInputElement | null>; full?: boolean; onFocus?: () => void; page?: boolean }) {
   const [query, setQuery] = useState(''), [mobile, setMobile] = useState(false);
   const url = page && (query ? `${page}?${query}` : page);
   const [draft, setDraft] = useState(url), [shown, setShown] = useState(url);
@@ -100,9 +100,11 @@ function Preview({ s, tab, url: page, addressRef, full, onFocus }: { s: Studio; 
         {onFocus && <IconButton label={full ? 'Back to details' : 'Expand'} onClick={onFocus}>{full ? <Minimize2 size={14} strokeWidth={2} /> : <Maximize2 size={14} strokeWidth={2} />}</IconButton>}
         <IconButton label="Open in browser" onClick={() => url && s.api?.openExternal(url)}><ExternalLink size={14} strokeWidth={2} /></IconButton>
       </div>
-      <div className={cn('relative min-h-0 flex-1 bg-black', mobile && 'grid place-items-center bg-raised py-4')}>
+      {/* games keep their designed 16:9 frame (black bars) whatever the window shape; web pages fill the panel */}
+      <div className={cn('relative min-h-0 flex-1 bg-black', (mobile || !webPage) && 'grid place-items-center', mobile && 'bg-raised py-4')} style={!mobile && !webPage ? { containerType: 'size' } : undefined}>
         {url ? <iframe key={`${tab}:${s.reloads[tab] ?? 0}`} src={url} title="Preview" allow="autoplay; fullscreen; pointer-lock; gamepad"
-          className={cn('border-0 bg-black', mobile ? 'h-full max-h-[844px] w-auto aspect-[390/844] rounded-[12px]' : 'absolute inset-0 h-full w-full')} />
+          style={!mobile && !webPage ? { width: 'min(100cqw, calc(100cqh * 16 / 9))', aspectRatio: '16 / 9' } : undefined}
+          className={cn('border-0 bg-black', mobile ? 'h-full max-h-[844px] w-auto aspect-[390/844] rounded-[12px]' : webPage ? 'absolute inset-0 h-full w-full' : 'block')} />
           : <div className="grid h-full place-items-center text-[13px] text-subtle">Starting the game server…</div>}
       </div>
     </div>

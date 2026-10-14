@@ -22,6 +22,7 @@ import { state, loadState, saveState } from './main/state.mjs';
 if (process.env.STUDIO_USER_DATA) app.setPath('userData', process.env.STUDIO_USER_DATA);
 import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, updateClaude, INSTALL_CMD, loginCmd } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
+import { downloadRealistic } from './main/library.mjs';
 import { listGames } from './main/games.mjs';
 import { jobs, resetChat, sendChat } from './main/claude.mjs';
 import { serveUi, setMenu, uiUrl } from './main/ui.mjs';
@@ -82,6 +83,8 @@ app.whenReady().then(async () => {
   });
   if (process.env.STUDIO_HIDDEN) win.webContents.setAudioMuted(true);   // tests: no game music out of the speakers
   win.loadURL(uiUrl());
+  // packaged app: fetch the realistic asset packs in the background (progress shows in the sidebar)
+  if (app.isPackaged && !process.env.STUDIO_SKIP_ASSET_DOWNLOAD) void downloadRealistic((t) => send('tools:status', t));
   if (existsSync(GAMES)) watch(GAMES, { recursive: true }, (_t, f) => { if (f && /game\.json|FIXES\.md/.test(f)) send('games:changed'); });
   // debug: STUDIO_SCREENSHOT=out.png [STUDIO_QUIT=1] [STUDIO_DELAY=ms] captures the window after load
   if (process.env.STUDIO_SCREENSHOT) setTimeout(async () => { const img = await win.webContents.capturePage(); writeFileSync(process.env.STUDIO_SCREENSHOT, img.toPNG()); if (process.env.STUDIO_QUIT) app.quit(); }, Number(process.env.STUDIO_DELAY ?? 6000));

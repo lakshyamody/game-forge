@@ -61,6 +61,8 @@ export const nodeScript = (script, args) => run(process.execPath, [join(ROOT, sc
 const gitBash = () => !IS_WIN || ['C:/Program Files/Git/bin/bash.exe', 'C:/Program Files (x86)/Git/bin/bash.exe', join(LOCAL, 'Programs/Git/bin/bash.exe')].some(existsSync);
 
 let toolsStatus = 'ready';
+/** what the setup sheet and sidebar show about the game tools (downloads in progress, problems) */
+export const setToolsStatus = (t) => { toolsStatus = t; };
 /** what the setup screen shows: is Claude Code installed and signed in, are the game tools there */
 export async function checkEnv(port) {
   const claude = findClaude();

@@ -30,7 +30,8 @@ export function Thread({ s, g, width, onHide }: { s: Studio; g: Game; width: num
         <Messages s={s} chatKey={g.slug} className="pb-4" />
       </div>
       <div className="shrink-0 px-3 pb-3">
-        <Composer s={s} chatKey={g.slug} placeholder={`Ask for a change to ${g.title}…`} />
+        {/* no autofocus: focusing the chat on tab switch pulls focus out of the game, which pauses most games */}
+        <Composer s={s} chatKey={g.slug} autoFocus={false} placeholder={`Ask for a change to ${g.title}…`} />
         <p className="px-1 pt-1.5 text-[12px] text-subtle">{s.busy.has(g.slug) ? 'Sends when Claude Code finishes, or press Stop' : 'Return to send · Shift-Return for a new line'}</p>
       </div>
     </aside>
