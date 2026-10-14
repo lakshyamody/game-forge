@@ -3,7 +3,7 @@
  * (session ids in state), translated into friendly events for the page: start → text / tool … → result → end.
  */
 import { spawn } from 'node:child_process';
-import { ROOT } from './paths.mjs';
+import { RES, ROOT } from './paths.mjs';
 import { state, saveState } from './state.mjs';
 import { childEnv, claudeCommand, claudeUpdated, claudeUpdating, killTree } from './env.mjs';
 import { listGames } from './games.mjs';
@@ -12,13 +12,16 @@ export const NEW = '__new__';   // chat key for "make a new game" before the gam
 const STUDIO_PROMPT = `You are running inside Game Forge Studio, a desktop app for people who are not programmers.
 - Reply in short, friendly plain language. Do not paste code unless the user asks for it. Say what changed in the game, not which functions changed.
 - The app already runs the game dev server and shows a live preview that reloads on save. Never run \`npm run dev\` or \`npm run play\`, and never open a browser.
-- Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged.
+- Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged. Read the screenshots \`npm run shot\` lists (exact paths) and look at every one before saying a game looks right. For a scripted playtest, import \`devServer\` and \`launchChromium\` from scripts/lib/browser.mjs instead of starting vite yourself.
 - When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done.
 - Only the games in games/ exist in this workspace: skip reference games that AGENTS.md names but aren't there.
 - The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.`;
 const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill', 'TodoWrite', 'WebSearch', 'WebFetch',
   'Bash(npm run *)', 'Bash(npm install *)', 'Bash(npx tsc *)', 'Bash(node scripts/*)', 'Bash(node .scratch/*)', 'Bash(ls *)', 'Bash(cat *)', 'Bash(head *)', 'Bash(tail *)',
-  'Bash(grep *)', 'Bash(wc *)', 'Bash(mkdir *)', 'Bash(date*)', 'Bash(cp *)', 'Bash(git status*)', 'Bash(git diff*)', 'Bash(git log*)', 'Bash(sed -n *)', 'Bash(find *)', 'Bash(python3 *)'];
+  'Bash(grep *)', 'Bash(wc *)', 'Bash(mkdir *)', 'Bash(date*)', 'Bash(cp *)', 'Bash(git status*)', 'Bash(git diff*)', 'Bash(git log*)', 'Bash(sed -n *)', 'Bash(find *)', 'Bash(python3 *)',
+  // the everyday glue of a build session (claude -p can't ask, so anything missing here just fails)
+  'Bash(cd *)', 'Bash(echo *)', 'Bash(printf *)', 'Bash(node *)', 'Bash(npx *)', 'Bash(sort *)', 'Bash(uniq *)', 'Bash(cut *)', 'Bash(tr *)', 'Bash(awk *)',
+  'Bash(jq *)', 'Bash(sleep *)', 'Bash(test *)', 'Bash(true*)', 'Bash(pwd*)', 'Bash(which *)', 'Bash(xargs *)', 'Bash(diff *)', 'Bash(touch *)', 'Bash(mv *)', 'Bash(rm .scratch/*)', 'Bash(rm -f .scratch/*)', 'Bash(rm -rf .scratch/*)'];
 export const jobs = new Map();   // chat key → running claude process
 const resets = new Map();   // chat key → how many times it was reset ("New chat")
 
@@ -37,7 +40,9 @@ export async function sendChat(key, text, slug, emit) {
   if (jobs.has(key)) return fail('Still working on the last request — wait for it or press Stop.');
   const prompt = slug ? `[Working on the game in games/${slug}/ — read its GAME.md first if you haven't this session.]\n\n${text}` : text;
   const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits',
-    '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed];
+    '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed,
+    // packaged app: assets/ and node_modules/ are links into the app bundle; without this Claude Code may not read them
+    ...(RES !== ROOT ? ['--add-dir', RES] : [])];
   if (state.sessions[key]) args.push('--resume', state.sessions[key]);
   const before = new Set(listGames().map((g) => g.slug));
   const child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true });

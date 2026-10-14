@@ -77,11 +77,15 @@ export async function checkEnv(port) {
 export function openTerminal(cmd) {
   if (IS_MAC) spawn('osascript', ['-e', `tell application "Terminal" to do script "${cmd.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`, '-e', 'tell application "Terminal" to activate']);
   // a new PowerShell window: Start-Process passes the command as one argument, so `|` stays inside PowerShell
-  else if (IS_WIN) spawn('powershell.exe', ['-NoProfile', '-Command', `Start-Process powershell -ArgumentList '-NoExit','-Command','${cmd.replace(/'/g, "''")}'`], { env: childEnv(), windowsHide: true });
+  else if (IS_WIN) spawn('powershell.exe', ['-NoProfile', '-Command', `Start-Process powershell -ArgumentList '-NoExit','-ExecutionPolicy','Bypass','-Command','${cmd.replace(/'/g, "''")}'`], { env: childEnv(), windowsHide: true });
   else spawn('x-terminal-emulator', ['-e', `bash -lc '${cmd}; exec bash'`], { env: childEnv() });
 }
 /** official installer commands */
-export const INSTALL_CMD = IS_WIN ? 'irm https://claude.ai/install.ps1 | iex' : 'curl -fsSL https://claude.ai/install.sh | bash';
+// Windows: the official script, run from a file. `irm … | iex` breaks in Windows PowerShell 5.1 (the script is served as
+// application/octet-stream, so irm returns bytes and iex fails with CommandNotFoundException).
+export const INSTALL_CMD = IS_WIN
+  ? "$p = Join-Path $env:TEMP 'claude-install.ps1'; Invoke-WebRequest -UseBasicParsing -Uri https://claude.ai/install.ps1 -OutFile $p; & $p"
+  : 'curl -fsSL https://claude.ai/install.sh | bash';
 
 let installer = null, installError = null;
 /**
@@ -101,7 +105,7 @@ export function installClaude(onDone = () => {}) {
     if (!installer) return;   // 'error' and 'close' can both fire
     clearTimeout(timer); installer = null;
     const ok = !err && code === 0 && !!findClaude();
-    if (!ok) installError = (err ?? log.trim().split(/\r?\n/).filter(Boolean).pop() ?? `installer exited with ${code}`).slice(0, 200);
+    if (!ok) installError = (err ?? (log.trim().split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(-4).join(' · ') || `installer exited with ${code}`)).slice(0, 400);
     onDone(ok);
   };
   installer.on('close', (code) => finish(code));

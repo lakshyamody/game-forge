@@ -113,6 +113,7 @@ await browser.close();
 await dev.close();
 
 console.log(`\nscreenshots (${files.length}) → ${out}`);
+for (const f of files) console.log(`  ${f}`);   // exact paths: open these, don't guess names (they depend on timing)
 console.log('state:', JSON.stringify(state));
 if (warnings.length) console.log(`\nwarnings (${warnings.length}):\n  ` + [...new Set(warnings)].slice(0, 10).join('\n  '));
 if (errors.length) {
