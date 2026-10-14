@@ -55,7 +55,9 @@ page.on('console', (m) => {
 let shotN = 0;
 const shot = async (label) => {
   const file = resolve(out, `${String(++shotN).padStart(2, '0')}-${label}.png`);
-  await page.screenshot({ path: file });
+  // software-rendered 3D (SwiftShader: CI runners, PCs without a usable GPU) can take 5–45 s per screenshot on a
+  // slow machine; Playwright's 30 s default failed whole playtests there (Windows CI: blast-ball at 0.5–5 fps)
+  await page.screenshot({ path: file, timeout: 120000 });
   return file;
 };
 
