@@ -14,13 +14,10 @@
  *
  * Exit code 1 if the page threw any errors. Screenshots land in .shots/<name>/.
  */
-import { createServer } from 'vite';
-import { chromium } from 'playwright';
 import { mkdirSync, rmSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+import { root } from './lib/common.mjs';
+import { devServer, launchChromium } from './lib/browser.mjs';
 const args = process.argv.slice(2);
 const target = args.find((a) => !a.startsWith('--') && !/^\d/.test(a)) ?? 'neon-swarm';
 const opt = (name, def) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : def; };
@@ -31,8 +28,6 @@ const [vw, vh] = opt('size', '1280x720').split('x').map(Number);
 const query = opt('query', '');   // e.g. --query "god&autoaim&wave=5"
 const clicks = !args.includes('--no-click');
 const evalJs = opt('eval', '');    // JS run in the page after start, e.g. --eval "__game.scene.getScene('Play').xp = 99"
-const scene = (k) => `window.__game.scene.getScene('${k}')`;
-void scene;
 const isRoot = target === '.' || target === '/' || target === 'arcade';
 const path = isRoot ? '' : target.includes('/') ? target.replace(/\/?$/, '/') : `games/${target}/`;
 const name = isRoot ? 'arcade' : basename(target);
@@ -40,20 +35,11 @@ const out = resolve(root, '.shots', name);
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 
-const server = await createServer({ root, configFile: resolve(root, 'vite.config.ts'), server: { port: 0, open: false }, logLevel: 'error' });
-await server.listen();
-const base = server.resolvedUrls.local[0];
-
+const dev = await devServer();
+const base = dev.base;
 // --gpu uses the real GPU (accurate visuals, real fps); default is SwiftShader software GL (works anywhere/CI).
 const gpu = args.includes('--gpu');
-const browser = await chromium.launch({
-  // the full chromium (not headless-shell) is needed for real-GPU rendering
-  channel: gpu ? 'chromium' : undefined,
-  args: [
-    ...(gpu ? [`--use-angle=${process.platform === 'darwin' ? 'metal' : process.platform === 'win32' ? 'd3d11' : 'vulkan'}`, '--enable-gpu', '--ignore-gpu-blocklist'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']),
-    '--autoplay-policy=no-user-gesture-required',
-  ],
-});
+const browser = await launchChromium({ gpu });
 const page = await browser.newPage({ viewport: { width: vw, height: vh } });
 const errors = [];
 const warnings = [];
@@ -124,7 +110,7 @@ const state = await page.evaluate(() => {
 });
 
 await browser.close();
-await server.close();
+await dev.close();
 
 console.log(`\nscreenshots (${files.length}) → ${out}`);
 console.log('state:', JSON.stringify(state));

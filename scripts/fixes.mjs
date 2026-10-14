@@ -12,14 +12,13 @@
  * Each patch is made against the same base, so fixes apply independently in any order unless two touch
  * the same lines — then the second one reports a conflict and you re-implement it from its plan in FIXES.md.
  */
-import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+import { root, walk, usageOf, typecheck as tsc } from './lib/common.mjs';
 const [cmd, slug, ...rest] = process.argv.slice(2);
-const usage = () => { console.log(readFileSync(fileURLToPath(import.meta.url), 'utf8').split('*/')[0]); process.exit(1); };
+const usage = () => { console.log(usageOf(readFileSync(fileURLToPath(import.meta.url), 'utf8'))); process.exit(1); };
 if (!cmd || !slug) usage();
 const game = join(root, 'games', slug);
 if (!existsSync(game)) { console.error(`✖ no game "${slug}" in games/`); process.exit(1); }
@@ -34,13 +33,10 @@ function copyGame(from, to) {
   mkdirSync(to, { recursive: true });
   for (const f of readdirSync(from)) if (f !== 'fixes') cpSync(join(from, f), join(to, f), { recursive: true });
 }
-function walk(d) { return existsSync(d) ? readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; }) : []; }
+/** type errors in this game or the shared code (another game's broken file shouldn't block this one); null = clean */
 function typecheck() {
-  const r = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '--noEmit', '-p', root], { cwd: root, encoding: 'utf8' });
-  if (r.status === 0) return null;
-  // only errors in this game or the shared code count — another game's broken file shouldn't block this one
-  const mine = (r.stdout + r.stderr).split('\n').filter((l) => /error TS/.test(l) && (l.startsWith(`games/${slug}/`) || /^(kit|templates|src)\//.test(l)));
-  return mine.length ? mine.slice(0, 15).join('\n') : null;
+  const errs = tsc({ only: (l) => l.startsWith(`games/${slug}/`) || /^(kit|templates|src)\//.test(l) });
+  return errs?.length ? errs.slice(0, 15).join('\n') : null;
 }
 function setStatus(n, done) {
   if (!existsSync(fixesMd)) return;

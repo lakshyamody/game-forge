@@ -9,11 +9,10 @@
  *
  * Creates games/<slug>/ and replaces {{TITLE}}, {{SLUG}}, {{TAGLINE}}.
  */
-import { cpSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+import { root, walk } from './lib/common.mjs';
 const args = process.argv.slice(2);
 const opt = (n, d) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : d; };
 const slug = args.find((a, i) => !a.startsWith('--') && !args[i - 1]?.startsWith('--'));
@@ -50,7 +49,6 @@ const src = from ? resolve(root, 'games', from) : resolve(root, 'templates', tem
 const oldTitle = from ? JSON.parse(readFileSync(join(src, 'game.json'), 'utf8')).title : null;
 cpSync(src, dest, { recursive: true });
 
-const walk = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; });
 for (const f of walk(dest)) {
   if (!/\.(ts|js|json|html|css|md)$/.test(f)) continue;
   let s = readFileSync(f, 'utf8');

@@ -4,22 +4,17 @@
  *   const c = await fbxConverter();  await c.model(fbxPath, { texturesDir }, outGlb);  await c.anims([{ path, name, inPlace }], outGlb);  await c.close();
  * Textures: TGA/PNG/JPG found by file name in texturesDir, downscaled to 1024, converted to PBR (Phong specular → roughness 0.72).
  */
-import { createServer } from 'vite';
-import { chromium } from 'playwright';
 import { readdirSync, writeFileSync, existsSync } from 'node:fs';
-import { join, resolve, relative, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+import { join, resolve, relative } from 'node:path';
+import { root } from './lib/common.mjs';
+import { devServer, launchChromium } from './lib/browser.mjs';
 export async function fbxConverter() {
-  const server = await createServer({ root, configFile: join(root, 'vite.config.ts'), server: { port: 0, open: false }, logLevel: 'error' });
-  await server.listen();
-  const base = `http://localhost:${server.httpServer.address().port}`;
-  const url = (p) => `${base}/${relative(root, resolve(p)).split('\\').join('/')}`;
-  const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const dev = await devServer();
+  const url = (p) => dev.url(relative(root, resolve(p)).split('\\').join('/'));
+  const browser = await launchChromium();   // software GL is plenty: this page only parses and exports
   const page = await browser.newPage();
   page.on('pageerror', (e) => console.error('  page error:', e.message));
-  await page.goto(`${base}/scripts/tools/fbx2glb.html`);
+  await page.goto(dev.url('scripts/tools/fbx2glb.html'));
   await page.waitForFunction(() => window.ready === true, null, { timeout: 60000 });
   return {
     async model(fbx, { texturesDir }, out) {
@@ -33,6 +28,6 @@ export async function fbxConverter() {
       writeFileSync(out, Buffer.from(r.glb, 'base64'));
       return r.speeds;
     },
-    async close() { await browser.close(); await server.close(); },
+    async close() { await browser.close(); await dev.close(); },
   };
 }

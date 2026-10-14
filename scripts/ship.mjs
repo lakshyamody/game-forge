@@ -8,10 +8,9 @@
 import { build } from 'vite';
 import { existsSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, cpSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { resolve, join, dirname, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join, dirname } from 'node:path';
 
-const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
+import { root, walk } from './lib/common.mjs';
 const slug = process.argv[2];
 if (!slug || !existsSync(resolve(root, 'games', slug, 'index.html'))) { console.error('usage: npm run ship -- <slug>   (a folder in games/)'); process.exit(1); }
 process.env.GAME = slug;
@@ -21,7 +20,6 @@ const out = resolve(root, 'ship', slug);
 // copy only the library assets this game references (string literals like 'car-kit/race', 'impact-sounds/footstep_*',
 // template prefixes like `voiceover-pack/${line}`, or explicit 'sprites/...'/'textures' ids)
 const A = resolve(root, 'assets');
-const walk = (d) => (existsSync(d) ? readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? walk(p) : [p]; }) : []);
 const sources = walk(resolve(root, 'games', slug)).filter((f) => /\.(ts|js)$/.test(f)).map((f) => readFileSync(f, 'utf8')).join('\n');
 const literals = [...sources.matchAll(/(['"`])([a-z0-9_.\-/*]+(?:\$\{[^}]*\})?[a-z0-9_.\-/*]*)\1/gi)].map((m) => m[2]);
 const keep = new Set(['catalog.json', 'LICENSES.md']);
