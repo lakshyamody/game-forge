@@ -122,7 +122,10 @@ kit/            shared game kit — every file's header comment is its docs
   assets.ts       load library models/animations/textures/skies/sounds by name
 templates/      six genre starters
 games/          your games (each: index.html, main.ts, game.json, GAME.md)
-scripts/        new-game, play, shot (headless playtest), fixes (staged patches), ship, assets (importer)
+scripts/        new-game, play, shot (headless playtest), fixes (staged patches), ship, assets (importer CLI)
+  importers/      one module per asset source (Kenney, KayKit, Poly Haven, ambientCG, Rocketbox) + catalog
+  lib/            shared helpers (paths, CLI flags, type-check, Vite + Chromium)
+studio/         Game Forge Studio desktop app (main.mjs + main/: env, workspace, games, Claude chat runner)
 .claude/        skills (make-game, kid-check, playtest, polish, ship, phaser4) + type-check hook
 AGENTS.md       instructions for any coding agent (CLAUDE.md imports it)
 ```
