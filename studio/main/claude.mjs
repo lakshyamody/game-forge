@@ -3,7 +3,7 @@
  * (session ids in state), translated into friendly events for the page: start → text / tool … → result → end.
  */
 import { spawn } from 'node:child_process';
-import { RES, ROOT } from './paths.mjs';
+import { RES, ROOT, IS_WIN } from './paths.mjs';
 import { state, saveState } from './state.mjs';
 import { childEnv, claudeCommand, claudeUpdated, claudeUpdating, killTree } from './env.mjs';
 import { listGames } from './games.mjs';
@@ -13,6 +13,7 @@ const STUDIO_PROMPT = `You are running inside Game Forge Studio, a desktop app f
 - Reply in short, friendly plain language. Do not paste code unless the user asks for it. Say what changed in the game, not which functions changed.
 - The app already runs the game dev server and shows a live preview that reloads on save. Never run \`npm run dev\` or \`npm run play\`, and never open a browser.
 - Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged. Read the screenshots \`npm run shot\` lists (exact paths) and look at every one before saying a game looks right. For a scripted playtest, import \`devServer\` and \`launchChromium\` from scripts/lib/browser.mjs instead of starting vite yourself.
+- Keep scratch files (logs, scripts) in .scratch/ inside the workspace, never /tmp or other folders outside it: there is no one to approve writes out there, so they fail.
 - When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done.
 - Only the games in games/ exist in this workspace: skip reference games that AGENTS.md names but aren't there.
 - The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.`;
@@ -21,7 +22,24 @@ const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill
   'Bash(grep *)', 'Bash(wc *)', 'Bash(mkdir *)', 'Bash(date*)', 'Bash(cp *)', 'Bash(git status*)', 'Bash(git diff*)', 'Bash(git log*)', 'Bash(sed -n *)', 'Bash(find *)', 'Bash(python3 *)',
   // the everyday glue of a build session (claude -p can't ask, so anything missing here just fails)
   'Bash(cd *)', 'Bash(echo *)', 'Bash(printf *)', 'Bash(node *)', 'Bash(npx *)', 'Bash(sort *)', 'Bash(uniq *)', 'Bash(cut *)', 'Bash(tr *)', 'Bash(awk *)',
-  'Bash(jq *)', 'Bash(sleep *)', 'Bash(test *)', 'Bash(true*)', 'Bash(pwd*)', 'Bash(which *)', 'Bash(xargs *)', 'Bash(diff *)', 'Bash(touch *)', 'Bash(mv *)', 'Bash(rm .scratch/*)', 'Bash(rm -f .scratch/*)', 'Bash(rm -rf .scratch/*)'];
+  'Bash(jq *)', 'Bash(sleep *)', 'Bash(test *)', 'Bash(true*)', 'Bash(pwd*)', 'Bash(which *)', 'Bash(xargs *)', 'Bash(diff *)', 'Bash(touch *)', 'Bash(mv *)', 'Bash(rm .scratch/*)', 'Bash(rm -f .scratch/*)', 'Bash(rm -rf .scratch/*)',
+  'Bash(sed -i *)',   // in-place edits, same reach as Edit (denied in Windows sessions: "requires approval: sed -i …")
+  // subagents and deferred tools, for bigger builds
+  'Agent', 'Task', 'ToolSearch',
+  // Windows: Claude Code's main shell there is the PowerShell tool (even with Git Bash installed), and Bash(…) rules
+  // don't cover it, so without these every command (npm run shot, node, listing assets) was denied: no playtests,
+  // no screenshots. Same commands as above, in PowerShell's words (aliases like ls/cat/rm resolve to these cmdlets).
+  ...(IS_WIN ? [
+    'npm run *', 'npm install *', 'npx *', 'node *', 'git status*', 'git diff*', 'git log*', 'python *', 'py *',
+    'Get-ChildItem *', 'Get-Content *', 'Get-Item *', 'Test-Path *', 'Resolve-Path *', 'Split-Path *', 'Join-Path *', 'Get-Location*', 'Set-Location *',
+    'Select-String *', 'Select-Object *', 'Where-Object *', 'ForEach-Object *', 'Sort-Object *', 'Measure-Object*', 'Group-Object *', 'Compare-Object *',
+    'Format-List*', 'Format-Table*', 'Out-String*', 'ConvertFrom-Json*', 'ConvertTo-Json*', 'Write-Output *', 'Write-Host *', 'Get-Date*', 'Start-Sleep *', 'Get-Command *',
+    'New-Item *', 'Copy-Item *', 'Move-Item *', 'Rename-Item *', 'Remove-Item .scratch*', 'Remove-Item -Recurse -Force .scratch*', 'Remove-Item -Force -Recurse .scratch*',
+  ].map((c) => `PowerShell(${c})`) : []),
+  // Windows: full shell access (both shells, every command). Windows sessions lean on commands no prefix list
+  // anticipates (compound commands, redirects, edits after cd), and claude -p can't ask, so anything missing was
+  // just denied. Trade-off: Claude Code can run any command as the user without an approval step.
+  ...(IS_WIN ? ['Bash', 'PowerShell'] : [])];
 export const jobs = new Map();   // chat key → running claude process
 const resets = new Map();   // chat key → how many times it was reset ("New chat")
 

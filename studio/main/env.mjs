@@ -24,6 +24,10 @@ const BROWSERS = join(RES, 'ms-playwright');
 export function childEnv() {
   const env = {}; let path = '';
   for (const [k, v] of Object.entries(process.env)) { if (k.toLowerCase() === 'path') path = v ?? ''; else env[k] = v; }
+  // Windows: drop the Store's app-alias folder (WindowsApps). Its pwsh.exe alias breaks Claude Code's PowerShell tool
+  // ("pwsh exited with code 1: The command line is too long" on every command); without it Claude Code falls back to
+  // the built-in Windows PowerShell, which works. The folder only holds Store app launchers.
+  if (IS_WIN) path = path.split(delimiter).filter((d) => !/[\\/]Microsoft[\\/]WindowsApps[\\/]?$/i.test(d)).join(delimiter);
   env.PATH = [shimBin, ...EXTRA_PATH, path].filter(Boolean).join(delimiter);
   env.FORCE_COLOR = '0';
   if (app.isPackaged && existsSync(BROWSERS)) env.PLAYWRIGHT_BROWSERS_PATH = BROWSERS;

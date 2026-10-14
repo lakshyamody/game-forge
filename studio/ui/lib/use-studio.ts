@@ -122,8 +122,10 @@ export function useStudio() {
       else if (ev.type === 'result') {
         if (!ev.ok && !stopped.current.has(k)) push(k, { kind: 'retry', text: /\[|_diagnostic|stop_reason/.test(ev.text || '') || !ev.text ? 'The agent stopped before it finished.' : ev.text });
         for (const d of ev.denials ?? []) {
-          const cmd = d.tool === 'Bash' ? String(d.input?.command ?? '') : d.tool;
-          push(k, { kind: 'perm', what: d.tool === 'Bash' ? cmd.slice(0, 120) : d.tool, rule: d.tool === 'Bash' ? `Bash(${cmd.trim().split(/\s+/)[0]} *)` : d.tool });
+          // shell tools (Bash, and PowerShell on Windows): allow that command, never the whole shell
+          const shell = d.tool === 'Bash' || d.tool === 'PowerShell';
+          const cmd = shell ? String(d.input?.command ?? '') : d.tool;
+          push(k, { kind: 'perm', what: shell ? cmd.slice(0, 120) : d.tool, rule: shell ? `${d.tool}(${cmd.trim().split(/\s+/)[0]} *)` : d.tool });
         }
       } else if (ev.type === 'end') {
         setBusy((b) => { const n = new Map(b); n.delete(k); return n; });
