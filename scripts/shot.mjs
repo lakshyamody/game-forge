@@ -9,7 +9,7 @@
  *   npm run shot -- arcade --no-bot               # the launcher page
  *   npm run shot -- neon-swarm --no-bot           # just load + screenshot
  *   npm run shot -- neon-swarm --keys "Space,KeyD" # extra keys the bot should mash
- *   npm run shot -- neon-swarm --query "god&wave=5" # URL params (games can read them for debug)
+ *   npm run shot -- neon-swarm --query "god;wave=5" # URL params (games can read them for debug); ; or & between
  *   npm run shot -- my-game --eval "__game.scene.getScene('Play').xp = 99"   # force a state after start
  *
  * Exit code 1 if the page threw any errors. Screenshots land in .shots/<name>/.
@@ -25,7 +25,8 @@ const seconds = Number(opt('seconds', 8));
 const bot = !args.includes('--no-bot');
 const extraKeys = (opt('keys', '') || '').split(',').filter(Boolean);
 const [vw, vh] = opt('size', '1280x720').split('x').map(Number);
-const query = opt('query', '');   // e.g. --query "god&autoaim&wave=5"
+// e.g. --query "god&autoaim&wave=5"; ';' separates too (on Windows cmd.exe takes & for a second command)
+const query = opt('query', '').replace(/;/g, '&');
 const clicks = !args.includes('--no-click');
 const evalJs = opt('eval', '');    // JS run in the page after start, e.g. --eval "__game.scene.getScene('Play').xp = 99"
 const isRoot = target === '.' || target === '/' || target === 'arcade';

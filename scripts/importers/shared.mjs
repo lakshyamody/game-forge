@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { root } from '../lib/common.mjs';
+import { IS_WIN, winTar } from '../lib/platform.mjs';
 
 export const A = join(root, 'assets');
 export const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);   // keep texture transforms, materials etc. intact
@@ -20,6 +21,8 @@ export async function download(url, dest) {
 }
 export function unzip(zip, dir) {
   mkdirSync(dir, { recursive: true });
+  // Windows: System32's bsdtar (unzip is rarely installed there, and Git Bash's GNU tar can't read zip)
+  if (IS_WIN) return void execFileSync(winTar(), ['-xf', zip, '-C', dir], { windowsHide: true });
   try { execFileSync('unzip', ['-qo', zip, '-d', dir]); } catch { execFileSync('tar', ['-xf', zip, '-C', dir]); }
 }
 export const tempDir = (prefix) => mkdtempSync(join(tmpdir(), `${prefix}-`));
