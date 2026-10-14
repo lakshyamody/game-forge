@@ -17,7 +17,8 @@
     "fixes": "node scripts/fixes.mjs",
     "studio": "node studio/launch.mjs",
     "studio:build": "node scripts/build-studio.mjs",
-    "studio:dev": "node studio/launch.mjs --dev"
+    "studio:dev": "node studio/launch.mjs --dev",
+    "thumbs": "node scripts/thumbs.mjs"
   },
   "devDependencies": {
     "@fontsource/orbitron": "^5.3.0",

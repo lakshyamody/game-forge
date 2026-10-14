@@ -11,6 +11,6 @@ export function listGames() {
   if (!existsSync(GAMES)) return [];
   return readdirSync(GAMES).filter((d) => existsSync(join(GAMES, d, 'game.json'))).map((slug) => {
     const meta = readJson(join(GAMES, slug, 'game.json'));
-    return { slug, title: meta.title ?? slug, tagline: meta.tagline ?? '', color: meta.color ?? '#7c5cff', controls: meta.controls ?? '', fixes: readFixes(join(GAMES, slug, 'FIXES.md')), session: !!state.sessions[slug] };
+    return { slug, thumb: existsSync(join(GAMES, slug, 'thumb.jpg')), title: meta.title ?? slug, tagline: meta.tagline ?? '', color: meta.color ?? '#7c5cff', controls: meta.controls ?? '', fixes: readFixes(join(GAMES, slug, 'FIXES.md')), session: !!state.sessions[slug] };
   }).sort((a, b) => a.title.localeCompare(b.title));
 }

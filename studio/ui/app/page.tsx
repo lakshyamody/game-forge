@@ -21,20 +21,25 @@ export default function Studio() {
   useEffect(() => keep('agent', agent), [agent]);
   useEffect(() => keep('agentWidth', width), [width]);
 
-  // keyboard: ⌘N new · ⌘W close tab · ⌘R reload preview · ⌘B sidebar · ⌘J agent
+  // shortcuts come from the native menu (studio/main/ui.mjs) as actions
   const sRef = useRef(s); sRef.current = s;
+  const address = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!e.metaKey && !e.ctrlKey) return;
-      const st = sRef.current, k = e.key.toLowerCase();
-      if (k === 'n') { e.preventDefault(); st.open(NEW); }
-      else if (k === 'w') { e.preventDefault(); st.close(st.active); }
-      else if (k === 'r') { e.preventDefault(); if (st.active !== NEW) st.reload(st.active); }
-      else if (k === 'b') { e.preventDefault(); setExplorer((x) => !x); }
-      else if (k === 'j') { e.preventDefault(); setAgent((x) => !x); }
-    };
-    addEventListener('keydown', onKey); return () => removeEventListener('keydown', onKey);
-  }, []);
+    s.api?.onMenu((action) => {
+      const st = sRef.current, i = st.tabs.indexOf(st.active);
+      if (action === 'new') st.open(NEW);
+      else if (action === 'close') st.close(st.active);
+      else if (action === 'reload') { if (st.active !== NEW) st.reload(st.active); }
+      else if (action === 'sidebar') setExplorer((x) => !x);
+      else if (action === 'agent') setAgent((x) => !x);
+      else if (action === 'address') address.current?.select();
+      else if (action === 'account') st.setSetupOpen(true);
+      else if (action === 'export') { if (st.game) void st.exportGame(st.game.slug); }
+      else if (action === 'folder') void st.api?.openFolder(st.game?.slug ?? null);
+      else if (action === 'nextTab') st.setActive(st.tabs[(i + 1) % st.tabs.length]);
+      else if (action === 'prevTab') st.setActive(st.tabs[(i - 1 + st.tabs.length) % st.tabs.length]);
+    });
+  }, [s.api]);
 
   // drag the divider to resize the agent panel
   const drag = (e: React.PointerEvent) => {
@@ -45,16 +50,16 @@ export default function Studio() {
   };
 
   if (!mounted) return <div className="h-full bg-bg" />;
-  if (!s.api) return <div className="grid h-full place-items-center text-muted">Open this inside Game Forge Studio.</div>;
+  if (!s.api) return <div className="grid h-full place-items-center text-muted">Open this page inside Game Forge Studio.</div>;
   return (
     <div className="flex h-full flex-col">
       <TitleBar s={s} explorer={explorer} agent={agent} toggleExplorer={() => setExplorer((x) => !x)} toggleAgent={() => setAgent((x) => !x)} />
       <div className="flex min-h-0 flex-1">
         <ActivityBar s={s} explorer={explorer} toggleExplorer={() => setExplorer((x) => !x)} />
         {explorer && <Explorer s={s} />}
-        <Browser s={s} />
+        <Browser s={s} addressRef={address} />
         {agent && <>
-          <div onPointerDown={drag} className="w-[3px] shrink-0 cursor-col-resize bg-transparent transition-colors hover:bg-accent/50" title="Drag to resize" />
+          <div onPointerDown={drag} className="-mx-[2px] w-[4px] shrink-0 cursor-col-resize bg-transparent z-10 hover:bg-accent/40" />
           <Agent s={s} width={width} />
         </>}
       </div>

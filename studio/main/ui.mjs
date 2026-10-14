@@ -27,12 +27,17 @@ export function serveUi() {
 export const uiUrl = () => (process.env.STUDIO_UI_DEV ? DEV_URL : 'studio://app/');
 export const uiBuilt = () => existsSync(join(OUT, 'index.html'));
 
-/** a small native menu: keeps copy/paste and quit, and frees ⌘R/⌘W/⌘N/⌘B/⌘J for the app's own shortcuts */
-export function setMenu() {
+/**
+ * The native menu. Shortcuts live here (like any Mac app) and are forwarded to the page as `menu` actions,
+ * so ⌘N / ⌘W / ⌘R etc. do the app's thing instead of Electron's defaults.
+ */
+export function setMenu(send) {
+  const item = (label, accelerator, action) => ({ label, accelerator, click: () => send(action) });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
-    ...(IS_MAC ? [{ label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, { role: 'hide' }, { role: 'hideOthers' }, { type: 'separator' }, { role: 'quit' }] }] : []),
+    ...(IS_MAC ? [{ label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, item('Account…', 'CmdOrCtrl+,', 'account'), { type: 'separator' }, { role: 'hide' }, { role: 'hideOthers' }, { type: 'separator' }, { role: 'quit' }] }] : []),
+    { label: 'File', submenu: [item('New Game', 'CmdOrCtrl+N', 'new'), { type: 'separator' }, item('Close Tab', 'CmdOrCtrl+W', 'close'), { type: 'separator' }, item('Export for itch.io…', 'CmdOrCtrl+E', 'export'), item('Show in Finder', 'CmdOrCtrl+Shift+R', 'folder')] },
     { label: 'Edit', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
-    { label: 'View', submenu: [{ role: 'toggleDevTools', accelerator: 'Alt+CmdOrCtrl+I' }, { role: 'togglefullscreen' }] },
-    { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }] },
+    { label: 'View', submenu: [item('Toggle Sidebar', 'CmdOrCtrl+B', 'sidebar'), item('Toggle Agent', 'CmdOrCtrl+J', 'agent'), { type: 'separator' }, item('Reload Game', 'CmdOrCtrl+R', 'reload'), item('Focus Address Bar', 'CmdOrCtrl+L', 'address'), { type: 'separator' }, { role: 'togglefullscreen' }, { role: 'toggleDevTools', accelerator: 'Alt+CmdOrCtrl+I' }] },
+    { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }, { type: 'separator' }, item('Next Tab', 'Ctrl+Tab', 'nextTab'), item('Previous Tab', 'Ctrl+Shift+Tab', 'prevTab')] },
   ]));
 }

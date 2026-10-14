@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('studio', {
   openExternal: (url) => ipcRenderer.invoke('open:external', url),
   openFolder: (slug) => ipcRenderer.invoke('open:folder', slug),
   onChat: (fn) => ipcRenderer.on('chat:event', (_e, ev) => fn(ev)),
+  onMenu: (fn) => ipcRenderer.on('menu', (_e, action) => fn(action)),
   onTools: (fn) => ipcRenderer.on('tools:status', (_e, t) => fn(t)),
   onGamesChanged: (fn) => ipcRenderer.on('games:changed', () => fn()),
 });

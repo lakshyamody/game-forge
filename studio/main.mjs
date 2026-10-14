@@ -51,10 +51,10 @@ async function startVite() {
 }
 
 app.whenReady().then(async () => {
-  loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu(); ensurePlaywright((status) => send('tools:status', status));
+  loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu((action) => send('menu', action)); ensurePlaywright((status) => send('tools:status', status));
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
-    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#0a0a0b',
+    width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#ffffff',
     titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 14, y: 12 },   // macOS buttons sit inside the app's own title bar
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });

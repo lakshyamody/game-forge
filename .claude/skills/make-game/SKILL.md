@@ -72,4 +72,4 @@ Run the `kid-check` skill: find the 5 things a kid would say look wrong, stage a
 
 ## 7. Hand off
 
-Tell the user: how long the build took, `npm run play -- <slug>` (opens it), the 5 kid-check problems (numbered, kid-phrased, with "say fix 2 / fix all"), the controls, `?tune` for live sliders, what you tuned for fun, what you'd add next. Update GAME.md's Status and Ideas.
+Run `npm run thumbs -- <slug>` (title-screen thumbnail for the arcade and Studio). Tell the user: how long the build took, `npm run play -- <slug>` (opens it), the 5 kid-check problems (numbered, kid-phrased, with "say fix 2 / fix all"), the controls, `?tune` for live sliders, what you tuned for fun, what you'd add next. Update GAME.md's Status and Ideas.

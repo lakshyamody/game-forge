@@ -4,7 +4,7 @@ export interface Env {
   node: boolean; deps: boolean; tools: string; port: number;
 }
 export interface Fix { n: number; done: boolean; text: string }
-export interface Game { slug: string; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
+export interface Game { slug: string; thumb: boolean; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
 export interface RunResult { code: number; stdout: string; stderr: string }
 export type ChatEvent =
   | { key: string; type: 'start' }
@@ -28,9 +28,19 @@ export interface StudioApi {
   openFolder(slug: string | null): Promise<void>;
   onChat(fn: (ev: ChatEvent) => void): void;
   onTools(fn: (status: string) => void): void;
+  onMenu(fn: (action: string) => void): void;
   onGamesChanged(fn: () => void): void;
 }
 
 declare global { interface Window { studio?: StudioApi } }
 export const studio = (): StudioApi | null => (typeof window !== 'undefined' ? window.studio ?? null : null);
 export const NEW = '__new__';   // tab / chat key for "make a new game"
+export const PAGE_ARCADE = 'page:arcade', PAGE_ASSETS = 'page:assets';
+export const TEMPLATES = [
+  { id: 'topdown', name: 'Top-down shooter', note: 'Waves, upgrades, lots of enemies' },
+  { id: 'platformer', name: 'Platformer', note: 'Jumping, levels, pixel art' },
+  { id: 'puzzle', name: 'Puzzle', note: 'Grid and turn based, with undo' },
+  { id: 'physics', name: 'Physics', note: 'Slingshots, stacking, golf' },
+  { id: '3d', name: '3D', note: 'Driving, exploring, first person' },
+  { id: 'blank', name: 'Blank 2D', note: 'Anything else' },
+] as const;
