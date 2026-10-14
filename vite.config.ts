@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { readdirSync, existsSync, realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -21,7 +21,13 @@ export default defineConfig({
   // the CC0 asset library is served as-is (stable paths for models/textures/sounds) — see kit/assets.ts
   publicDir: only ? false : 'assets',
   resolve: { alias: { '@kit': resolve(root, 'kit') } },
-  server: { port: 5173, open: false, fs: { allow: [root, ...linked] } },
+  server: {
+    port: 5173, open: false, fs: { allow: [root, ...linked] },
+    // nothing to live-reload in these. On Windows a watched folder that gets deleted stays "pending delete" while the
+    // watcher holds it, so making it again right away failed with EPERM (half the time: .shots/<game> on every
+    // playtest, games/<slug>/fixes on every kid check). assets/ stays watched: Vite's public-file list follows it.
+    watch: { ignored: (p: string) => /^(\.shots|\.scratch|ship|dist|\.vite-cache)([\\/]|$)/.test(relative(root, p)) || /[\\/]fixes([\\/]|$)/.test(p) },
+  },
   build: {
     target: 'es2022',
     outDir: only ? `ship/${only}` : 'dist',
