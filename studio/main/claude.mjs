@@ -24,14 +24,17 @@ const resets = new Map();   // chat key → how many times it was reset ("New ch
 
 /** `emit(event)` delivers { key, type, … } to the page */
 export async function sendChat(key, text, slug, emit) {
+  let waited = false;
   if (claudeUpdating()) {
     const gen = resets.get(key);
-    emit({ key, type: 'tool', text: '⬆️ Updating Claude Code first' }); await claudeUpdated();
-    if (resets.get(key) !== gen) return;   // the chat was reset while waiting: drop this message
+    // show it as working while it waits, so the page queues anything typed meanwhile instead of sending it twice
+    emit({ key, type: 'start' }); emit({ key, type: 'tool', text: '⬆️ Updating Claude Code first' }); await claudeUpdated(); waited = true;
+    if (resets.get(key) !== gen) return;   // the chat was reset while waiting: drop this message (the page already cleared it)
   }
+  const fail = (text) => { emit({ key, type: 'error', text }); if (waited) emit({ key, type: 'end', code: 1, newGame: null, error: '', auth: false }); };
   const claude = claudeCommand();
-  if (!claude) return emit({ key, type: 'error', text: 'Claude Code is not installed yet.' });
-  if (jobs.has(key)) return emit({ key, type: 'error', text: 'Still working on the last request — wait for it or press Stop.' });
+  if (!claude) return fail('Claude Code is not installed yet.');
+  if (jobs.has(key)) return fail('Still working on the last request — wait for it or press Stop.');
   const prompt = slug ? `[Working on the game in games/${slug}/ — read its GAME.md first if you haven't this session.]\n\n${text}` : text;
   const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits',
     '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed];

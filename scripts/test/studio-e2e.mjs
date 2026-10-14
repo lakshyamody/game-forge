@@ -59,7 +59,7 @@ async function t(name, fn) {
   const before = pageErrors.length;
   try { await fn(); const errs = pageErrors.slice(before); if (errs.length) throw new Error(`page errors: ${errs.join(' | ')}`); results.push([true, name]); console.log(`✔ ${name}`); }
   catch (e) {
-    results.push([false, name, e.message]); console.log(`✖ ${name}\n    ${e.message.split('\n').slice(0, 4).join('\n    ')}`);
+    results.push([false, name, e.message]); console.log(`✖ ${name}\n    ${e.message.split('\n').slice(0, 9).join('\n    ')}`);
     if (shots) await page.screenshot({ path: join(shots, `fail-${results.length}.png`) }).catch(() => {});
   }
 }
@@ -219,6 +219,8 @@ await t('sidebar ⌘B, appearance cycles and persists across reload', async () =
 });
 await t('account sheet: menu opens it, Escape and Done close it, Help opens the readme', async () => {
   await menu('Account…'); await page.waitForSelector('text=Game tools');
+  await page.waitForTimeout(3500);   // the background account re-check must not close a sheet the user opened
+  assert(await page.locator('text=Game tools').count() === 1, 'the Account sheet closed by itself');
   await page.keyboard.press('Escape'); assert(await page.locator('text=Game tools').count() === 0, 'escape');
   // the sidebar's account button: "Account" when signed in, "Set up Claude Code" when not (CI)
   await page.getByRole('button', { name: /^(Account|Set up Claude Code)$/ }).first().click(); await page.getByRole('button', { name: /Done|Later/ }).click();
@@ -279,6 +281,19 @@ if (o.flag('claude')) {
     await page.waitForSelector('aside >> text=Stopped.', { timeout: 3000 });
     assert(await page.locator('text=/stopped before it finished/').count() === 0, 'a deliberate Stop shows as a failure');
     await shot('after-stop');
+  });
+  await t('claude: New chat during a run, then a message right away, stays working until its reply', async () => {
+    await say('Automated test: read every file in kit/ one at a time and summarise each in a sentence.');
+    await page.waitForTimeout(4000);
+    await page.getByLabel('New chat').click();
+    await say('Automated test: reply with exactly the word fresh and nothing else. No tools.');
+    // the stopped run's late exit must not mark this new run as finished
+    for (let i = 0; i < 1200 && !(await page.locator('aside >> text=/^fresh\\.?$/i').count()); i++) {
+      assert(await page.locator('[aria-label=Stop]').count() === 1, 'the new run showed as finished before its reply arrived');
+      await page.waitForTimeout(200);
+    }
+    await idle();
+    assert(await page.locator('aside:has([aria-label="New chat"]) >> text=/read every file in kit/').count() === 0, 'the old conversation came back');   // the chat panel (Recents in the sidebar keeps the prompt)
   });
   await t('claude: the new-game chat becomes the new game\'s tab', async () => {
     rmSync(join(root, 'games/zz-e2e'), { recursive: true, force: true });

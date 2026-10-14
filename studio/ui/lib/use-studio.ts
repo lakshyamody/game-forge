@@ -48,10 +48,12 @@ export function useStudio() {
   const reload = useCallback((slug: string) => setReloads((r) => ({ ...r, [slug]: (r[slug] ?? 0) + 1 })), []);
 
   const refreshGames = useCallback(async () => { if (api) setGames(await api.games()); }, [api]);
+  const envRef = useRef(env); envRef.current = env;
   const check = useCallback(async () => {
     if (!api) return false;
+    const before = envRef.current;   // null until the first check after launch
     const e = await api.checkEnv(); setEnv(e);
-    if (ready(e)) setSetupOpen(false);
+    if (ready(e) && before && !ready(before)) setSetupOpen(false);   // setup just finished: close the sheet (not when Account was opened on purpose)
     return ready(e);
   }, [api]);
 

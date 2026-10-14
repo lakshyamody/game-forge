@@ -72,7 +72,7 @@ export default function Studio() {
         </>}
       </div>
       <Setup s={s} />
-      <SetupToast s={s} />
+      <SetupToast s={s} hidden={!!(thread && game)} />   {/* not over a game's chat box; the sidebar shows the status there */}
     </div>
   );
 }

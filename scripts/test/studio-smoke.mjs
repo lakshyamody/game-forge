@@ -33,6 +33,8 @@ try {
   // the top-right pill settles on "Account" (ready) or "Set up" (not installed / not signed in)
   await page.waitForFunction(() => !/Checking…|Installing Claude Code/.test(document.body.innerText), null, { timeout: 300000 });
   const ready = await page.locator('main button', { hasText: /^Account$/ }).count() > 0;
+  const envNow = await page.evaluate(() => window.studio.checkEnv());
+  if (envNow.installError) step(`Claude Code background install failed: ${envNow.installError}`);
   step(`Claude Code: ${ready ? 'installed and signed in' : (await page.locator('main .rounded-full', { hasText: 'Set up' }).first().textContent())?.replace('Set up', '').trim()}`);
   await page.keyboard.press('Escape');   // not signed in (CI): the setup sheet opens on launch; it can be dismissed
   const game = page.locator('aside button', { hasText: 'Blast Ball' }).first();
@@ -58,7 +60,7 @@ if (o.flag('packaged')) {
       env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', PLAYWRIGHT_BROWSERS_PATH: join(resources, 'forge/ms-playwright') },
     });
     if (!/no runtime errors/.test(out)) errs.push(`bundled playtest: ${out.slice(-400)}`); else step('bundled playtest ran clean');
-  } catch (e) { errs.push(`bundled playtest failed: ${`${e.stdout ?? ''}${e.stderr ?? ''}`.slice(-600) || e.message}`); }
+  } catch (e) { errs.push(`bundled playtest failed (exit ${e.status ?? '-'}, signal ${e.signal ?? '-'}${e.signal === 'SIGTERM' ? ', timed out' : ''}):\n${`${e.stdout ?? ''}\n${e.stderr ?? ''}`.trim().slice(-1500) || e.message}`); }
 }
 console.log(errs.length ? `✖ ${errs.join('\n✖ ')}` : '✔ Studio smoke test passed');
 process.exit(errs.length ? 1 : 0);

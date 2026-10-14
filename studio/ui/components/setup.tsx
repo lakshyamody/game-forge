@@ -55,9 +55,9 @@ function Row({ done, busy, title, note, action, optional }: { done: boolean; bus
 }
 
 /** bottom-right card while Claude Code isn't ready (like the reference's "Connect your channel") */
-export function SetupToast({ s }: { s: Studio }) {
+export function SetupToast({ s, hidden }: { s: Studio; hidden?: boolean }) {
   const e = s.env;
-  if (!e || s.ready || s.setupOpen) return null;
+  if (!e || s.ready || s.setupOpen || hidden) return null;
   const title = !e.claude ? (e.installing ? 'Installing Claude Code…' : 'Install Claude Code') : 'Sign in to Claude';
   const note = !e.claude ? (e.installing ? 'Almost there. Sign in when it finishes.' : 'Game Forge needs it to build your games.') : 'Use your Claude Pro or Max account to start making games.';
   return (
