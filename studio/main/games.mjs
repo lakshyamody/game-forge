@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { GAMES } from './paths.mjs';
 import { state } from './state.mjs';
 
-const read = (p) => { try { return readFileSync(p, 'utf8'); } catch { return ''; } };
+// Windows PowerShell 5.1 writes UTF-8 with a BOM (Set-Content -Encoding UTF8) or UTF-16LE (> / Out-File): without this JSON.parse fails and FIXES.md stops parsing
+const text = (b) => (b[0] === 0xff && b[1] === 0xfe ? b.toString('utf16le') : b.toString('utf8')).replace(/^\uFEFF/, '');
+const read = (p) => { try { return text(readFileSync(p)); } catch { return ''; } };
 const readJson = (p) => { try { return JSON.parse(read(p)); } catch { return {}; } };   // half-written while Claude edits
 const readFixes = (md) => [...read(md).matchAll(/^## (⬜|✅) (\d+)\. (.+)$/gm)].map(([, st, n, text]) => ({ n: Number(n), done: st === '✅', text: text.replace(/^"|"$/g, '') }));
 /** first paragraph under "## Pitch" in GAME.md */

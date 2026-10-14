@@ -13,8 +13,10 @@ import { APP_DIR, RES, ROOT, IS_MAC, IS_WIN } from './paths.mjs';
 
 // apps launched from Finder / the Start menu get a minimal PATH: add the usual install locations
 const H = homedir(), LOCAL = process.env.LOCALAPPDATA ?? join(H, 'AppData/Local'), ROAMING = process.env.APPDATA ?? join(H, 'AppData/Roaming');
+// Program Files can be on another drive: ask Windows, fall back to the usual C: spelling
+const PF = process.env.ProgramFiles ?? 'C:/Program Files', PF86 = process.env['ProgramFiles(x86)'] ?? 'C:/Program Files (x86)';
 const EXTRA_PATH = IS_WIN
-  ? [join(H, '.local/bin'), join(ROAMING, 'npm'), join(LOCAL, 'Microsoft/WinGet/Links'), join(LOCAL, 'Programs/nodejs'), 'C:/Program Files/nodejs', 'C:/Program Files/Git/cmd']
+  ? [join(H, '.local/bin'), join(ROAMING, 'npm'), join(LOCAL, 'Microsoft/WinGet/Links'), join(LOCAL, 'Programs/nodejs'), join(PF, 'nodejs'), join(PF, 'Git/cmd')]
   : [join(H, '.local/bin'), join(H, '.claude/local'), '/opt/homebrew/bin', '/usr/local/bin', join(H, '.npm-global/bin')];
 let shimBin = '';
 // the packaged app ships Playwright's Chromium (scripts/build-studio.mjs); playtests find it through this env var
@@ -56,9 +58,9 @@ export function claudeCommand() {
   const p = findClaude();
   if (!p) return null;
   if (!/\.cmd$/i.test(p)) return { file: p, args: [], env: {} };
-  const target = readFileSync(p, 'utf8').match(/%~?dp0%?\\?([^"%\r\n]+\.(?:exe|js|cjs|mjs))/i)?.[1];
-  const full = target && resolve(dirname(p), target);
-  if (full && existsSync(full)) return /\.exe$/i.test(full) ? { file: full, args: [], env: {} } : { file: process.execPath, args: [full], env: { ELECTRON_RUN_AS_NODE: '1' } };
+  // classic npm/pnpm shims mention `%dp0%\node.exe` first (IF EXIST …): take the first target that exists and isn't node.exe
+  const full = [...readFileSync(p, 'utf8').matchAll(/%~?dp0%?\\?([^"%\r\n]+\.(?:exe|js|cjs|mjs))/gi)].map((m) => resolve(dirname(p), m[1])).find((f) => !/[\\/]node\.exe$/i.test(f) && existsSync(f));
+  if (full) return /\.exe$/i.test(full) ? { file: full, args: [], env: {} } : { file: process.execPath, args: [full], env: { ELECTRON_RUN_AS_NODE: '1' } };
   return { file: p, args: [], env: {}, shell: true };   // unknown launcher: last resort
 }
 
@@ -69,7 +71,7 @@ const runClaude = (args) => { const c = claudeCommand(); return c ? run(c.file, 
 export const nodeScript = (script, args) => run(process.execPath, [join(ROOT, script), ...args], { env: { ...childEnv(), ELECTRON_RUN_AS_NODE: '1' }, timeout: 180000 });
 
 /** Git for Windows gives Claude Code its Bash tool (optional: without it Claude Code uses PowerShell) */
-const gitBash = () => !IS_WIN || ['C:/Program Files/Git/bin/bash.exe', 'C:/Program Files (x86)/Git/bin/bash.exe', join(LOCAL, 'Programs/Git/bin/bash.exe')].some(existsSync);
+const gitBash = () => !IS_WIN || [join(PF, 'Git/bin/bash.exe'), join(PF86, 'Git/bin/bash.exe'), join(LOCAL, 'Programs/Git/bin/bash.exe')].some(existsSync);
 
 let toolsStatus = 'ready';
 /** what the setup sheet and sidebar show about the game tools (downloads in progress, problems) */
@@ -87,11 +89,12 @@ export async function checkEnv(port) {
 }
 
 /** open a visible terminal running a command (install and sign-in stay in Anthropic's own tools) */
+// every spawn here needs an 'error' listener: ENOENT/EACCES (exe quarantined by Defender, blocked by policy) would otherwise raise Electron's main-process error dialog
 export function openTerminal(cmd) {
-  if (IS_MAC) spawn('osascript', ['-e', `tell application "Terminal" to do script "${cmd.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`, '-e', 'tell application "Terminal" to activate']);
+  if (IS_MAC) spawn('osascript', ['-e', `tell application "Terminal" to do script "${cmd.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`, '-e', 'tell application "Terminal" to activate']).on('error', () => {});
   // a new PowerShell window: Start-Process passes the command as one argument, so `|` stays inside PowerShell
-  else if (IS_WIN) spawn('powershell.exe', ['-NoProfile', '-Command', `Start-Process powershell -ArgumentList '-NoExit','-ExecutionPolicy','Bypass','-Command','${cmd.replace(/'/g, "''")}'`], { env: childEnv(), windowsHide: true });
-  else spawn('x-terminal-emulator', ['-e', `bash -lc '${cmd}; exec bash'`], { env: childEnv() });
+  else if (IS_WIN) spawn('powershell.exe', ['-NoProfile', '-Command', `Start-Process powershell -ArgumentList '-NoExit','-ExecutionPolicy','Bypass','-Command','${cmd.replace(/'/g, "''")}'`], { env: childEnv(), windowsHide: true }).on('error', () => {});
+  else spawn('x-terminal-emulator', ['-e', `bash -lc '${cmd}; exec bash'`], { env: childEnv() }).on('error', () => {});
 }
 /** official installer commands */
 // Windows: the official script, run from a file. `irm … | iex` breaks in Windows PowerShell 5.1 (the script is served as
@@ -150,7 +153,7 @@ export const loginCmd = () => (IS_WIN ? `& '${(findClaude() ?? 'claude').replace
 /** stop a process and everything it started (Claude Code runs shells, Vite, Chromium…) */
 export function killTree(child) {
   if (!child || child.exitCode !== null) return;
-  if (IS_WIN) spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true });
+  if (IS_WIN) spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { windowsHide: true }).on('error', () => {});
   else child.kill('SIGINT');
 }
 
@@ -164,7 +167,8 @@ export function installShims() {
   // POSIX sh wrappers serve macOS and Git Bash on Windows (forward slashes work there); .cmd wrappers serve PowerShell / cmd
   const fwd = (p) => p.split('\\').join('/');
   const sh = (body) => `#!/bin/sh\nexport ELECTRON_RUN_AS_NODE=1\n${body}\n`;
-  const cmd = (body) => `@echo off\r\nset ELECTRON_RUN_AS_NODE=1\r\n${body}\r\n`;
+  // chcp 65001 first: cmd reads batch files in the OEM code page, so the UTF-8 paths below (usernames like "José Łukasz") would break every wrapper
+  const cmd = (body) => `@chcp 65001 >nul\r\n@echo off\r\nset ELECTRON_RUN_AS_NODE=1\r\n${body}\r\n`;
   const files = {
     node: sh(`exec "${fwd(exe)}" "$@"`), npm: sh(`SHIM_MODE=npm exec "${fwd(exe)}" "${fwd(shim)}" "$@"`), npx: sh(`SHIM_MODE=npx exec "${fwd(exe)}" "${fwd(shim)}" "$@"`),
   };
@@ -193,5 +197,7 @@ export function ensurePlaywright(onDone) {
   if (!existsSync(cli)) return;
   toolsStatus = 'Downloading the playtest browser (one time, ~150 MB)…';
   const p = spawn(process.execPath, [cli, 'install', 'chromium'], { cwd: ROOT, env: { ...childEnv(), ELECTRON_RUN_AS_NODE: '1' }, windowsHide: true });
-  p.on('close', (code) => { toolsStatus = code === 0 ? 'ready' : 'Playtest browser download failed. Games still work; automatic playtests may not.'; onDone(toolsStatus); });
+  let over = false; const finish = (t) => { if (over) return; over = true; toolsStatus = t; onDone(t); };   // 'error' and 'close' can both fire
+  p.on('close', (code) => finish(code === 0 ? 'ready' : 'Playtest browser download failed. Games still work; automatic playtests may not.'));
+  p.on('error', (e) => finish(`Playtest browser couldn't start (${e.message}). Games still work; automatic playtests may not.`));
 }
