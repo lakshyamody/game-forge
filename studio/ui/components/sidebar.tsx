@@ -1,7 +1,7 @@
 'use client';
 import { Plus, LayoutGrid, Boxes, FolderOpen, CircleHelp, Moon, Sun, Monitor } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { NEW, PAGE_ARCADE, PAGE_ASSETS } from '@/lib/studio';
+import { NEW, PAGE_ARCADE, PAGE_ASSETS, IS_MAC, FILE_MANAGER } from '@/lib/studio';
 import type { Studio } from '@/lib/use-studio';
 import { Spinner, Square } from './ui';
 
@@ -23,7 +23,7 @@ export function Sidebar({ s, theme, setTheme }: { s: Studio; theme: ThemePref; s
   return (
     <aside className="flex w-[216px] shrink-0 flex-col">
       {/* header row shares the top line with the tabs; macOS traffic lights sit on its left */}
-      <div className="drag flex h-10 shrink-0 items-center gap-2 pl-[82px] pr-3">
+      <div className={cn('drag flex h-10 shrink-0 items-center gap-2 pr-3', IS_MAC ? 'pl-[82px]' : 'pl-4')}>
         <span className="h-4 w-4 shrink-0 rounded-[4px] bg-[#f5c518]" />
         <span className="truncate text-[13px] font-semibold">Game Forge</span>
       </div>
@@ -36,7 +36,7 @@ export function Sidebar({ s, theme, setTheme }: { s: Studio; theme: ThemePref; s
 
       <div className="mt-5 flex items-center justify-between px-4 pb-1">
         <span className="text-[11.5px] font-medium text-subtle">Games</span>
-        <button title="Show games folder in Finder" onClick={() => void s.api?.openFolder(null)} className="text-subtle hover:text-fg"><FolderOpen size={13} strokeWidth={1.8} /></button>
+        <button title={`Show games folder in ${FILE_MANAGER}`} onClick={() => void s.api?.openFolder(null)} className="text-subtle hover:text-fg"><FolderOpen size={13} strokeWidth={1.8} /></button>
       </div>
       <div className="min-h-0 flex-1 space-y-px overflow-y-auto px-2">
         {s.games.map((g) => (
@@ -52,8 +52,10 @@ export function Sidebar({ s, theme, setTheme }: { s: Studio; theme: ThemePref; s
             <p className="mt-1 truncate text-[12px] text-muted">{e?.email ?? 'Signed in'} · {e?.version?.split(' ')[0]}</p>
             {e && e.tools !== 'ready' && <p className="mt-1 text-[12px] text-warn">{e.tools}</p>}
           </> : <>
-            <div className="flex items-center gap-1.5 text-[12.5px] font-medium"><span className="h-2 w-2 rounded-full bg-warn" /> {e?.claude ? 'Not signed in' : 'Claude Code not installed'}</div>
-            <p className="mt-1 text-[12px] leading-snug text-muted">Game Forge needs Claude Code and a Claude Pro or Max account.</p>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium">
+              {!e.claude && e.installing ? <><Spinner className="text-accent" /> Installing Claude Code…</> : <><span className="h-2 w-2 rounded-full bg-warn" /> {e.claude ? 'Not signed in' : 'Claude Code not installed'}</>}
+            </div>
+            <p className="mt-1 text-[12px] leading-snug text-muted">{e.claude ? 'Sign in with your Claude Pro or Max account to start.' : 'Game Forge needs Claude Code and a Claude Pro or Max account.'}</p>
           </>}
           {e && <button onClick={() => s.setSetupOpen(true)} className="mt-2 text-[12.5px] font-medium text-accent hover:underline">{s.ready ? 'Account' : 'Set up'}</button>}
         </div>

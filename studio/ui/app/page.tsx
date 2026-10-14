@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useStudio } from '@/lib/use-studio';
-import { NEW } from '@/lib/studio';
+import { NEW, IS_MAC } from '@/lib/studio';
 import { Sidebar, type ThemePref } from '@/components/sidebar';
 import { Tabs } from '@/components/tabs';
 import { CenterPanel } from '@/components/page';
@@ -21,7 +21,11 @@ export default function Studio() {
   // Appearance: dark / light / follow the system
   useEffect(() => {
     const mq = matchMedia('(prefers-color-scheme: dark)');
-    const apply = () => { document.documentElement.dataset.theme = theme === 'system' ? (mq.matches ? 'dark' : 'light') : theme; };
+    const apply = () => {
+      const t = theme === 'system' ? (mq.matches ? 'dark' : 'light') : theme;
+      document.documentElement.dataset.theme = t;
+      void window.studio?.setTheme?.(t === 'dark');   // Windows caption buttons follow the theme
+    };
     apply(); mq.addEventListener('change', apply); return () => mq.removeEventListener('change', apply);
   }, [theme]);
 
@@ -56,7 +60,7 @@ export default function Studio() {
   if (!s.api) return <div className="grid h-full place-items-center text-muted">Open this page inside Game Forge Studio.</div>;
   return (
     <div className="flex h-full">
-      {sidebar ? <Sidebar s={s} theme={theme} setTheme={setTheme} /> : <div className="drag w-[82px] shrink-0" />}
+      {sidebar ? <Sidebar s={s} theme={theme} setTheme={setTheme} /> : <div className={IS_MAC ? 'drag w-[82px] shrink-0' : 'w-1.5 shrink-0'} />}
       <div className="flex min-w-0 flex-1 flex-col pr-1.5 pb-1.5">
         <Tabs s={s} />
         <div className="flex min-h-0 flex-1">

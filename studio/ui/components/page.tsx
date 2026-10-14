@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { RotateCw, ExternalLink, Smartphone, Maximize2, Minimize2, Download, FolderOpen, Check, Plus } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { NEW, PAGE_ARCADE, PAGE_ASSETS, TEMPLATES, type Game } from '@/lib/studio';
+import { NEW, PAGE_ARCADE, PAGE_ASSETS, TEMPLATES, FILE_MANAGER, kbd, type Game } from '@/lib/studio';
 import type { Studio } from '@/lib/use-studio';
 import { Chip, Dot, IconButton, Spinner, Thumb } from './ui';
 
@@ -41,8 +41,8 @@ function GamePage({ s, g, addressRef }: { s: Studio; g: Game; addressRef: React.
           <Chip><Dot color={g.engine === 'Three.js' ? '#a78bfa' : '#38bdf8'} /> {g.engine}</Chip>
           {g.fixes.length > 0 && <Chip><span className="text-muted">Fixes</span> {applied}/{g.fixes.length}</Chip>}
           {g.created > 0 && <Chip><span className="text-muted">Created</span> {date(g.created)}</Chip>}
-          <Chip onClick={() => void s.exportGame(g.slug)} title="Export a zip for itch.io (⌘E)"><Download size={12} strokeWidth={2} className="text-muted" /> Export</Chip>
-          <Chip onClick={() => void s.api?.openFolder(g.slug)} title="Show in Finder"><FolderOpen size={12} strokeWidth={2} className="text-muted" /> Folder</Chip>
+          <Chip onClick={() => void s.exportGame(g.slug)} title={`Export a zip for itch.io (${kbd('E')})`}><Download size={12} strokeWidth={2} className="text-muted" /> Export</Chip>
+          <Chip onClick={() => void s.api?.openFolder(g.slug)} title={`Show in ${FILE_MANAGER}`}><FolderOpen size={12} strokeWidth={2} className="text-muted" /> Folder</Chip>
         </div>
 
         <p className="mt-6 text-[14px] leading-[1.7] text-fg/90">{g.pitch || g.tagline}</p>
@@ -98,7 +98,7 @@ function Preview({ s, tab, url: page, addressRef, full, onFocus }: { s: Studio; 
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-9 shrink-0 items-center gap-1 px-2">
-        <IconButton label="Reload (⌘R)" onClick={() => s.reload(tab)}><RotateCw size={13} strokeWidth={2} /></IconButton>
+        <IconButton label={`Reload (${kbd('R')})`} onClick={() => s.reload(tab)}><RotateCw size={13} strokeWidth={2} /></IconButton>
         <form className="flex h-6 min-w-0 flex-1 items-center rounded-md px-2 hover:bg-hover focus-within:bg-hover" onSubmit={(e) => { e.preventDefault(); setQuery(draft.split('?')[1] ?? ''); s.reload(tab); }}>
           <input ref={full || onFocus ? addressRef : undefined} value={draft.replace(/^http:\/\//, '')} onChange={(e) => setDraft(e.target.value)} spellCheck={false} aria-label="Address"
             title="Add ?god, ?tune or other debug flags, then press Return" className="min-w-0 flex-1 bg-transparent font-mono text-[11.5px] text-subtle outline-none focus:text-fg" />

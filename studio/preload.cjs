@@ -2,9 +2,12 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('studio', {
+  platform: process.platform,
+  setTheme: (dark) => ipcRenderer.invoke('theme:set', dark),
+  installGit: () => ipcRenderer.invoke('git:install'),
   checkEnv: () => ipcRenderer.invoke('env:check'),
   login: () => ipcRenderer.invoke('auth:login'),
-  installClaude: () => ipcRenderer.invoke('claude:install'),
+  installClaude: (opts) => ipcRenderer.invoke('claude:install', opts),
   games: () => ipcRenderer.invoke('games:list'),
   send: (key, text, slug) => ipcRenderer.invoke('chat:send', { key, text, slug }),
   stop: (key) => ipcRenderer.invoke('chat:stop', key),
@@ -18,5 +21,6 @@ contextBridge.exposeInMainWorld('studio', {
   onChat: (fn) => ipcRenderer.on('chat:event', (_e, ev) => fn(ev)),
   onMenu: (fn) => ipcRenderer.on('menu', (_e, action) => fn(action)),
   onTools: (fn) => ipcRenderer.on('tools:status', (_e, t) => fn(t)),
+  onEnvChanged: (fn) => ipcRenderer.on('env:changed', () => fn()),
   onGamesChanged: (fn) => ipcRenderer.on('games:changed', () => fn()),
 });

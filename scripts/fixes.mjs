@@ -12,11 +12,11 @@
  * Each patch is made against the same base, so fixes apply independently in any order unless two touch
  * the same lines — then the second one reports a conflict and you re-implement it from its plan in FIXES.md.
  */
-import { spawnSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { root, walk, usageOf, typecheck as tsc } from './lib/common.mjs';
+import { planPatch, commit, makePatch } from './lib/patch.mjs';
 const [cmd, slug, ...rest] = process.argv.slice(2);
 const usage = () => { console.log(usageOf(readFileSync(fileURLToPath(import.meta.url), 'utf8'))); process.exit(1); };
 if (!cmd || !slug) usage();
@@ -44,7 +44,6 @@ function setStatus(n, done) {
   writeFileSync(fixesMd, s);
 }
 const patchFile = (n) => join(fixesDir, `${n}.patch`);
-const git = (args, input) => spawnSync('git', args, { cwd: root, encoding: 'utf8', input });
 
 if (cmd === 'start') {
   copyGame(game, base);
@@ -59,9 +58,9 @@ if (cmd === 'start') {
   // diff base → current (without fixes/), rewrite paths so the patch applies at games/<slug>/
   const cur = join(root, '.scratch', 'fixcur', slug);
   copyGame(game, cur);
-  const r = git(['diff', '--no-index', '--binary', rel(base), rel(cur)]);
-  let patch = r.stdout.split(`a/${rel(base)}/`).join(`a/${rel(game)}/`).split(`b/${rel(cur)}/`).join(`b/${rel(game)}/`);
+  const { text: patch, skipped } = makePatch(base, cur, rel(game));
   rmSync(cur, { recursive: true, force: true });
+  if (skipped.length) console.warn(`· binary files changed and are not part of the patch: ${skipped.join(', ')}`);
   if (!patch.trim()) { console.error('✖ no changes since the base snapshot — nothing to save'); process.exit(1); }
   mkdirSync(fixesDir, { recursive: true });
   writeFileSync(patchFile(n), patch);
@@ -77,16 +76,15 @@ if (cmd === 'start') {
   let failed = 0;
   for (const n of ns) {
     if (!existsSync(patchFile(n))) { console.error(`✖ no staged fix #${n} (fixes/${n}.patch)`); failed++; continue; }
-    const args = ['apply', '--whitespace=nowarn', ...(cmd === 'undo' ? ['-R'] : []), rel(patchFile(n))];
-    const check = git([...args.slice(0, 2), '--check', ...args.slice(2)]);
+    const text = readFileSync(patchFile(n), 'utf8');
+    const plan = planPatch(text, root, { reverse: cmd === 'undo' });
     // already in the requested state (applied twice, or undoing one that was never applied) → skip quietly
-    const opposite = git(['apply', '--check', ...(cmd === 'undo' ? [] : ['-R']), rel(patchFile(n))]);
-    if (check.status !== 0 && opposite.status === 0) { console.log(`· fix #${n} ${cmd === 'apply' ? 'is already applied' : "isn't applied"}`); continue; }
-    if (check.status !== 0) {
-      console.error(`✖ fix #${n} doesn't apply cleanly (it overlaps an earlier change). Re-implement it from its plan in FIXES.md.\n${check.stderr.trim().split('\n').slice(0, 4).join('\n')}`);
+    if (!plan.ok && planPatch(text, root, { reverse: cmd !== 'undo' }).ok) { console.log(`· fix #${n} ${cmd === 'apply' ? 'is already applied' : "isn't applied"}`); continue; }
+    if (!plan.ok) {
+      console.error(`✖ fix #${n} doesn't apply cleanly (it overlaps an earlier change). Re-implement it from its plan in FIXES.md.\n  ${plan.error}`);
       failed++; continue;
     }
-    git(args);
+    commit(plan);
     setStatus(n, cmd === 'apply');
     console.log(`✔ ${cmd === 'apply' ? 'applied' : 'undid'} fix #${n}`);
   }

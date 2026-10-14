@@ -9,7 +9,10 @@ let argv = process.argv.slice(2);
 let root = process.cwd();
 while (!existsSync(join(root, 'package.json')) && dirname(root) !== root) root = dirname(root);
 const bin = join(root, 'node_modules', '.bin');
-const env = { ...process.env, PATH: [bin, process.env.PATH].join(delimiter) };
+// Windows env keys are case-insensitive ("Path"): rebuild PATH once instead of adding a second key
+const env = {}; let path = '';
+for (const [k, v] of Object.entries(process.env)) { if (k.toLowerCase() === 'path') path = v || ''; else env[k] = v; }
+env.PATH = [bin, path].filter(Boolean).join(delimiter);
 delete env.SHIM_MODE;
 const done = (p) => p.on('exit', (c) => process.exit(c ?? 0));
 

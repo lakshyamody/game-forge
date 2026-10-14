@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Bot, PanelRightClose, SquarePen, Terminal, PencilLine, FileText, Search, BookOpen, Globe, ListChecks, ShieldAlert, RotateCcw, ArrowUp, Square as StopIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { NEW } from '@/lib/studio';
+import { NEW, kbd } from '@/lib/studio';
 import type { Msg, Studio } from '@/lib/use-studio';
 import { Avatar, Button, IconButton, Square } from './ui';
 
@@ -48,7 +48,7 @@ export function Thread({ s, width, onHide }: { s: Studio; width: number; onHide:
         <span className="truncate text-[13px] font-medium">Thread <span className="text-subtle">{g ? g.slug : 'new'}</span></span>
         <div className="flex-1" />
         <IconButton label="New thread" onClick={() => void s.resetChat(key)}><SquarePen size={13} strokeWidth={1.9} /></IconButton>
-        <IconButton label="Hide thread (⌘J)" onClick={onHide}><PanelRightClose size={14} strokeWidth={1.9} /></IconButton>
+        <IconButton label={`Hide thread (${kbd('J')})`} onClick={onHide}><PanelRightClose size={14} strokeWidth={1.9} /></IconButton>
       </header>
 
       <div ref={scroller} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">

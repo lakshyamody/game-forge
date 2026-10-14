@@ -14,9 +14,9 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { APP_DIR, RES, ROOT, GAMES, IS_WIN } from './main/paths.mjs';
+import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
-import { checkEnv, ensurePlaywright, installShims, nodeScript, openTerminal } from './main/env.mjs';
+import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, nodeScript, openTerminal, INSTALL_CMD, loginCmd } from './main/env.mjs';
 import { ensureWorkspace } from './main/workspace.mjs';
 import { listGames } from './main/games.mjs';
 import { jobs, sendChat } from './main/claude.mjs';
@@ -27,11 +27,15 @@ const send = (channel, payload) => win?.webContents.send(channel, payload);
 
 function wire() {
   ipcMain.handle('env:check', () => checkEnv(port));
-  ipcMain.handle('auth:login', () => openTerminal('claude auth login'));
-  ipcMain.handle('claude:install', () => openTerminal(IS_WIN ? 'irm https://claude.ai/install.ps1 | iex' : 'curl -fsSL https://claude.ai/install.sh | bash'));
+  ipcMain.handle('auth:login', () => openTerminal(loginCmd()));
+  // background install; { terminal: true } opens a terminal instead (fallback when the background install failed)
+  ipcMain.handle('claude:install', (_e, opts) => (opts?.terminal ? openTerminal(INSTALL_CMD) : installClaude(() => send('env:changed'))));
+  ipcMain.handle('git:install', () => shell.openExternal('https://git-scm.com/downloads/win'));
+  // Windows draws its own caption buttons over our title row: keep their colours in step with the theme
+  ipcMain.handle('theme:set', (_e, dark) => { if (!IS_MAC) win?.setTitleBarOverlay?.({ color: dark ? '#0e0e0f' : '#f1f1f2', symbolColor: dark ? '#ececee' : '#18181b', height: 40 }); });
   ipcMain.handle('games:list', listGames);
   ipcMain.handle('chat:send', (_e, { key, text, slug }) => sendChat(key, text, slug, (ev) => send('chat:event', ev)));
-  ipcMain.handle('chat:stop', (_e, key) => { jobs.get(key)?.kill('SIGINT'); });
+  ipcMain.handle('chat:stop', (_e, key) => killTree(jobs.get(key)));
   ipcMain.handle('chat:reset', (_e, key) => { delete state.sessions[key]; saveState(); });
   ipcMain.handle('perm:allow', (_e, rule) => { if (!state.allowed.includes(rule)) state.allowed.push(rule); saveState(); });
   ipcMain.handle('fixes:apply', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['apply', slug, String(n)]));
@@ -52,11 +56,14 @@ async function startVite() {
 
 app.whenReady().then(async () => {
   loadState(); ensureWorkspace(); installShims(); wire(); serveUi(); setMenu((action) => send('menu', action)); ensurePlaywright((status) => send('tools:status', status));
+  // packaged app: install Claude Code on first launch, so only signing in is left
+  if (app.isPackaged || process.env.STUDIO_AUTO_INSTALL) installClaude(() => send('env:changed'));
   try { await startVite(); } catch (e) { console.error('vite failed', e); }
   win = new BrowserWindow({
     show: !process.env.STUDIO_HIDDEN,   // tests: render without putting a window on screen (stray clicks)
     width: 1560, height: 960, minWidth: 1100, minHeight: 680, title: 'Game Forge Studio', backgroundColor: '#0e0e0f',
-    titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 16 },   // macOS buttons sit inside the app's own title bar
+    // the window buttons sit inside the app's own top row: traffic lights on macOS, caption buttons on Windows
+    ...(IS_MAC ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 16, y: 16 } } : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#0e0e0f', symbolColor: '#ececee', height: 40 } }),
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });
   win.loadURL(uiUrl());
@@ -71,6 +78,6 @@ let quitting = false;
 app.on('before-quit', (e) => {
   if (quitting) return;
   e.preventDefault(); quitting = true;
-  for (const c of jobs.values()) c.kill('SIGINT');
+  for (const c of jobs.values()) killTree(c);
   Promise.race([vite?.close(), new Promise((r) => setTimeout(r, 1500))]).finally(() => app.exit(0));
 });

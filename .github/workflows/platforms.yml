@@ -1,0 +1,52 @@
+# Game Forge on macOS and Windows: type-check, staged fixes (Windows checks out CRLF; patches are LF), headless
+# playtest, itch.io export, then build Game Forge Studio for that OS and smoke-test the packaged app.
+name: platforms
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium
+      - run: npm run check
+      - name: Staged fixes (save / apply / undo, real fixes)
+        run: node scripts/test/fixes-roundtrip.mjs blast-ball siteline banner-raid sunset-district
+      - name: Headless playtest
+        run: npm run shot -- neon-swarm --seconds 4
+      - name: itch.io export
+        run: npm run ship -- neon-swarm
+      - name: Studio from the repo
+        run: node scripts/test/studio-smoke.mjs --shot studio-dev.png
+      - name: Build Studio
+        run: npm run studio:build
+      - name: Studio packaged
+        run: node scripts/test/studio-smoke.mjs --packaged --shot studio-packaged.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: studio-${{ matrix.os }}
+          path: |
+            studio-*.png
+            .shots/neon-swarm/*.png
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: success() && runner.os == 'Windows'
+        with:
+          name: Game-Forge-Studio-win-x64
+          path: dist-studio/Game-Forge-Studio-win-x64.zip

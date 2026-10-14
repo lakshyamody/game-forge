@@ -35,9 +35,9 @@ export function setMenu(send) {
   const item = (label, accelerator, action) => ({ label, accelerator, click: () => send(action) });
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     ...(IS_MAC ? [{ label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, item('Account…', 'CmdOrCtrl+,', 'account'), { type: 'separator' }, { role: 'hide' }, { role: 'hideOthers' }, { type: 'separator' }, { role: 'quit' }] }] : []),
-    { label: 'File', submenu: [item('New Game', 'CmdOrCtrl+N', 'new'), { type: 'separator' }, item('Close Tab', 'CmdOrCtrl+W', 'close'), { type: 'separator' }, item('Export for itch.io…', 'CmdOrCtrl+E', 'export'), item('Show in Finder', 'CmdOrCtrl+Shift+R', 'folder')] },
+    { label: 'File', submenu: [item('New Game', 'CmdOrCtrl+N', 'new'), ...(IS_MAC ? [] : [item('Account…', 'CmdOrCtrl+,', 'account')]), { type: 'separator' }, item('Close Tab', 'CmdOrCtrl+W', 'close'), { type: 'separator' }, item('Export for itch.io…', 'CmdOrCtrl+E', 'export'), item(IS_MAC ? 'Show in Finder' : 'Show in Explorer', 'CmdOrCtrl+Shift+R', 'folder')] },
     { label: 'Edit', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
     { label: 'View', submenu: [item('Toggle Sidebar', 'CmdOrCtrl+B', 'sidebar'), item('Toggle Agent', 'CmdOrCtrl+J', 'agent'), { type: 'separator' }, item('Reload Game', 'CmdOrCtrl+R', 'reload'), item('Focus Address Bar', 'CmdOrCtrl+L', 'address'), { type: 'separator' }, { role: 'togglefullscreen' }, { role: 'toggleDevTools', accelerator: 'Alt+CmdOrCtrl+I' }] },
-    { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }, { type: 'separator' }, item('Next Tab', 'Ctrl+Tab', 'nextTab'), item('Previous Tab', 'Ctrl+Shift+Tab', 'prevTab')] },
+    { label: 'Window', submenu: [{ role: 'minimize' }, ...(IS_MAC ? [{ role: 'zoom' }] : []), { type: 'separator' }, item('Next Tab', 'Ctrl+Tab', 'nextTab'), item('Previous Tab', 'Ctrl+Shift+Tab', 'prevTab')] },
   ]));
 }

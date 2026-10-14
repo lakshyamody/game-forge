@@ -1,13 +1,17 @@
 /** Packaged app only: build ~/Game Forge from the bundled tools on every launch, never touching the user's games. */
 import { app } from 'electron';
-import { cpSync, existsSync, lstatSync, mkdirSync, readlinkSync, rmSync, symlinkSync } from 'node:fs';
-import { join } from 'node:path';
+import { cpSync, existsSync, lstatSync, mkdirSync, readlinkSync, rmSync, symlinkSync, unlinkSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { RES, ROOT, GAMES, IS_WIN } from './paths.mjs';
 
 const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'README.md'];
 
+// Windows junctions read back as "\\?\C:\…\" and paths are case-insensitive
+const same = (a, b) => { const n = (p) => resolve(p.replace(/^\\\\\?\\/, '')).replace(/[\\/]+$/, ''); return IS_WIN ? n(a).toLowerCase() === n(b).toLowerCase() : n(a) === n(b); };
 function link(target, path) {
-  try { if (lstatSync(path).isSymbolicLink() && readlinkSync(path) === target) return; rmSync(path, { recursive: true, force: true }); } catch { /* missing */ }
+  let st; try { st = lstatSync(path); } catch { /* missing */ }
+  if (st?.isSymbolicLink()) { if (same(readlinkSync(path), target)) return; unlinkSync(path); }   // unlink: never recurse through a link
+  else if (st) rmSync(path, { recursive: true, force: true });
   symlinkSync(target, path, IS_WIN ? 'junction' : 'dir');
 }
 

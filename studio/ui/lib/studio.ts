@@ -1,7 +1,9 @@
 /** The bridge to the Electron main process (studio/preload.cjs). */
 export interface Env {
+  platform: string; gitBash: boolean;
   claude: string | null; version?: string; loggedIn: boolean; authMethod?: string | null; email?: string | null;
   node: boolean; deps: boolean; tools: string; port: number;
+  installing?: boolean; installError?: string | null;   // Claude Code background install
 }
 export interface Fix { n: number; done: boolean; text: string }
 export interface Game { slug: string; thumb: boolean; engine: string; pitch: string; created: number; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
@@ -13,9 +15,12 @@ export type ChatEvent =
   | { key: string; type: 'end'; code: number; newGame: string | null; error: string; auth: boolean };
 
 export interface StudioApi {
+  platform: string;
+  setTheme(dark: boolean): Promise<void>;
+  installGit(): Promise<void>;
   checkEnv(): Promise<Env>;
   login(): Promise<void>;
-  installClaude(): Promise<void>;
+  installClaude(opts?: { terminal?: boolean }): Promise<void>;
   games(): Promise<Game[]>;
   send(key: string, text: string, slug: string | null): Promise<void>;
   stop(key: string): Promise<void>;
@@ -28,6 +33,7 @@ export interface StudioApi {
   openFolder(slug: string | null): Promise<void>;
   onChat(fn: (ev: ChatEvent) => void): void;
   onTools(fn: (status: string) => void): void;
+  onEnvChanged(fn: () => void): void;
   onMenu(fn: (action: string) => void): void;
   onGamesChanged(fn: () => void): void;
 }
@@ -44,3 +50,8 @@ export const TEMPLATES = [
   { id: '3d', name: '3D', note: 'Driving, exploring, first person' },
   { id: 'blank', name: 'Blank 2D', note: 'Anything else' },
 ] as const;
+
+/** platform words and shortcut labels (macOS vs Windows) */
+export const IS_MAC = typeof window === 'undefined' || (window.studio?.platform ?? 'darwin') === 'darwin';
+export const kbd = (k: string) => (IS_MAC ? `⌘${k}` : `Ctrl+${k}`);
+export const FILE_MANAGER = IS_MAC ? 'Finder' : 'File Explorer';

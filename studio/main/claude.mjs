@@ -5,7 +5,7 @@
 import { spawn } from 'node:child_process';
 import { ROOT } from './paths.mjs';
 import { state, saveState } from './state.mjs';
-import { childEnv, findClaude } from './env.mjs';
+import { childEnv, claudeCommand } from './env.mjs';
 import { listGames } from './games.mjs';
 
 export const NEW = '__new__';   // chat key for "make a new game" before the game exists
@@ -22,7 +22,7 @@ export const jobs = new Map();   // chat key → running claude process
 
 /** `emit(event)` delivers { key, type, … } to the page */
 export function sendChat(key, text, slug, emit) {
-  const claude = findClaude();
+  const claude = claudeCommand();
   if (!claude) return emit({ key, type: 'error', text: 'Claude Code is not installed yet.' });
   if (jobs.has(key)) return emit({ key, type: 'error', text: 'Still working on the last request — wait for it or press Stop.' });
   const prompt = slug ? `[Working on the game in games/${slug}/ — read its GAME.md first if you haven't this session.]\n\n${text}` : text;
@@ -30,7 +30,7 @@ export function sendChat(key, text, slug, emit) {
     '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed];
   if (state.sessions[key]) args.push('--resume', state.sessions[key]);
   const before = new Set(listGames().map((g) => g.slug));
-  const child = spawn(claude, args, { cwd: ROOT, env: childEnv() });
+  const child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true });
   jobs.set(key, child);
   emit({ key, type: 'start' });
   let buf = '', errText = '';

@@ -109,13 +109,14 @@ export function useStudio() {
       }
     });
     api.onTools((t) => setEnv((e) => (e ? { ...e, tools: t } : e)));
+    api.onEnvChanged(() => void check());
     let timer: ReturnType<typeof setTimeout>;
     api.onGamesChanged(() => { clearTimeout(timer); timer = setTimeout(() => void refreshGames(), 400); });
     void refreshGames();   // the games list doesn't depend on the Claude Code check — show it right away
     void check().then((ok) => { if (!ok) setSetupOpen(true); });
   }, [api]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // poll while setup isn't complete (install / sign-in happen in a terminal window)
+  // poll while setup isn't complete (Claude Code installing in the background, sign-in in the browser)
   useEffect(() => {
     if (!setupOpen) return;
     const t = setInterval(() => void check(), 2500);

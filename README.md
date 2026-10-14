@@ -17,13 +17,15 @@ All games were built by Claude in this repo from short prompts, using the shared
 
 ## Game Forge Studio (desktop app, no setup)
 
-For people who don't use a terminal: a Mac app laid out like Cursor — games on the left, the live game in browser-style tabs in the middle, and the Claude Code agent on the right.
+For people who don't use a terminal: a desktop app for **macOS and Windows**, laid out like Linear — games on the left, the live game in browser-style tabs in the middle, and the Claude Code agent on the right.
 
-- **One download:** `npm run studio:build` makes `dist-studio/Game-Forge-Studio.dmg` (~380 MB). It bundles the game tools, the asset library and every library, and runs on its own built-in Node, so the person you send it to doesn't install Node, npm or git.
-- **Uses their own Claude Code:** the setup screen installs Claude Code with Anthropic's official installer and signs in through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max).
-- **Making games:** "New game" → describe it → Claude Code builds it and the preview appears. Ask for changes in plain words; click a quick-fix to apply a kid-check fix; "Export for itch.io" makes the zip.
-- Games live in `~/Game Forge/games`. Try the app from this repo with `npm run studio`.
-- Not yet: Windows build, and an Apple Developer ID signature. Until it's signed and notarized, people right-click the app → Open the first time.
+- **One download, nothing to set up:** `npm run studio:build` makes the app for the computer you run it on. It bundles the game tools, the asset library, every library and the playtest browser (Chromium), and runs on its own built-in Node, so the person you send it to doesn't install Node, npm, git or a browser. On first launch it installs Claude Code by itself in the background (Anthropic's official installer). The only step left is signing in to Claude.
+  - **Mac:** `dist-studio/Game-Forge-Studio.dmg`
+  - **Windows:** `dist-studio/Game-Forge-Studio-win-x64.zip`: unzip it and run `Game Forge Studio.exe`. You can build it on Windows, or cross-build it from a Mac with `npm run studio:build -- --win`. CI also builds it on every push (the `platforms` workflow's artifacts).
+- **Uses their own Claude Code:** Claude Code is installed with Anthropic's official installer (`install.sh` on Mac, `install.ps1` on Windows) rather than shipped inside the app, so it stays licensed to them and keeps auto-updating. Sign-in goes through Claude's own sign-in page. The app never sees or stores Claude credentials, it just runs `claude` on their machine with their plan (Pro or Max). On Windows, [Git for Windows](https://git-scm.com/downloads/win) is optional: with it, Claude Code uses Git Bash; without it, PowerShell.
+- **Making games:** "New game" → describe it → Claude Code builds it and the preview appears. Ask for changes in plain words; apply a suggested fix with one click; "Export" makes the itch.io zip.
+- Games live in `~/Game Forge/games` (`C:\Users\<you>\Game Forge\games` on Windows). Try the app from this repo with `npm run studio`.
+- Not signed yet. Mac: right-click the app → Open the first time. Windows: SmartScreen → "More info" → "Run anyway".
 
 ## Asset library
 

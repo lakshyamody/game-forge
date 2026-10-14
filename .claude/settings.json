@@ -6,7 +6,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.mjs\"",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/hooks/typecheck.mjs"
+            ],
             "timeout": 30,
             "statusMessage": "Type-checking…"
           }

@@ -7,10 +7,10 @@
  */
 import { build } from 'vite';
 import { existsSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, cpSync, mkdirSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { resolve, join, dirname } from 'node:path';
 
 import { root, walk } from './lib/common.mjs';
+import { zipDir } from './lib/platform.mjs';
 const slug = process.argv[2];
 if (!slug || !existsSync(resolve(root, 'games', slug, 'index.html'))) { console.error('usage: npm run ship -- <slug>   (a folder in games/)'); process.exit(1); }
 process.env.GAME = slug;
@@ -47,6 +47,5 @@ console.log(`  assets: ${keep.size} files (${(bytes / 1048576).toFixed(1)} MB) o
 writeFileSync(resolve(out, 'index.html'), `<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=games/${slug}/"><script>location.replace('games/${slug}/')</script>`);
 const zip = resolve(root, 'ship', `${slug}.zip`);
 rmSync(zip, { force: true });
-if (process.platform === 'win32') execFileSync('powershell', ['-NoProfile', '-Command', `Compress-Archive -Path '${out}\\*' -DestinationPath '${zip}'`]);
-else execFileSync('zip', ['-qr', zip, '.'], { cwd: out });
+zipDir(out, zip);
 console.log(`✔ ship/${slug}/  (static site)\n✔ ship/${slug}.zip  (upload to itch.io as an HTML game)`);
