@@ -36,10 +36,22 @@ const BASE_TOOLS = ['Read', 'Write', 'Edit', 'MultiEdit', 'Glob', 'Grep', 'Skill
     'Format-List*', 'Format-Table*', 'Out-String*', 'ConvertFrom-Json*', 'ConvertTo-Json*', 'Write-Output *', 'Write-Host *', 'Get-Date*', 'Start-Sleep *', 'Get-Command *',
     'New-Item *', 'Copy-Item *', 'Move-Item *', 'Rename-Item *', 'Remove-Item .scratch*', 'Remove-Item -Recurse -Force .scratch*', 'Remove-Item -Force -Recurse .scratch*',
   ].map((c) => `PowerShell(${c})`) : []),
-  // Windows: full shell access (both shells, every command). Windows sessions lean on commands no prefix list
-  // anticipates (compound commands, redirects, edits after cd), and claude -p can't ask, so anything missing was
-  // just denied. Trade-off: Claude Code can run any command as the user without an approval step.
-  ...(IS_WIN ? ['Bash', 'PowerShell'] : [])];
+];
+/**
+ * Full access (macOS and Windows): claude -p can't ask for approval, and real build sessions keep needing commands no
+ * allow list anticipates (compound commands, redirects, `cd x && sed -i …`, scratch files outside the workspace), so
+ * each one was simply denied and builds stopped testing their games. bypassPermissions runs every tool without an
+ * approval step; BASE_TOOLS still documents the expected set and applies if this is ever switched back to acceptEdits.
+ * Trade-off: Claude Code can run any command as the user.
+ */
+const PERMISSION_MODE = 'bypassPermissions';
+/**
+ * The session is Studio's, not the user's Claude Code setup: only this workspace's settings (project + local), and no
+ * personal MCP servers. Otherwise personal plugins and hooks ran inside Studio (seen: a "talk like a caveman" hook, a
+ * "brainstorm first" plugin, a user-level model override that pointed at an unavailable model, Gmail/Drive connectors),
+ * changing how Claude talks and builds. The login is unaffected (credentials aren't a setting source).
+ */
+const ISOLATION = ['--setting-sources', 'project,local', '--strict-mcp-config'];
 export const jobs = new Map();   // chat key → running claude process
 const resets = new Map();   // chat key → how many times it was reset ("New chat")
 
@@ -57,13 +69,15 @@ export async function sendChat(key, text, slug, emit) {
   if (!claude) return fail('Claude Code is not installed yet.');
   if (jobs.has(key)) return fail('Still working on the last request — wait for it or press Stop.');
   const prompt = slug ? `[Working on the game in games/${slug}/ — read its GAME.md first if you haven't this session.]\n\n${text}` : text;
-  const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits',
+  const args = ['-p', prompt, '--output-format', 'stream-json', '--verbose', '--permission-mode', PERMISSION_MODE, ...ISOLATION,
     '--append-system-prompt', STUDIO_PROMPT, '--allowedTools', ...BASE_TOOLS, ...state.allowed,
     // packaged app: assets/ and node_modules/ are links into the app bundle; without this Claude Code may not read them
     ...(RES !== ROOT ? ['--add-dir', RES] : [])];
   if (state.sessions[key]) args.push('--resume', state.sessions[key]);
   const before = new Set(listGames().map((g) => g.slug));
-  const child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true });
+  const child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true,
+    // stdin closed: with an open pipe, claude -p waits 3 s for piped input on every message ("no stdin data received")
+    stdio: ['ignore', 'pipe', 'pipe'] });
   jobs.set(key, child);
   emit({ key, type: 'start' });
   let buf = '', errText = '';
