@@ -18,7 +18,7 @@ A browser-game workshop: shared kit + genre templates + headless playtesting, so
 
 - `kit/` — engine-agnostic: `audio` (sfx presets, music sequencer, `audio.output` bus), `tune` (live sliders on `?tune`), `director` (waves/spawn budget), `upgrades` (pick-1-of-N), `grid` (A*, flood fill, ASCII), `fsm`, `pool`, `spatial`, `math`, `rng`, `save`, `input` (Three/canvas).
 - `kit/phaser/` — `boot` (`bootPhaser`, `playtest()`), `menus` (`menuScene`, `gameOverScene`), `scenes` (`go`, `enablePause`), `cards` (`chooseCard`), `textures` (procedural art), `juice`, `ui`, `level` (`buildLevel`), `touch` (`TouchPad`).
-- `kit/three/` — `boot` (`bootThree`: renderer, bloom, shadows, resize, loop, HTML HUD, shake), `debris` (instanced cube particles).
+- `kit/three/` — `boot` (`bootThree`: renderer, resize, loop, HTML HUD, shake), `look` (`look()`: the whole visual stack for stylised games — **call this in every 3D game**), `realism` (photoreal stack), `debris` (instanced cube particles).
 - `kit/assets.ts` — the asset library loader (models + animations, PBR textures, HDRI, recorded sounds, URLs). Works in dev, builds and itch.io zips.
 - Each kit file's header comment is its usage doc. Read it before using the module.
 - `templates/` — `blank`, `topdown`, `platformer`, `puzzle`, `physics`, `3d` (a grounded world that already looks good), `3d-neon`. Each is a complete, playtested game; `npm run new` with no args describes them.
@@ -46,6 +46,45 @@ Thousands of 3D models, ~1,900 sprites, ~670 sounds, hundreds of photoscanned PB
   KayKit clips are named like `Running_A`, `1H_Melee_Attack_Chop`, `Death_A`; their rig has `handslot.r` / `handslot.l` bones for weapons. Buildings/worlds: `kaykit-medieval-hexagon` (castles, barracks, towers, homes in 4 team colours), `castle-kit`, `fantasy-town-kit`, `kaykit-dungeon-remastered`, `kaykit-halloween-bits`, `kaykit-city-builder`, `kaykit-space-base`, `kaykit-prototype-bits`.
 - Kenney GLB models face **+z** (rotate π if your forward is −z). The mini-characters / blocky-characters / graveyard characters share one rig: `idle walk sprint jump die crouch attack-melee-right attack-kick-right holding-both holding-both-shoot …`. Attach props (guns, tools) in the character root's space at hand height rather than to the arm bone — the bone's axes swing with each clip.
 - Pixel tilesheets: `pixel-platformer` tiles are 18px (20 per row), characters 24px; draw at an integer scale (2×) with `pixelArt: true`. See `templates/platformer/art.ts`.
+
+## Stylised 3D — call `look()` in every 3D game
+
+**Every 3D game starts with `look(game, '<preset>')` (`kit/three/look.ts`).** It is one line and it is the
+difference between a game that reads as finished and one that reads as a prototype. Do not hand-roll a
+`HemisphereLight` + `DirectionalLight` pair — that is what `look()` replaces.
+
+```ts
+const game = bootThree({ fov: 60, maxPixelRatio: 1.5 });   // look() owns bloom, shadows, fog and the background
+const { scene, camera, loop, hud, shake } = game;
+const fx = look(game, 'night');
+fx.prepare(model);                       // shadows on every mesh under it
+each frame: fx.follow(player.position)   // keeps the sharp shadow area on the player
+```
+
+It gives you a gradient sky (with stars at night) that the fog colour and image-based light are derived
+from — so the horizon can never go muddy — plus a key/fill/rim light rig with soft shadows, bloom, AgX
+filmic tone mapping, a colour grade and a vignette, all tuned per preset.
+
+| Preset | For |
+|---|---|
+| `day` | bright outdoors, clear sky |
+| `toy` | flat-lit bright voxel / toy look, cheap (no strong shadows) |
+| `night` | moonlit exteriors, starry sky |
+| `sunset` | golden hour, warm low sun |
+| `neon` | synthwave / arcade, heavy bloom |
+| `horror` | dark, dense fog, heavy vignette |
+| `interior` | warm cosy rooms, lamp light |
+| `overcast` | soft grey daylight |
+
+- `look(game, 'day', { hdri: 'kloofendal_48d_partly_cloudy_puresky' })` uses a real HDRI sky and its
+  image-based light instead of the procedural gradient — better for photoscanned settings. The light rig,
+  post chain and `follow()` are unchanged. This is what `templates/3d` does.
+- `fx.setPreset('night')` swaps the whole look at runtime (night falling, entering a cave).
+- `fx.tune({ fogDensity: 0.02 })` nudges single values. Colour and light tweaks are cheap; changing
+  `zenith`/`horizon`/`ground`/`stars` rebuilds the sky texture, so don't do that every frame.
+- Ambient occlusion is **off** by default (flat-shaded art barely shows it, and it costs); opt in with
+  `look(game, 'day', { ao: {} })`.
+- Cheapest settings for a heavy scene: `{ shadows: false }`, or a smaller `shadowRange` (default 40).
 
 ## Realistic 3D (GTA-style look)
 

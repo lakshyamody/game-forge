@@ -2,6 +2,22 @@
 
 The difference between "works" and "fun" is almost entirely here. Every line maps to a kit call.
 
+## Looks (do this first — it is one line and it changes everything)
+- **3D: call `look(game, '<preset>')`** (`kit/three/look.ts`) before building the world. It is the whole
+  visual stack: gradient sky, key/fill/rim lights, soft shadows, bloom, AgX tone mapping, grade, vignette.
+  `fx.prepare(obj)` on models, `fx.follow(player.position)` each frame.
+- **Never ship a flat single-colour sky.** "The sky is just one boring blue / just black / all grey" is the
+  single most common kid-check complaint in this repo. A preset gives you a gradient and stars for free.
+- **The player must not blend into the background.** Give the key object emissive, a brighter value, or an
+  outline colour the backdrop never uses.
+- **No default-grey materials.** Every `MeshStandardMaterial` gets a deliberate colour and roughness. Pick a
+  palette (3-4 colours + one accent for anything interactive) and stay in it.
+- **Anything that is supposed to emit light must glow** — emissive material *and* a real light, not a white
+  box standing in for a lamp.
+- **Give things ground contact.** Shadows (via `fx.prepare`) or a soft dark decal under the player; objects
+  that float look broken.
+- Check it at the camera distance you actually play at, not from a debug angle.
+
 ## Core verb (fires every second — make it crunchy)
 - Sound on every action (`sfx.play`), pitch-varied (ZzFX randomness does this).
 - Visual kick: muzzle flash / dust puff / squash (`juice.burst`, `juice.squash`).

@@ -7,8 +7,9 @@
  */
 import * as THREE from 'three';
 import { bootThree } from '@kit/three/boot';
+import { look } from '@kit/three/look';
 import { createInput } from '@kit/input';
-import { loadModel, loadTexture, loadHdri, animate, sound } from '@kit/assets';
+import { loadModel, loadTexture, animate, sound } from '@kit/assets';
 import { sfx, music, SONGS, audio } from '@kit/audio';
 import { damp, clamp } from '@kit/math';
 import { rng } from '@kit/rng';
@@ -22,19 +23,12 @@ const save = store('{{SLUG}}', { best: 0 });
 const T = { walk: 4.2, run: 7.5, turn: 10, gems: 12, time: 60 };
 tune(T, 'Tuning');
 
-const { scene, camera, loop, hud, shake } = bootThree({ fov: 50, shadows: true, fog: { color: 0xc9dcec, near: 70, far: 220 }, bloom: { strength: 0.2, radius: 0.4, threshold: 0.9 } });
-// sky + soft light from a real HDRI (swap the id for your setting: *_night, *_sunset, snowy_park_01, urban_street_01…)
-await loadHdri(scene, 'kloofendal_48d_partly_cloudy_puresky', { background: true, intensity: 0.6 });
-scene.add(new THREE.HemisphereLight(0xdcebff, 0x5a5040, 0.45));
-const sun = new THREE.DirectionalLight(0xfff1d8, 2.6);
-sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004;
-Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120 });
-scene.add(sun, sun.target);
-/** shadows on for every mesh of a loaded model */
-const fx = {
-  prepare: (o: THREE.Object3D) => o.traverse((c) => { const m = c as THREE.Mesh; if (m.isMesh) m.castShadow = m.receiveShadow = true; }),
-  follow: (p: THREE.Vector3) => { sun.target.position.copy(p); sun.position.set(p.x + 25, 45, p.z + 18); },   // the sharp shadow area moves with the player
-};
+const game = bootThree({ fov: 50 });   // look() owns the sky, lights, shadows, fog and post-processing
+const { scene, camera, loop, hud, shake } = game;
+// One call for the whole look: sky, key/fill/rim lights, soft shadows that follow the player, bloom,
+// filmic tone mapping, colour grade, vignette. Swap the preset for your setting — day, night, sunset,
+// neon, horror, interior, toy, overcast — or pass your own `hdri` for a photoscanned sky like this one.
+const fx = look(game, 'day', { hdri: 'kloofendal_48d_partly_cloudy_puresky' });
 const input = createInput(document.body);
 
 // ------------------------------------------------------------------ world: textured ground to the horizon, props
@@ -111,7 +105,7 @@ function end() {
 for (const id of ['menu', 'over']) $(id).addEventListener('pointerdown', () => start());
 
 // ------------------------------------------------------------------ loop
-const camPos = new THREE.Vector3(0, 6, 9), look = new THREE.Vector3();
+const camPos = new THREE.Vector3(0, 6, 9), lookAt = new THREE.Vector3();
 loop((dt) => {
   if (input.pressed('KeyM')) audio.toggleMute();
   if (state !== 'play' && (input.pressed('Space') || input.pressed('Enter'))) start();
@@ -153,8 +147,8 @@ loop((dt) => {
   // third-person camera: behind and above, smoothed
   camPos.set(player.position.x, player.position.y + 6.5, player.position.z + 9.5);
   camera.position.lerp(camPos, 1 - Math.exp(-4 * dt));
-  look.set(player.position.x, player.position.y + 1.2, player.position.z - 2);
-  camera.lookAt(look);
+  lookAt.set(player.position.x, player.position.y + 1.2, player.position.z - 2);
+  camera.lookAt(lookAt);
   fx.follow(player.position);
   for (const s of solids) s.m.visible = Math.hypot(s.x - camera.position.x, s.z - camera.position.z) > 3.5;   // never fill the screen with a tree the camera backs into
 

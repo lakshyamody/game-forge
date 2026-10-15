@@ -50,6 +50,7 @@ Ask the user only if the genre itself is ambiguous; otherwise pick the most fun 
 ## 3. Build the core verb first
 
 Get the player moving and the core verb working with feedback before anything else. Most of the work is the game's Play scene; menus, pause, game over, best score, level-up cards come from the kit (`menuScene`, `gameOverScene`, `enablePause`, `chooseCard`).
+- **3D games start with `look(game, '<preset>')`** (`kit/three/look.ts`) — sky, key/fill/rim lights, soft shadows, bloom, filmic tone mapping, colour grade, vignette, in one line. Presets: `day toy night sunset neon horror interior overcast`. Never hand-roll a `HemisphereLight` + `DirectionalLight` pair. Photoreal game? `realism()` instead.
 - Art + sound: the asset library via `kit/assets.ts` (models, animations, textures, skies, recorded sounds, sprite sheets) — see the Asset library section of AGENTS.md. Procedural `kit/phaser/textures.ts` / `kit/audio.ts` for abstract styles, effects and synth SFX. Feel: `Juice`.
 - Every tuning number goes in the game's `config.ts` and through `tune(obj, 'Name')` so `?tune` shows live sliders.
 - Systems to reuse rather than rewrite: `Director` (waves), `Upgrades` (roguelite picks), `Grid` (A*, flood fill), `Fsm` (AI/states), `Pool` + `SpatialHash` (>100 entities), `buildLevel` (ASCII levels), `TouchPad` (mobile).
