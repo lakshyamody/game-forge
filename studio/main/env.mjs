@@ -175,6 +175,10 @@ export function installShims() {
   if (IS_WIN) Object.assign(files, { 'node.cmd': cmd(`"${exe}" %*`), 'npm.cmd': cmd(`set SHIM_MODE=npm\r\n"${exe}" "${shim}" %*`), 'npx.cmd': cmd(`set SHIM_MODE=npx\r\n"${exe}" "${shim}" %*`) });
   // one wrapper per package tool (tsc, vite, playwright…), so npm scripts find them without node_modules/.bin
   const nm = join(RES, 'node_modules');
+  // tsc: TypeScript 7's native compiler directly. Its JS launcher starts it without windowsHide, so from Studio (no
+  // console) every `npm run check` / `npx tsc` flashed a terminal window on Windows
+  const tscExe = join(nm, '@typescript', `typescript-${process.platform}-${process.arch}`, 'lib', IS_WIN ? 'tsc.exe' : 'tsc');
+  if (existsSync(tscExe)) { files.tsc = sh(`exec "${fwd(tscExe)}" "$@"`); if (IS_WIN) files['tsc.cmd'] = cmd(`"${tscExe}" %*`); }
   if (existsSync(nm)) for (const d of readdirSync(nm).flatMap((d) => (d.startsWith('@') ? readdirSync(join(nm, d)).map((s) => join(d, s)) : [d]))) {
     try {
       const pj = JSON.parse(readFileSync(join(nm, d, 'package.json'), 'utf8'));

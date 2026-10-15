@@ -27,7 +27,12 @@ export const usageOf = (src) => src.split('*/')[0];
 export function typecheck({ only } = {}) {
   const tsc = join(root, 'node_modules/typescript/bin/tsc');
   if (!existsSync(tsc)) return null;
-  const r = spawnSync(process.execPath, [tsc, '--noEmit', '--pretty', 'false', '-p', root], { cwd: root, encoding: 'utf8', windowsHide: true });
+  // TypeScript 7's native compiler, called directly: its JS launcher starts it without windowsHide, so on Windows (in
+  // Game Forge Studio, which has no console) every type-check flashed a terminal window
+  const native = join(root, 'node_modules/@typescript', `typescript-${process.platform}-${process.arch}`, 'lib', process.platform === 'win32' ? 'tsc.exe' : 'tsc');
+  const [file, pre] = existsSync(native) ? [native, []] : [process.execPath, [tsc]];
+  const r = spawnSync(file, [...pre, '--noEmit', '--pretty', 'false', '-p', root], { cwd: root, encoding: 'utf8', windowsHide: true });
+  if (r.error || r.status === null) return null;   // couldn't run (blocked, killed): don't report it as a type error
   if (r.status === 0) return [];
   const lines = `${r.stdout}${r.stderr}`.split('\n').filter(Boolean);
   return only ? lines.filter((l) => /error TS/.test(l) && only(l)) : lines;
