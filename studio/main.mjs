@@ -16,7 +16,7 @@ import { existsSync, watch, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
-import { APP_DIR, RES, ROOT, GAMES, IS_MAC } from './main/paths.mjs';
+import { APP_DIR, RES, ROOT, GAMES, IS_MAC, IS_WIN } from './main/paths.mjs';
 import { state, loadState, saveState } from './main/state.mjs';
 // tests: a throwaway profile (sessions, allowed tools, shims) instead of the user's own
 if (process.env.STUDIO_USER_DATA) app.setPath('userData', process.env.STUDIO_USER_DATA);
@@ -92,6 +92,8 @@ app.whenReady().then(async () => {
     width: Math.min(1560, aw), height: Math.min(960, ah), minWidth: Math.min(1100, aw), minHeight: Math.min(680, ah), title: 'Game Forge Studio', backgroundColor: '#ffffff',
     // the window buttons sit inside the app's own top row: traffic lights on macOS, caption buttons on Windows
     ...(IS_MAC ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 20, y: 21 } } : { titleBarStyle: 'hidden', titleBarOverlay: { color: '#ffffff', symbolColor: '#1b1b1b', height: 56 } }),
+    // macOS takes the icon from the .app bundle; Windows and Linux need it on the window
+    ...(IS_MAC ? {} : { icon: join(APP_DIR, IS_WIN ? 'studio/icon.ico' : 'studio/icon.png') }),
     webPreferences: { preload: join(APP_DIR, 'studio/preload.cjs'), contextIsolation: true, nodeIntegration: false },
   });
   if (process.env.STUDIO_HIDDEN) win.webContents.setAudioMuted(true);   // tests: no game music out of the speakers

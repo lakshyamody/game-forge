@@ -137,10 +137,11 @@ function buildMac() {
   rmSync(join(R, 'default_app.asar'), { force: true });
   fillResources(R, join(root, 'node_modules'), 'mac');
   step('naming + signing');
+  cpSync(join(root, 'studio/icon.icns'), join(R, 'icon.icns'));   // CFBundleIconFile below points at this
   const plist = join(appPath, 'Contents/Info.plist');
   // Electron treats an executable named "Electron" as dev mode (app.isPackaged = false), so give it the app's name
   renameSync(join(appPath, 'Contents/MacOS/Electron'), join(appPath, 'Contents/MacOS', name));
-  for (const [k, v] of [['CFBundleExecutable', name], ['CFBundleName', name], ['CFBundleDisplayName', name], ['CFBundleIdentifier', 'dev.gameforge.studio'], ['CFBundleShortVersionString', pkg.version]]) {
+  for (const [k, v] of [['CFBundleExecutable', name], ['CFBundleName', name], ['CFBundleDisplayName', name], ['CFBundleIdentifier', 'dev.gameforge.studio'], ['CFBundleShortVersionString', pkg.version], ['CFBundleIconFile', 'icon']]) {
     try { sh('plutil', ['-replace', k, '-string', v, plist]); } catch { sh('plutil', ['-insert', k, '-string', v, plist]); }
   }
   sh('codesign', ['--force', '--deep', '--sign', '-', appPath], { stdio: 'ignore' });   // ad-hoc: required for Apple Silicon to run it
