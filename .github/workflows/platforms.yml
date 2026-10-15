@@ -25,6 +25,8 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium
       - run: npm run check
+      - name: Realistic packs resume after the app is closed mid-download
+        run: node scripts/test/realistic-resume.mjs
       - name: Staged fixes (save / apply / undo, real fixes)
         run: node scripts/test/fixes-roundtrip.mjs blast-ball siteline banner-raid sunset-district
       - name: Headless playtest
