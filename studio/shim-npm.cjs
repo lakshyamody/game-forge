@@ -48,9 +48,15 @@ if (mode === 'npx') {
     if (!name) { console.log(Object.keys(scripts).join('\n')); process.exit(0); }
     if (!scripts[name]) { console.error(`npm: no script "${name}"`); process.exit(1); }
     const extra = rest[0] === '--' ? rest.slice(1) : rest;
-    const quoted = extra.map((a) => (/^[\w./:=@%+,-]+$/.test(a) ? a : `'${a.replace(/'/g, `'\\''`)}'`)).join(' ');
-    const line = `${scripts[name]} ${quoted}`.trim();
+    const win = process.platform === 'win32';
+    // quoting for the shell that runs the line: sh takes '…'; cmd.exe has no single quotes, only "…" (with \" inside).
+    // Single quotes on Windows split `--title "Goal Rush"` into 'Goal and Rush' and new games started broken.
+    const quote = (a) => (/^[\w./:=@+,-]+$/.test(a) ? a : win ? `"${a.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/, '$1$1')}"` : `'${a.replace(/'/g, `'\\''`)}'`);
+    const line = `${scripts[name]} ${extra.map(quote).join(' ')}`.trim();
     console.log(`\n> ${name}\n> ${line}\n`);
-    done(process.platform === 'win32' ? spawn(line, { stdio: 'inherit', env, shell: true, windowsHide: true }) : spawn('/bin/sh', ['-c', line], { stdio: 'inherit', env }));
+    // `node <script>` (most of this repo's scripts): run it on our Node directly, args as a list, no shell to re-parse them
+    const direct = /^node\s+([\w./-]+)$/.exec(scripts[name]);
+    if (direct) done(spawn(process.execPath, [join(root, direct[1]), ...extra], { stdio: 'inherit', cwd: root, env: { ...env, ELECTRON_RUN_AS_NODE: '1' }, windowsHide: true }));
+    else done(win ? spawn(line, { stdio: 'inherit', env, shell: true, windowsHide: true }) : spawn('/bin/sh', ['-c', line], { stdio: 'inherit', env }));
   } else { console.error(`npm ${cmd ?? ''}: not supported in Game Forge Studio (try: npm run <script>)`); process.exit(1); }
 }

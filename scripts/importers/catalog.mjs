@@ -1,6 +1,6 @@
 /** The library index: assets/catalog.json for the asset browser, assets/CATALOG.md for agents. */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, join, relative } from 'node:path';
+import { basename, dirname, join, relative, sep } from 'node:path';
 import { walk } from '../lib/common.mjs';
 import { A as LIBRARY } from './shared.mjs';
 
@@ -21,7 +21,7 @@ export function catalog(A = LIBRARY) {
       return { name: basename(f, '.glb'), preview: existsSync(join(dir, '_preview', basename(f, '.glb') + '.png')), ...(anims.length ? { animations: anims } : {}) };
     });
   }
-  for (const pack of existsSync(join(A, 'sprites')) ? readdirSync(join(A, 'sprites')).sort() : []) cat.sprites[pack] = walk(join(A, 'sprites', pack)).filter((f) => f.endsWith('.png') && !f.endsWith('_preview.png')).map((f) => relative(join(A, 'sprites', pack), f)).sort();
+  for (const pack of existsSync(join(A, 'sprites')) ? readdirSync(join(A, 'sprites')).sort() : []) cat.sprites[pack] = walk(join(A, 'sprites', pack)).filter((f) => f.endsWith('.png') && !f.endsWith('_preview.png')).map((f) => relative(join(A, 'sprites', pack), f).split(sep).join('/')).sort();   // '/' on Windows too: these land in catalog.json and CATALOG.md
   for (const pack of existsSync(join(A, 'sounds')) ? readdirSync(join(A, 'sounds')).sort() : []) cat.sounds[pack] = readdirSync(join(A, 'sounds', pack)).filter((f) => f.endsWith('.ogg')).map((f) => basename(f, '.ogg')).sort();
   cat.textures = existsSync(join(A, 'textures')) ? readdirSync(join(A, 'textures')).sort() : [];
   cat.hdri = existsSync(join(A, 'hdri')) ? readdirSync(join(A, 'hdri')).filter((f) => f.endsWith('.hdr')).map((f) => basename(f, '.hdr')).sort() : [];

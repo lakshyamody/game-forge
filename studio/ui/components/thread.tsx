@@ -1,7 +1,7 @@
 'use client';
 /** The chat panel beside a game: the conversation with Claude Code about that game. */
 import { PanelRightClose, SquarePen } from 'lucide-react';
-import { kbd, type Game } from '@/lib/studio';
+import { IS_MAC, kbd, type Game } from '@/lib/studio';
 import type { Studio } from '@/lib/use-studio';
 import { IconButton, Square } from './ui';
 import { Composer, Messages } from './chat';
@@ -32,7 +32,7 @@ export function Thread({ s, g, width, onHide }: { s: Studio; g: Game; width: num
       <div className="shrink-0 px-3 pb-3">
         {/* no autofocus: focusing the chat on tab switch pulls focus out of the game, which pauses most games */}
         <Composer s={s} chatKey={g.slug} autoFocus={false} placeholder={`Ask for a change to ${g.title}…`} />
-        <p className="px-1 pt-1.5 text-[12px] text-subtle">{s.busy.has(g.slug) ? 'Sends when Claude Code finishes, or press Stop' : 'Return to send · Shift-Return for a new line'}</p>
+        <p className="px-1 pt-1.5 text-[12px] text-subtle">{s.busy.has(g.slug) ? 'Sends when Claude Code finishes, or press Stop' : (IS_MAC ? 'Return to send · Shift-Return for a new line' : 'Enter to send · Shift+Enter for a new line')}</p>
       </div>
     </aside>
   );

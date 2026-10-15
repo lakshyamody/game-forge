@@ -10,7 +10,7 @@ import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFi
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { ROOT } from './paths.mjs';
+import { ROOT, IS_WIN } from './paths.mjs';
 import { childEnv, nodeScript, setToolsStatus } from './env.mjs';
 import { realisticInstalled, stripLiteNote } from './workspace.mjs';
 
@@ -35,14 +35,14 @@ export async function downloadRealistic(onStatus) {
       if (done(f.name)) continue;
       const part = join(TMP, `${f.name}.part`);
       const sha = await download(`${REALISTIC}${f.name}`, part, (n) => status(`Downloading realistic textures, skies and people… ${Math.floor(((before + n) / total) * 100)}% (${mb(before + n)} of ${mb(total)})`));
-      if (sha !== f.sha256) { rmSync(part, { force: true }); throw new Error(`${f.name} didn't match its checksum`); }
+      if (sha !== f.sha256) { rmSync(part, { force: true, maxRetries: 5 }); throw new Error(`${f.name} didn't match its checksum`); }
       status(`Unpacking ${f.name}…`);
       await untar(part, A);
-      rmSync(part, { force: true }); writeFileSync(join(TMP, `${f.name}.done`), f.sha256);
+      rmSync(part, { force: true, maxRetries: 5 }); writeFileSync(join(TMP, `${f.name}.done`), f.sha256);
       before += f.size;
     }
     writeFileSync(join(A, '.realistic'), String(manifest.version ?? 1));
-    rmSync(TMP, { recursive: true, force: true });
+    rmSync(TMP, { recursive: true, force: true, maxRetries: 5 });
     stripLiteNote();
     await catalogIfNeeded();
     status('ready');
@@ -62,7 +62,9 @@ async function download(url, file, onBytes) {
   return hash.digest('hex');
 }
 
-const untar = (file, dest) => new Promise((ok, fail) => execFile('tar', ['-xf', file, '-C', dest], { env: childEnv(), windowsHide: true, maxBuffer: 1e7 }, (e, _o, err) => (e ? fail(new Error(`unpack failed: ${String(err || e.message).trim().slice(-200)}`)) : ok())));
+// Windows: System32's bsdtar by full path. A PATH `tar` can be GNU tar (Git's usr\bin, MSYS2, Cygwin): it can't read zip and takes `C:` for a host, so the pack would re-download every launch
+const TAR = IS_WIN ? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe') : 'tar';
+const untar = (file, dest) => new Promise((ok, fail) => execFile(TAR, ['-xf', file, '-C', dest], { env: childEnv(), windowsHide: true, maxBuffer: 1e7 }, (e, _o, err) => (e ? fail(new Error(`unpack failed: ${String(err || e.message).trim().slice(-200)}`)) : ok())));
 
 /** the asset browser and CATALOG.md (what Claude reads) list the full library once it's in */
 async function catalogIfNeeded() {

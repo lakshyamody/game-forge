@@ -1,6 +1,6 @@
 /** Kenney packs (kenney.nl, CC0): 3D kits → embedded GLBs + previews; 2D packs → sprites and/or sounds. */
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync } from 'node:fs';
-import { basename, dirname, join, relative, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 import { walk } from '../lib/common.mjs';
 import { A, io, download, unzip, tempDir, writeLicense } from './shared.mjs';
 
@@ -39,12 +39,12 @@ async function importModels(slug, src, glbDir) {
 }
 
 function importSpritesAndSounds(slug, src, files) {
-  const parts = [];
+  const parts = [], rel = (f) => relative(src, f).split(sep).join('/');   // '/' on Windows too: the regexes below match on it
   // 2D: keep tiles, tilemaps/sheets, PNG folders, fonts; skip engine projects and vector sources
-  const keep = files.filter((f) => /\.(png|txt|xml|tmx|tsx|ttf)$/i.test(f) && !/(Construct 3|Unity|Vector|Visit |Isometric|Side|Black background|Spritesheet\/.*black|Preview\.png|Sample)/i.test(relative(src, f)) && !/License/i.test(basename(f)));
+  const keep = files.filter((f) => /\.(png|txt|xml|tmx|tsx|ttf)$/i.test(f) && !/(Construct 3|Unity|Vector|Visit |Isometric|Side|Black background|Spritesheet\/.*black|Preview\.png|Sample)/i.test(rel(f)) && !/License/i.test(basename(f)));
   if (keep.some((f) => f.endsWith('.png'))) {
     const out = join(A, 'sprites', slug); rmSync(out, { recursive: true, force: true });
-    for (const f of keep) { const d = join(out, relative(src, f).replace(/PNG \(Transparent\)\//, '')); mkdirSync(dirname(d), { recursive: true }); cpSync(f, d); }
+    for (const f of keep) { const d = join(out, rel(f).replace(/PNG \(Transparent\)\//, '')); mkdirSync(dirname(d), { recursive: true }); cpSync(f, d); }
     const prev = files.find((f) => /^preview\.png$/i.test(basename(f)));
     if (prev) cpSync(prev, join(out, '_preview.png'));
     parts.push(`${keep.length} sprite files`);

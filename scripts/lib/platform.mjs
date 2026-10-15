@@ -5,7 +5,8 @@
  * - Windows env keys are case-insensitive ("Path"); copying process.env and setting PATH would create two keys.
  */
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
-import { delimiter } from 'node:path';
+import { readdirSync, rmSync } from 'node:fs';
+import { delimiter, join } from 'node:path';
 
 export const IS_WIN = process.platform === 'win32';
 
@@ -28,8 +29,13 @@ export function npmSync(args, opts = {}) {
 /** start npm asynchronously (e.g. a dev server) */
 export const npmSpawn = (args, opts = {}) => (IS_WIN ? spawn(['npm', ...args.map(winQuote)].join(' '), { stdio: 'inherit', shell: true, windowsHide: true, ...opts }) : spawn('npm', args, { stdio: 'inherit', ...opts }));
 
-/** zip a folder's contents → file (zip on macOS/Linux, PowerShell Compress-Archive on Windows) */
+/** Windows' own bsdtar (System32, Windows 10+) reads and writes zip; a GNU tar earlier on PATH (Git Bash, MSYS2) can't */
+export const winTar = () => join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe');
+
+/** zip a folder's contents → file (zip on macOS/Linux, bsdtar on Windows) */
 export function zipDir(dir, file) {
-  if (IS_WIN) execFileSync('powershell', ['-NoProfile', '-Command', `Compress-Archive -Path '${dir.replace(/'/g, "''")}\\*' -DestinationPath '${file.replace(/'/g, "''")}' -Force`], { stdio: 'inherit', windowsHide: true });
+  // not Compress-Archive: Windows PowerShell 5.1 names entries with backslashes (games\x\index.html), which isn't a valid
+  // zip path, so a host like itch.io can see one flat file instead of folders
+  if (IS_WIN) { rmSync(file, { force: true }); execFileSync(winTar(), ['-a', '-c', '-f', file, ...readdirSync(dir)], { cwd: dir, stdio: 'inherit', windowsHide: true }); }
   else execFileSync('zip', ['-qry', file, '.'], { cwd: dir, stdio: 'inherit' });
 }

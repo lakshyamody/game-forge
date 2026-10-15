@@ -9,7 +9,7 @@
  *   npm run shot -- arcade --no-bot               # the launcher page
  *   npm run shot -- neon-swarm --no-bot           # just load + screenshot
  *   npm run shot -- neon-swarm --keys "Space,KeyD" # extra keys the bot should mash
- *   npm run shot -- neon-swarm --query "god&wave=5" # URL params (games can read them for debug)
+ *   npm run shot -- neon-swarm --query "god;wave=5" # URL params (games can read them for debug); ; or & between
  *   npm run shot -- my-game --eval "__game.scene.getScene('Play').xp = 99"   # force a state after start
  *
  * Exit code 1 if the page threw any errors. Screenshots land in .shots/<name>/.
@@ -19,13 +19,14 @@ import { resolve, basename } from 'node:path';
 import { root } from './lib/common.mjs';
 import { devServer, launchChromium } from './lib/browser.mjs';
 const args = process.argv.slice(2);
-const target = args.find((a) => !a.startsWith('--') && !/^\d/.test(a)) ?? 'neon-swarm';
+const target = (args.find((a) => !a.startsWith('--') && !/^\d/.test(a)) ?? 'neon-swarm').replace(/\\/g, '/');   // games\neon-swarm (Windows) → games/neon-swarm
 const opt = (name, def) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : def; };
 const seconds = Number(opt('seconds', 8));
 const bot = !args.includes('--no-bot');
 const extraKeys = (opt('keys', '') || '').split(',').filter(Boolean);
 const [vw, vh] = opt('size', '1280x720').split('x').map(Number);
-const query = opt('query', '');   // e.g. --query "god&autoaim&wave=5"
+// e.g. --query "god&autoaim&wave=5"; ';' separates too (on Windows cmd.exe takes & for a second command)
+const query = opt('query', '').replace(/;/g, '&');
 const clicks = !args.includes('--no-click');
 const evalJs = opt('eval', '');    // JS run in the page after start, e.g. --eval "__game.scene.getScene('Play').xp = 99"
 const isRoot = target === '.' || target === '/' || target === 'arcade';
@@ -43,6 +44,7 @@ const base = dev.base;
 const gpu = args.includes('--gpu');
 const browser = await launchChromium({ gpu });
 const page = await browser.newPage({ viewport: { width: vw, height: vh } });
+page.setDefaultTimeout(120000);   // navigation + actions: the 30 s default times out on slow software-rendered machines
 const errors = [];
 const warnings = [];
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}\n${(e.stack || '').split('\n').slice(1, 4).join('\n')}`));
@@ -55,7 +57,9 @@ page.on('console', (m) => {
 let shotN = 0;
 const shot = async (label) => {
   const file = resolve(out, `${String(++shotN).padStart(2, '0')}-${label}.png`);
-  await page.screenshot({ path: file });
+  // software-rendered 3D (SwiftShader: CI runners, PCs without a usable GPU) can take 5–45 s per screenshot on a
+  // slow machine; Playwright's 30 s default failed whole playtests there (Windows CI: blast-ball at 0.5–5 fps)
+  await page.screenshot({ path: file, timeout: 120000 });
   return file;
 };
 

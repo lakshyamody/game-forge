@@ -20,6 +20,7 @@ export async function launchChromium({ gpu = false } = {}) {
   const angle = process.platform === 'darwin' ? 'metal' : process.platform === 'win32' ? 'd3d11' : 'vulkan';
   const opts = (channel) => ({
     channel,
+    timeout: 120000,   // the first launch after unzipping can be slow while antivirus scans Chromium
     args: [
       ...(gpu ? [`--use-angle=${angle}`, '--enable-gpu', '--ignore-gpu-blocklist'] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']),
       '--autoplay-policy=no-user-gesture-required',

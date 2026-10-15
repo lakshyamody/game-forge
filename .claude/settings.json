@@ -26,7 +26,15 @@
       "Bash(npm run play:*)",
       "Bash(npm run ship:*)",
       "Bash(npm run shot:*)",
-      "Bash(npx tsc --noEmit -p .)"
+      "Bash(npx tsc --noEmit -p .)",
+      "PowerShell(node scripts/shot.mjs:*)",
+      "PowerShell(npm run build)",
+      "PowerShell(npm run check)",
+      "PowerShell(npm run new:*)",
+      "PowerShell(npm run play:*)",
+      "PowerShell(npm run ship:*)",
+      "PowerShell(npm run shot:*)",
+      "PowerShell(npx tsc --noEmit -p .)"
     ]
   }
 }

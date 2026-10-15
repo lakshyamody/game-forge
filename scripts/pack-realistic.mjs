@@ -11,6 +11,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream, mkdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { root } from './lib/common.mjs';
+import { IS_WIN, winTar } from './lib/platform.mjs';
 
 const A = join(root, 'assets'), out = join(root, 'dist-studio/realistic');
 const PACKS = { 'realistic-textures.zip': ['textures', 'hdri'], 'realistic-models.zip': ['models/polyhaven', 'models/rocketbox'] };
@@ -21,7 +22,9 @@ const files = [];
 for (const [name, dirs] of Object.entries(PACKS)) {
   const zip = join(out, name);
   console.log(`▸ ${name} (${dirs.join(', ')})`);
-  execFileSync('zip', ['-qr', '-1', zip, ...dirs, '-x', '*.DS_Store'], { cwd: A, stdio: 'inherit' });   // paths relative to assets/
+  // paths relative to assets/; Windows has no zip, its own bsdtar writes zips
+  if (IS_WIN) execFileSync(winTar(), ['-a', '-c', '-f', zip, '--exclude', '.DS_Store', ...dirs], { cwd: A, stdio: 'inherit' });
+  else execFileSync('zip', ['-qr', '-1', zip, ...dirs, '-x', '*.DS_Store'], { cwd: A, stdio: 'inherit' });
   const size = statSync(zip).size;
   if (size >= 2 * 1024 ** 3) throw new Error(`${name} is over GitHub's 2 GB limit: split it`);
   files.push({ name, size, sha256: await sha256(zip) });

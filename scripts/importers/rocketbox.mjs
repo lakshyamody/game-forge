@@ -3,7 +3,7 @@
  * scripts/fbx2glb.mjs), plus two shared mocap libraries (anims-male / anims-female) and their walking speeds.
  */
 import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 import { root, walk } from '../lib/common.mjs';
 import { A, getJson, download, writeLicense } from './shared.mjs';
 
@@ -21,7 +21,7 @@ export async function addRocketbox(o) {
   const src = o.opt('from') ? resolve(o.opt('from')) : join(root, '.scratch', 'rocketbox');   // raw-download cache
   const get = async (rel) => { const p = join(src, rel); if (!existsSync(p)) { mkdirSync(dirname(p), { recursive: true }); await download(RAW + 'Assets/' + rel, p); } return p; };
   const tree = await getJson('https://api.github.com/repos/microsoft/Microsoft-Rocketbox/git/trees/HEAD?recursive=1').catch(() => null);
-  const files = tree ? tree.tree.map((t) => t.path) : walk(src).map((f) => 'Assets/' + relative(src, f));
+  const files = tree ? tree.tree.map((t) => t.path) : walk(src).map((f) => 'Assets/' + relative(src, f).split(sep).join('/'));   // ids are '/' paths like the GitHub tree's
   const { fbxConverter } = await import('../fbx2glb.mjs');
   const conv = await fbxConverter();
   const out = join(A, 'models', 'rocketbox'); mkdirSync(join(out, '_preview'), { recursive: true });
