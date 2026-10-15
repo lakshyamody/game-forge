@@ -31,6 +31,16 @@ jobs:
         run: npm run shot -- neon-swarm --seconds 4
       - name: itch.io export
         run: npm run ship -- neon-swarm
+      # zip entries must use / (Windows PowerShell 5.1's Compress-Archive wrote games\x\index.html)
+      - name: itch.io export zip has valid entry names
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $z = [IO.Compression.ZipFile]::OpenRead("$PWD\ship\neon-swarm.zip"); $names = $z.Entries.FullName; $z.Dispose()
+          if (-not $names) { throw 'empty zip' }
+          $bad = @($names | Where-Object { $_.Contains('\') }); if ($bad) { throw "backslashes in zip entry names: $($bad[0..2] -join ', ')" }
+          "$($names.Count) entries, e.g. $($names | Select-Object -Last 1)"
       - name: Build Studio UI
         run: |
           npm ci --prefix studio/ui
@@ -50,10 +60,12 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          foreach ($d in 'C:\Program Files\Git', 'C:\Program Files\nodejs', "$env:LOCALAPPDATA\Programs\nodejs") { if (Test-Path $d) { Rename-Item $d "$d.off" } }
+          foreach ($d in 'C:\Program Files\Git', 'C:\Program Files\nodejs', "$env:LOCALAPPDATA\Programs\nodejs") { if (Test-Path $d) { Rename-Item $d "$d.off" -ErrorAction Stop } }
           Remove-Item -Recurse -Force "$HOME\Game Forge", "$HOME\.local\bin\claude.exe", "$HOME\.claude", "$HOME\.claude.json", "$env:APPDATA\Game Forge Studio" -ErrorAction SilentlyContinue
           $env:Path = 'C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0'
           if (Get-Command node, git, python -ErrorAction SilentlyContinue) { throw 'the runner still has node/git/python on PATH' }
+          # Studio also looks in these places itself (EXTRA_PATH), so they must really be gone
+          foreach ($x in "$env:ProgramFiles\nodejs\node.exe", "$env:ProgramFiles\Git\cmd\git.exe", "$env:ProgramFiles\Git\bin\bash.exe") { if (Test-Path $x) { throw "$x is still there" } }
           $env:ELECTRON_RUN_AS_NODE = '1'
           # piped: PowerShell doesn't wait for a GUI-subsystem exe (Electron) unless its output is consumed
           & "$PWD\dist-studio\win\Game Forge Studio\Game Forge Studio.exe" scripts/test/studio-smoke.mjs --packaged --require-claude --shot studio-blank.png 2>&1 | Out-Host
