@@ -2,11 +2,11 @@
  * Packaged app only: the realistic asset packs (photoscanned PBR textures, HDRI skies, Poly Haven props, Rocketbox
  * people; ~1.8 GB) aren't in the installer. After launch they download in the background from the repo's
  * `realistic-v1` release, are checked against the manifest's sha256, and unpacked into ~/Game Forge/assets with the
- * system tar (bsdtar reads zip on macOS and Windows 10+). Interrupted downloads start that file again next launch.
+ * system tar (bsdtar reads zip on macOS and Windows 10+). An interrupted download carries on from its .part next launch.
  */
 import { execFile } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -31,15 +31,17 @@ export async function downloadRealistic(onStatus) {
     const manifest = await res.json();   // { version, files: [{ name, size, sha256 }] }
     const total = manifest.files.reduce((a, f) => a + f.size, 0);
     let before = manifest.files.filter((f) => done(f.name)).reduce((a, f) => a + f.size, 0);
+    if (before) await catalog();   // packs from an earlier launch; an app update may have copied the light CATALOG.md back
     for (const f of manifest.files) {
       if (done(f.name)) continue;
       const part = join(TMP, `${f.name}.part`);
-      const sha = await download(`${REALISTIC}${f.name}`, part, (n) => status(`Downloading realistic textures, skies and people… ${Math.floor(((before + n) / total) * 100)}% (${mb(before + n)} of ${mb(total)})`));
+      const sha = await download(`${REALISTIC}${f.name}`, part, f.size, (n) => status(`Downloading realistic textures, skies and people… ${Math.floor(((before + n) / total) * 100)}% (${mb(before + n)} of ${mb(total)})`));
       if (sha !== f.sha256) { rmSync(part, { force: true, maxRetries: 5 }); throw new Error(`${f.name} didn't match its checksum`); }
       status(`Unpacking ${f.name}…`);
       await untar(part, A);
       rmSync(part, { force: true, maxRetries: 5 }); writeFileSync(join(TMP, `${f.name}.done`), f.sha256);
       before += f.size;
+      if (f !== manifest.files.at(-1)) await catalog();   // Claude Code can use this pack while the next downloads
     }
     writeFileSync(join(A, '.realistic'), String(manifest.version ?? 1));
     rmSync(TMP, { recursive: true, force: true, maxRetries: 5 });
@@ -51,13 +53,22 @@ export async function downloadRealistic(onStatus) {
   }
 }
 
-async function download(url, file, onBytes) {
-  const res = await fetch(url);   // follows GitHub's redirect to its file storage
+/** resumes `file` from what an earlier launch left: hashes those bytes, then asks only for the rest */
+async function download(url, file, size, onBytes) {
+  let hash = createHash('sha256'), n = 0;
+  if (existsSync(file)) for await (const c of createReadStream(file)) { hash.update(c); n += c.length; }
+  if (n) onBytes(n);
+  if (n === size && size) return hash.digest('hex');   // all there; the app closed before unpacking it
+  // follows GitHub's redirect to its file storage, which honours Range (206; 416 when the .part is already too long)
+  let res = await fetch(url, n ? { headers: { Range: `bytes=${n}-` } } : undefined);
+  const resumed = res.status === 206 && res.headers.get('content-range')?.startsWith(`bytes ${n}-`);
+  if (n && !resumed && res.status !== 200) { await res.body?.cancel(); res = await fetch(url); }
   if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
-  const hash = createHash('sha256'); let n = 0, last = 0;
+  if (!resumed) { hash = createHash('sha256'); n = 0; }   // whole file coming: start the .part again
+  let last = n;
   const body = Readable.fromWeb(res.body);
   body.on('data', (c) => { hash.update(c); n += c.length; if (n - last > 8 * 1048576) { last = n; onBytes(n); } });
-  await pipeline(body, createWriteStream(file));
+  await pipeline(body, createWriteStream(file, { flags: resumed ? 'a' : 'w' }));
   onBytes(n);
   return hash.digest('hex');
 }
@@ -66,9 +77,11 @@ async function download(url, file, onBytes) {
 const TAR = IS_WIN ? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe') : 'tar';
 const untar = (file, dest) => new Promise((ok, fail) => execFile(TAR, ['-xf', file, '-C', dest], { env: childEnv(), windowsHide: true, maxBuffer: 1e7 }, (e, _o, err) => (e ? fail(new Error(`unpack failed: ${String(err || e.message).trim().slice(-200)}`)) : ok())));
 
-/** the asset browser and CATALOG.md (what Claude reads) list the full library once it's in */
+/** the asset browser and CATALOG.md (what Claude reads) list what's on disk; never throws (a stale list beats a failed download) */
+const catalog = () => nodeScript('scripts/assets.mjs', ['catalog']).catch(() => ({ code: 1 }));
+/** the full library, once it's in (once per pack version) */
 async function catalogIfNeeded() {
   if (existsSync(join(A, '.catalog-ok'))) return;
-  const r = await nodeScript('scripts/assets.mjs', ['catalog']);
+  const r = await catalog();
   if (r.code === 0) writeFileSync(join(A, '.catalog-ok'), readFileSync(join(A, '.realistic'), 'utf8'));
 }
