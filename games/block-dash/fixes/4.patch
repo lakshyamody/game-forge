@@ -1,0 +1,24 @@
+===================================================================
+--- a/games/block-dash/main.ts	
++++ b/games/block-dash/main.ts	
+@@ -181,7 +181,7 @@
+ 
+ /** Hit an obstacle: smash it into voxels. A second hit while the zombies are close is game over. */
+ function stumble(ob: { kind: string; group?: THREE.Group }) {
+-  const colors = ob.kind === 'tnt' ? [0xc83228, 0xececec, 0xffb040, 0x333333] : ob.kind === 'beam' ? [0x685232, 0xb08f58] : [0x808080, 0x5a5a5a];
++  const colors = ob.kind === 'tnt' ? [0xc83228, 0xececec, 0xffb040, 0x333333] : ob.kind === 'beam' ? [0x685232, 0xb08f58] : [0xa8884f, 0x6e5630];
+   ob.group?.children.forEach((m) => debris.burst(m.position.x, m.position.y, m.position.z, colors, ob.kind === 'tnt' ? 22 : 12, ob.kind === 'tnt' ? 11 : 6, 8, 0.28));
+   if (ob.group) ob.group.visible = false;
+   if (ob.kind === 'tnt') { sfx.play('bigBoom'); shake(0.9); flash('#ffb040'); } else { sound.play('impact-sounds/impactmining_*', { volume: 0.8 }); shake(0.45); flash('#ff3030'); }
+===================================================================
+--- a/games/block-dash/world.ts	
++++ b/games/block-dash/world.ts	
+@@ -157,7 +157,7 @@
+       if (ob.kind === 'gap') continue;
+       const g = new THREE.Group();
+       if (ob.kind === 'tnt') for (const l of ob.lanes) box(g, 'tnt', ob.s, l, 0.5);
+-      if (ob.kind === 'wall') for (const l of ob.lanes) { box(g, 'cobble', ob.s, l, 0.5); box(g, 'cobble', ob.s, l, 1.5); }
++      if (ob.kind === 'wall') for (const l of ob.lanes) { box(g, 'planks', ob.s, l, 0.5); box(g, 'planks', ob.s, l, 1.5); }   // wood stands out on any stone or sand path
+       if (ob.kind === 'beam') { for (let o = -2; o <= 2; o++) box(g, 'log', ob.s, o, 1.5); box(g, 'log', ob.s, -2, 0.5); box(g, 'log', ob.s, 2, 0.5); }
+       ob.group = g; seg.group.add(g);
+     }

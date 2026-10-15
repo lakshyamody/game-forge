@@ -1,0 +1,12 @@
+===================================================================
+--- a/games/block-dash/world.ts	
++++ b/games/block-dash/world.ts	
+@@ -146,7 +146,7 @@
+       }
+       if (inGap(s)) { for (let o = -2; o <= 2; o++) put('lava', s, o, GROUND + 0.5); continue; }
+       if (s % 6 === 3 && s < len - 2) for (const o of [-2, 2]) for (let y = -1.5; y > GROUND; y--) put(bi.edge === 'planks' ? 'log' : 'stonebrick', s, o, y);
+-      if (s % 10 === 5 && s < len - 4) { const o = (s / 10) % 2 < 1 ? 2 : -2; put(bi.edge === 'planks' ? 'log' : 'stonebrick', s, o, 0.5); put('glowstone', s, o, 1.5); }
++      if (s % 10 === 5 && s < len - 4) { const o = (s / 10) % 2 < 1 ? 3 : -3; put('glowstone', s, o, -0.5); }   // lamps set into the path's outer edge, never in your face
+     }
+     // obstacles: their own small groups so a stumble can smash them
+     const box = (g: THREE.Group, type: string, s: number, o: number, y: number) => {

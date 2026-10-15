@@ -1,0 +1,24 @@
+===================================================================
+--- a/games/block-dash/world.ts	
++++ b/games/block-dash/world.ts	
+@@ -39,9 +39,11 @@
+   private heading = 0;   // sum of turns so far, kept in -1..1
+   private groundMats = new Map<string, THREE.MeshStandardMaterial>();
+   private coinGeo: THREE.BoxGeometry;
++  private coinMat: THREE.Material;
+   constructor(private scene: THREE.Scene, private B: Blocks, seed: string, private biomeEvery: () => number) {
+     this.rng = new Rng(seed);
+     this.coinGeo = B.geo.gold.clone().scale(0.42, 0.42, 0.42);
++    this.coinMat = new THREE.MeshStandardMaterial({ map: B.atlas, emissiveMap: B.atlas, emissive: 0xffc040, emissiveIntensity: 0.9, metalness: 0.4, roughness: 0.3 });   // gold glows (and blooms)
+   }
+ 
+   /** world x,z of a point on a segment */
+@@ -209,7 +211,7 @@
+     plane.receiveShadow = true;
+     seg.group.add(plane);
+     // coins
+-    seg.coinMesh = new THREE.InstancedMesh(this.coinGeo, B.lit, Math.max(1, seg.coins.length));
++    seg.coinMesh = new THREE.InstancedMesh(this.coinGeo, this.coinMat, Math.max(1, seg.coins.length));
+     seg.coinMesh.castShadow = true; seg.coinMesh.frustumCulled = false;
+     seg.group.add(seg.coinMesh);
+     this.updateCoins(seg, 0);

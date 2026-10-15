@@ -1,0 +1,7 @@
+{
+  "title": "Block Dash",
+  "tagline": "Temple Run in a Minecraft world. Outrun the zombie horde.",
+  "controls": "A/D lanes & turns · W/Space jump · S slide · swipe on touch · Esc pause · M mute",
+  "color": "#5dbb3a",
+  "engine": "three"
+}

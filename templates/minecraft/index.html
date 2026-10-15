@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>{{TITLE}}</title>
+  <link rel="icon" href="data:," />
+  <style>
+    html, body { margin: 0; height: 100%; background: #78a7ff; overflow: hidden; touch-action: none; }
+    #game { position: fixed; inset: 0; }
+    /* Minecraft HUD: pixel font, text with a hard drop shadow, stone-grey slots */
+    .hud { font-family: "Press Start 2P", monospace !important; image-rendering: pixelated; }
+    .hud .mc { color: #fff; text-shadow: 2px 2px 0 #3f3f3f; font-size: 14px; letter-spacing: 1px; }
+    .hud .top { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; gap: 18px; align-items: center; }
+    .hud .top .spacer { flex: 1; }
+    .hud .icon { width: 18px; height: 18px; vertical-align: -3px; margin-right: 6px; image-rendering: pixelated; }
+    .hud .cross { position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; transform: translate(-50%, -50%); }
+    .hud .cross::before, .hud .cross::after { content: ""; position: absolute; background: rgba(255,255,255,.85); mix-blend-mode: difference; }
+    .hud .cross::before { left: 8px; top: 0; width: 2px; height: 18px; }
+    .hud .cross::after { top: 8px; left: 0; width: 18px; height: 2px; }
+    .hud .hotbar { position: absolute; bottom: max(10px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; padding: 3px; background: rgba(20,20,20,.55); border: 3px solid #1d1d1d; box-shadow: inset 0 0 0 2px #8b8b8b; }
+    .hud .slot { width: 44px; height: 44px; display: grid; place-items: center; border: 2px solid #5a5a5a; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #9a9a9a; background: rgba(139,139,139,.35); position: relative; }
+    .hud .slot img { width: 30px; height: 30px; image-rendering: pixelated; }
+    .hud .slot.on { outline: 4px solid #fff; outline-offset: -1px; z-index: 1; }
+    .hud .slot span { position: absolute; left: 3px; top: 2px; font-size: 8px; color: #ddd; text-shadow: 1px 1px 0 #333; }
+    .hud .toast { position: absolute; top: 24%; left: 50%; transform: translateX(-50%); font-size: clamp(18px, 3vw, 30px); color: #ffff55; text-shadow: 3px 3px 0 #3f3f15; opacity: 0; transition: opacity .25s; pointer-events: none; white-space: nowrap; }
+    .hud .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(16, 12, 8, .45); pointer-events: auto; cursor: pointer; text-align: center; }
+    .hud .overlay h1 { margin: 0; font-size: clamp(26px, 6vw, 64px); color: #fff; text-shadow: 4px 4px 0 #3f3f3f; letter-spacing: 2px; }
+    .hud .overlay p { margin: 0; color: #e0e0e0; font-size: 12px; line-height: 1.8; text-shadow: 2px 2px 0 #3f3f3f; max-width: 80vw; }
+    .hud .overlay .go { margin-top: 12px; padding: 14px 26px; background: #6f6f6f; color: #fff; font-size: 13px; border: 3px solid #1d1d1d; box-shadow: inset 2px 2px 0 #a8a8a8, inset -2px -2px 0 #4a4a4a; text-shadow: 2px 2px 0 #3f3f3f; }
+    .hud .overlay .go:hover { background: #7f87c8; }
+    .hud .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

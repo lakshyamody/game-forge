@@ -1,0 +1,7 @@
+{
+  "title": "{{TITLE}}",
+  "tagline": "{{TAGLINE}}",
+  "controls": "WASD move · Space jump · Shift sprint · Mouse look · Click break · Right-click place · 1–9 blocks · V camera · M mute",
+  "color": "#5d9b3a",
+  "engine": "three"
+}

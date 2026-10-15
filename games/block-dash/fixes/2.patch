@@ -1,0 +1,12 @@
+===================================================================
+--- a/games/block-dash/world.ts	
++++ b/games/block-dash/world.ts	
+@@ -132,7 +132,7 @@
+     const t = seg.turn;
+     for (let o = -3; o <= 3; o++) for (let y = 0; y < 5; y++) {
+       const ot = o * t, dy = Math.abs(y - 2);
+-      const arrow = (dy === 0 && ot >= -2) || (dy === 1 && (ot === 1 || ot === 2)) || (dy === 2 && ot === 1);
++      const u = ot + dy, arrow = u >= 0 && u <= 2;   // one bold road-sign > chevron pointing the way
+       put(arrow ? 'glowstone' : 'stonebrick', len + 3, o, y + 0.5);
+     }
+     for (let s = len - 2; s <= len + 3; s++) for (let y = 0; y < 5; y++) put('stonebrick', s, -t * 3, y + 0.5);

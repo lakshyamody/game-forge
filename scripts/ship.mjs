@@ -7,7 +7,7 @@
  */
 import { build } from 'vite';
 import { existsSync, writeFileSync, rmSync, readFileSync, readdirSync, statSync, cpSync, mkdirSync } from 'node:fs';
-import { resolve, join, dirname } from 'node:path';
+import { resolve, join, dirname, relative, sep } from 'node:path';
 
 import { root, walk } from './lib/common.mjs';
 import { zipDir } from './lib/platform.mjs';
@@ -38,6 +38,9 @@ for (const lit of literals) {
   }
   if (!lit.includes('/')) { add(`hdri/${lit}.hdr`); if (existsSync(join(A, 'textures', lit))) for (const f of readdirSync(join(A, 'textures', lit))) keep.add(`textures/${lit}/${f}`); }
 }
+// the Minecraft kit (kit/three/mc) loads its block, item and plant art at runtime: ship those folders whole (~1 MB)
+if (/@kit\/three\/mc/.test(sources)) for (const dir of ['sprites/mc-blocks', 'sprites/voxel-pack/PNG/Tiles', 'sprites/voxel-pack/PNG/Items'])
+  for (const f of walk(join(A, dir))) keep.add(relative(A, f).split(sep).join('/'));
 // licence notices travel with the files that need them (MIT: Rocketbox people)
 for (const p of [...keep]) { const lic = p.replace(/[^/]+$/, 'LICENSE.md'); if (p.startsWith('models/') && existsSync(join(A, lic))) keep.add(lic); }
 let bytes = 0;

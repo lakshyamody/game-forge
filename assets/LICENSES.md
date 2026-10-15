@@ -45,6 +45,7 @@ Every asset here is free for commercial use and redistribution. Almost all are p
 | Kenney — ui-audio | https://kenney.nl/assets/ui-audio | CC0 |
 | Kenney — ui-pack | https://kenney.nl/assets/ui-pack | CC0 |
 | Kenney — voiceover-pack | https://kenney.nl/assets/voiceover-pack | CC0 |
+| Kenney — voxel-pack | https://kenney.nl/assets/voxel-pack | CC0 |
 | Microsoft Rocketbox — avatars + animations | https://github.com/microsoft/Microsoft-Rocketbox | MIT |
 | Poly Haven — HDRI skies | https://polyhaven.com | CC0 |
 | Poly Haven — PBR textures | https://polyhaven.com | CC0 |
@@ -73,3 +74,6 @@ Every asset here is free for commercial use and redistribution. Almost all are p
 | Poly Haven — wood_floor_worn | https://polyhaven.com/a/wood_floor_worn | CC0 |
 | Quaternius — Universal Animation Library (Standard) + Female Mannequin | https://opengameart.org/content/universal-animation-library | CC0 |
 | ambientCG — PBR materials | https://ambientcg.com | CC0 |
+| mc-blocks/classic — 16x16 block textures (ARoachIFoundOnMyPillow) | https://opengameart.org/content/1616-block-textures | CC0 |
+| mc-blocks/natural — 16x16 block texture set (ARoachIFoundOnMyPillow) | https://opengameart.org/content/16x16-block-texture-set | CC0 |
+| mc-blocks/stones — Too Many Stones (JoeEnderman) | https://opengameart.org/content/too-many-stones-just-the-assets-16x-minecraft-style | CC0 |
