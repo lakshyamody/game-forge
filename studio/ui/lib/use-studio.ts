@@ -4,7 +4,7 @@
  * busy flags and preview reloads. Mirrors the main process's chat events (start → text/tool → result → end).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { studio, NEW, FILE_MANAGER, type ChatEvent, type Env, type Game } from './studio';
+import { studio, NEW, FILE_MANAGER, type Ask, type ChatEvent, type Env, type Game } from './studio';
 
 export type Msg =
   | { id: number; kind: 'user' | 'bot' | 'err' | 'tool' | 'note'; text: string }
@@ -30,6 +30,8 @@ export function useStudio() {
   const [busy, setBusy] = useState<Map<string, number>>(new Map());   // chat key → start time
   const [reloads, setReloads] = useState<Record<string, number>>({});
   const [setupOpen, setSetupOpen] = useState(false);
+  const [asks, setAsks] = useState<Record<string, Ask>>({});   // "choose the look" options waiting, per game
+  const [picker, setPicker] = useState<string | null>(null);    // the game whose picker is open
   const [drafts, setDrafts] = useState<Record<string, string>>({});   // unsent composer text per tab
   const setDraft = useCallback((key: string, text: string) => setDrafts((d) => ({ ...d, [key]: text })), []);
   const [recents, setRecentsState] = useState<Recent[]>([]);
@@ -97,6 +99,18 @@ export function useStudio() {
 
   // "New chat": clear the conversation here and in the main process (which also stops a run in progress;
   // that run sends no end event, so it's no longer busy from here on)
+  /** the user's picks (option index per question) → recorded, and sent to Claude as the next message; null = "you decide" */
+  const answerAsk = useCallback(async (slug: string, picks: Record<string, number> | null) => {
+    const a = asks[slug]; if (!a || !api) return;
+    setPicker(null); setAsks(({ [slug]: _, ...rest }) => rest);
+    const chosen = picks && Object.fromEntries(a.questions.map((q) => [q.id, q.options[picks[q.id]]?.asset ?? '']));
+    await api.answerChoices(slug, chosen);
+    const text = picks
+      ? `Here's how I want it to look:\n${a.questions.map((q) => { const o = q.options[picks[q.id]]; return `• ${q.question} → ${o.label} (${o.asset}${o.tint ? `, tint ${o.tint}` : ''})`; }).join('\n')}\nUse exactly these. Now build the game.`
+      : 'You decide: pick whichever option looks best for each, then build the game.';
+    await send(text, slug);
+  }, [asks, api, send]);
+
   const resetChat = useCallback(async (key: string) => {
     stopped.current.delete(key);
     setBusy((b) => { const n = new Map(b); n.delete(key); return n; });
@@ -132,6 +146,7 @@ export function useStudio() {
         if (stopped.current.delete(k)) push(k, { kind: 'note', text: 'Stopped.' });
         else if (ev.auth) { push(k, { kind: 'err', text: 'Your Claude session expired. Sign in again to continue.' }); setSetupOpen(true); void check(); }
         else if (ev.error) push(k, { kind: 'err', text: ev.error });
+        if (ev.ask) { const a = ev.ask; setAsks((x) => ({ ...x, [a.slug]: a })); setPicker(a.slug); }
         const next = queuedRef.current[k];
         if (next) { setQueued(({ [k]: _, ...rest }) => rest); void send(next, k); }
         void refreshGames().then(() => {
@@ -164,7 +179,7 @@ export function useStudio() {
 
   const game = games.find((g) => g.slug === active) ?? null;
   return {
-    api, env, ready: ready(env), games, game, tabs, active, chats, busy, reloads, setupOpen, recents,
+    api, env, ready: ready(env), games, game, tabs, active, chats, busy, reloads, setupOpen, recents, asks, picker, setPicker, answerAsk,
     drafts, setDraft, queued, queue, setActive, open, close, send, stop, runFix, exportGame, resetChat, newGame, reload, check, setSetupOpen, push, patch,
     previewUrl: (slug: string) => (env?.port ? `http://localhost:${env.port}/games/${slug}/` : ''),
     thumbUrl: (g: Game) => (env?.port && g.thumb ? `http://localhost:${env.port}/games/${g.slug}/thumb.jpg` : ''),

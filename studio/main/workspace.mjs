@@ -4,7 +4,7 @@ import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, r
 import { join, resolve } from 'node:path';
 import { RES, ROOT, GAMES, IS_WIN } from './paths.mjs';
 
-const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'README.md'];
+const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'preview.html', 'README.md'];
 
 // Windows junctions read back as "\\?\C:\…\" and paths are case-insensitive
 const same = (a, b) => { const n = (p) => resolve(p.replace(/^\\\\\?\\/, '')).replace(/[\\/]+$/, ''); return IS_WIN ? n(a).toLowerCase() === n(b).toLowerCase() : n(a) === n(b); };

@@ -3,7 +3,9 @@
  * (session ids in state), translated into friendly events for the page: start → text / tool … → result → end.
  */
 import { spawn } from 'node:child_process';
-import { RES, ROOT, IS_WIN } from './paths.mjs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { RES, ROOT, GAMES, IS_WIN } from './paths.mjs';
 import { state, saveState } from './state.mjs';
 import { childEnv, claudeCommand, claudeUpdated, claudeUpdating, killTree } from './env.mjs';
 import { listGames } from './games.mjs';
@@ -15,6 +17,7 @@ const STUDIO_PROMPT = `You are running inside Game Forge Studio, a desktop app f
 - Headless checks (\`npm run shot\`, \`npm run check\`, Playwright scripts) are fine and encouraged. Read the screenshots \`npm run shot\` lists (exact paths) and look at every one before saying a game looks right. For a scripted playtest, import \`devServer\` and \`launchChromium\` from scripts/lib/browser.mjs instead of starting vite yourself.
 - Keep scratch files (logs, scripts) in .scratch/ inside the workspace, not /tmp or other folders outside it.
 - If \`npm run shot\` reports a SwiftShader or "Basic Render" renderer, this computer has no usable GPU: the fps it shows is not the game's real speed, so don't chase the fps target; judge the screenshots and mention it.
+- New game: after \`npm run new\`, run the choose-look skill (the user picks how the key things look from rendered options in a popup) and END YOUR TURN; build once their picks arrive. Same when they ask to change how something looks.
 - When you create a new game, use \`npm run new\` so it lands in games/<slug>/ with a game.json, and say the game's name when you're done. The user plays it in the app: tell them to open its tab, never to run npm commands (they have no terminal).
 - Only the games in games/ exist in this workspace: skip reference games that AGENTS.md names but aren't there.
 - The user can apply staged kid-check fixes with buttons in the app; if they ask you to "fix 2", run \`npm run fixes -- apply <slug> 2\`.${IS_WIN ? `
@@ -83,7 +86,9 @@ export async function sendChat(key, text, slug, emit) {
   // and the message just vanished) and nothing for a shell to re-parse. Ending stdin also spares claude -p its 3 s wait
   // for more piped input on every message.
   let child;
-  try { child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env }, shell: claude.shell, windowsHide: true }); }
+  const startedAt = Date.now();
+  // GAME_FORGE_STUDIO: scripts/ask.mjs tells Claude the Studio will show its "choose the look" options as a picker
+  try { child = spawn(claude.file, [...claude.args, ...args], { cwd: ROOT, env: { ...childEnv(), ...claude.env, GAME_FORGE_STUDIO: '1' }, shell: claude.shell, windowsHide: true }); }
   catch (e) { return fail(`Couldn't start Claude Code: ${e.message}`); }
   child.stdin.on('error', () => {});   // it exited before reading: 'close' reports why
   child.stdin.end(prompt);
@@ -109,7 +114,9 @@ export async function sendChat(key, text, slug, emit) {
     const fresh = listGames().map((g) => g.slug).filter((s) => !before.has(s));
     if (key === NEW && fresh.length) { state.sessions[fresh[0]] = state.sessions[NEW]; delete state.sessions[NEW]; saveState(); }
     const auth = /not logged in|login expired|run \/login|invalid api key|authentication/i.test(errText);
-    emit({ key, type: 'end', code, newGame: fresh[0] ?? null, error: code && !auth ? errText.trim().slice(-600) : '', auth });
+    // "choose the look": the run left options waiting for the user (scripts/ask.mjs) → the page shows the picker
+    const ask = pendingAsk(slug ?? fresh[0], startedAt);
+    emit({ key, type: 'end', code, newGame: fresh[0] ?? null, error: code && !auth ? errText.trim().slice(-600) : '', auth, ask });
   });
 }
 
@@ -148,4 +155,18 @@ function describeTool(name, i) {
   if (name === 'WebSearch' || name === 'WebFetch') return '🌐 Searching the web';
   if (name === 'TodoWrite') return '📝 Planning the steps';
   return `🛠 ${name}`;
+}
+
+/** options from scripts/ask.mjs still waiting for the user (written during this run) → { slug, title, questions } */
+function pendingAsk(slug, since) {
+  if (!slug) return null;
+  try {
+    const a = JSON.parse(readFileSync(join(GAMES, slug, 'choices', 'ask.json'), 'utf8'));
+    return a.status === 'pending' && a.created >= since - 1000 ? { slug, ...a } : null;
+  } catch { return null; }
+}
+/** the user's picks: recorded next to the options (the picks themselves go to Claude as the next message) */
+export function answerAsk(slug, picks) {
+  const f = join(GAMES, slug, 'choices', 'ask.json');
+  try { const a = JSON.parse(readFileSync(f, 'utf8')); writeFileSync(f, JSON.stringify({ ...a, status: 'answered', picks, answered: Date.now() }, null, 2)); } catch { /* gone */ }
 }

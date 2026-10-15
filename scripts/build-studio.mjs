@@ -31,7 +31,7 @@ const require = createRequire(import.meta.url);
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const electronVersion = require('electron/package.json').version;
 const SHOWCASE = ['blast-ball'];   // one example game; people make their own (games are ~100 KB, the asset library is the size)
-const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', '.claude/settings.json', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'README.md'];
+const ENGINE = ['kit', 'scripts', 'templates', 'src', '.claude/skills', '.claude/settings.json', 'CLAUDE.md', 'AGENTS.md', 'package.json', 'vite.config.ts', 'tsconfig.json', 'index.html', 'assets.html', 'preview.html', 'README.md'];
 const NOT_NEEDED = new Set(['electron', '@electron', 'electron-builder', 'app-builder-lib', 'app-builder-bin', 'dmg-builder', '7zip-bin', '.cache', '.vite']);
 /** shipped beside the app: the app isn't code-signed (free, internal), so the first launch needs one extra step */
 const HOW_TO_OPEN = {

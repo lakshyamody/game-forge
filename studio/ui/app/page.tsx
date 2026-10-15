@@ -7,6 +7,7 @@ import { TopBar } from '@/components/topbar';
 import { CenterPanel } from '@/components/page';
 import { Thread } from '@/components/thread';
 import { Setup, SetupToast } from '@/components/setup';
+import { Picker } from '@/components/picker';
 
 const pref = <T,>(k: string, d: T): T => { try { const v = localStorage.getItem(`studio:${k}`); return v ? (JSON.parse(v) as T) : d; } catch { return d; } };
 const keep = (k: string, v: unknown) => { try { localStorage.setItem(`studio:${k}`, JSON.stringify(v)); } catch { /* private mode */ } };
@@ -71,6 +72,7 @@ export default function Studio() {
           <Thread s={s} g={game} width={width} onHide={() => setThread(false)} />
         </>}
       </div>
+      <Picker s={s} />
       <Setup s={s} />
       <SetupToast s={s} hidden={!!(thread && game)} />   {/* not over a game's chat box; the sidebar shows the status there */}
     </div>

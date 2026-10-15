@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('studio', {
   send: (key, text, slug) => ipcRenderer.invoke('chat:send', { key, text, slug }),
   stop: (key) => ipcRenderer.invoke('chat:stop', key),
   resetChat: (key) => ipcRenderer.invoke('chat:reset', key),
+  answerChoices: (slug, picks) => ipcRenderer.invoke('choices:answer', { slug, picks }),
   allow: (rule) => ipcRenderer.invoke('perm:allow', rule),
   applyFix: (slug, n) => ipcRenderer.invoke('fixes:apply', { slug, n }),
   undoFix: (slug, n) => ipcRenderer.invoke('fixes:undo', { slug, n }),

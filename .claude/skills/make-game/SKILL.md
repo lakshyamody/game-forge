@@ -45,6 +45,8 @@ Ask the user only if the genre itself is ambiguous; otherwise pick the most fun 
 
 `npm run new -- <slug> --template <t> --title "Title" --tagline "One line"`, then fill in `games/<slug>/GAME.md` (pitch, loop, controls) and `game.json` controls/color. GAME.md is the game's memory across sessions — keep it current as you build.
 
+**In Game Forge Studio** (`GAME_FORGE_STUDIO` is set): now run the `choose-look` skill. It shows the user 2–3 rendered options for each key visual and you **end your turn**; continue at step 3 when their picks arrive (the clock pauses while they choose).
+
 ## 3. Build the core verb first
 
 Get the player moving and the core verb working with feedback before anything else. Most of the work is the game's Play scene; menus, pause, game over, best score, level-up cards come from the kit (`menuScene`, `gameOverScene`, `enablePause`, `chooseCard`).

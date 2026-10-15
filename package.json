@@ -8,7 +8,7 @@
     "dev": "vite --open /",
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
-    "preview": "vite preview",
+    "preview": "node scripts/preview.mjs",
     "new": "node scripts/new-game.mjs",
     "shot": "node scripts/shot.mjs",
     "play": "node scripts/play.mjs",
@@ -18,7 +18,8 @@
     "studio": "node studio/launch.mjs",
     "studio:build": "node scripts/build-studio.mjs",
     "studio:dev": "node studio/launch.mjs --dev",
-    "thumbs": "node scripts/thumbs.mjs"
+    "thumbs": "node scripts/thumbs.mjs",
+    "ask": "node scripts/ask.mjs"
   },
   "devDependencies": {
     "@fontsource/orbitron": "^5.3.0",

@@ -7,12 +7,15 @@ export interface Env {
 }
 export interface Fix { n: number; done: boolean; text: string }
 export interface Game { slug: string; thumb: boolean; engine: string; pitch: string; created: number; title: string; tagline: string; color: string; controls: string; fixes: Fix[]; session: boolean }
+/** "choose the look": options Claude rendered (scripts/ask.mjs) for the user to pick from */
+export interface AskOption { label: string; note: string; asset: string; tint: string | null; image: string }
+export interface Ask { slug: string; title: string; created: number; questions: { id: string; question: string; options: AskOption[] }[] }
 export interface RunResult { code: number; stdout: string; stderr: string }
 export type ChatEvent =
   | { key: string; type: 'start' }
   | { key: string; type: 'text' | 'tool' | 'error'; text: string }
   | { key: string; type: 'result'; ok: boolean; text: string; denials: { tool: string; input: Record<string, unknown> }[] }
-  | { key: string; type: 'end'; code: number; newGame: string | null; error: string; auth: boolean };
+  | { key: string; type: 'end'; code: number; newGame: string | null; error: string; auth: boolean; ask?: Ask | null };
 
 export interface StudioApi {
   platform: string;
@@ -25,6 +28,7 @@ export interface StudioApi {
   send(key: string, text: string, slug: string | null): Promise<void>;
   stop(key: string): Promise<void>;
   resetChat(key: string): Promise<void>;
+  answerChoices(slug: string, picks: Record<string, string> | null): Promise<void>;
   allow(rule: string): Promise<void>;
   applyFix(slug: string, n: number | 'all'): Promise<RunResult>;
   undoFix(slug: string, n: number | 'all'): Promise<RunResult>;

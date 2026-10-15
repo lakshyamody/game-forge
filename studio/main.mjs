@@ -28,7 +28,7 @@ import { checkEnv, ensurePlaywright, installClaude, installShims, killTree, node
 import { ensureWorkspace } from './main/workspace.mjs';
 import { downloadRealistic } from './main/library.mjs';
 import { listGames } from './main/games.mjs';
-import { jobs, resetChat, sendChat } from './main/claude.mjs';
+import { answerAsk, jobs, resetChat, sendChat } from './main/claude.mjs';
 import { serveUi, setMenu, uiUrl } from './main/ui.mjs';
 
 let win = null, vite = null, port = 0;
@@ -48,6 +48,7 @@ function wire() {
   ipcMain.handle('chat:send', (_e, { key, text, slug }) => sendChat(key, text, slug, (ev) => send('chat:event', ev)));
   ipcMain.handle('chat:stop', (_e, key) => killTree(jobs.get(key)));
   ipcMain.handle('chat:reset', (_e, key) => resetChat(key));
+  ipcMain.handle('choices:answer', (_e, { slug, picks }) => answerAsk(slug, picks));
   ipcMain.handle('perm:allow', (_e, rule) => { if (!state.allowed.includes(rule)) state.allowed.push(rule); saveState(); });
   ipcMain.handle('fixes:apply', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['apply', slug, String(n)]));
   ipcMain.handle('fixes:undo', (_e, { slug, n }) => nodeScript('scripts/fixes.mjs', ['undo', slug, String(n)]));
