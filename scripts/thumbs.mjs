@@ -17,6 +17,7 @@ const slugs = (o.names.length ? o.names : all).filter((s) => o.flag('force') || 
 if (!slugs.length) { console.log('✔ every game has a thumbnail'); process.exit(0); }
 const dev = await devServer(), browser = await launchChromium({ gpu: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+page.setDefaultTimeout(120000);   // the 30 s default times out on slow machines
 for (const slug of slugs) {
   try {
     await page.goto(dev.url(`games/${slug}/?freelook`), { waitUntil: 'load' });

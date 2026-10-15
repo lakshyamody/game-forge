@@ -24,8 +24,11 @@ export function planPatch(text, root, { reverse = false } = {}) {
     const file = join(root, from ?? path);
     if (from && !existsSync(file)) return { ok: false, writes, error: `${from}: file not found` };
     if (!from && existsSync(join(root, path))) return { ok: false, writes, error: `${path}: already exists` };
-    const out = applyPatch(from ? readFileSync(file, 'utf8') : '', p, { autoConvertLineEndings: true });
+    // apply on LF text, then restore the file's dominant ending: autoConvertLineEndings alone fails on mixed endings (one LF line a tool added to a CRLF file)
+    const raw = from ? readFileSync(file, 'utf8') : '', crlf = (raw.match(/\r\n/g) ?? []).length > (raw.match(/(?<!\r)\n/g) ?? []).length;
+    let out = applyPatch(raw.replace(/\r\n/g, '\n'), p, { autoConvertLineEndings: true });
     if (out === false) return { ok: false, writes, error: `${path}: hunks don't match the current file` };
+    if (crlf) out = out.replace(/\n/g, '\r\n');
     writes.push({ path: join(root, path), content: to ? out : null });
   }
   return { ok: writes.length > 0, writes, error: writes.length ? '' : 'empty patch' };

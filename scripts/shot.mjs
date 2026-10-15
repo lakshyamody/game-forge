@@ -19,7 +19,7 @@ import { resolve, basename } from 'node:path';
 import { root } from './lib/common.mjs';
 import { devServer, launchChromium } from './lib/browser.mjs';
 const args = process.argv.slice(2);
-const target = args.find((a) => !a.startsWith('--') && !/^\d/.test(a)) ?? 'neon-swarm';
+const target = (args.find((a) => !a.startsWith('--') && !/^\d/.test(a)) ?? 'neon-swarm').replace(/\\/g, '/');   // games\neon-swarm (Windows) → games/neon-swarm
 const opt = (name, def) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : def; };
 const seconds = Number(opt('seconds', 8));
 const bot = !args.includes('--no-bot');
@@ -44,6 +44,7 @@ const base = dev.base;
 const gpu = args.includes('--gpu');
 const browser = await launchChromium({ gpu });
 const page = await browser.newPage({ viewport: { width: vw, height: vh } });
+page.setDefaultTimeout(120000);   // navigation + actions: the 30 s default times out on slow software-rendered machines
 const errors = [];
 const warnings = [];
 page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}\n${(e.stack || '').split('\n').slice(1, 4).join('\n')}`));
