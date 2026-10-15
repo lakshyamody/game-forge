@@ -24,11 +24,16 @@ export function planPatch(text, root, { reverse = false } = {}) {
     const file = join(root, from ?? path);
     if (from && !existsSync(file)) return { ok: false, writes, error: `${from}: file not found` };
     if (!from && existsSync(join(root, path))) return { ok: false, writes, error: `${path}: already exists` };
-    // apply on LF text, then restore the file's dominant ending: autoConvertLineEndings alone fails on mixed endings (one LF line a tool added to a CRLF file)
-    const raw = from ? readFileSync(file, 'utf8') : '', crlf = (raw.match(/\r\n/g) ?? []).length > (raw.match(/(?<!\r)\n/g) ?? []).length;
-    let out = applyPatch(raw.replace(/\r\n/g, '\n'), p, { autoConvertLineEndings: true });
+    const raw = from ? readFileSync(file, 'utf8') : '';
+    let out = applyPatch(raw, p, { autoConvertLineEndings: true });   // keeps each line's ending, byte for byte
+    // mixed endings (one LF line a tool added to a CRLF file, common on Windows) make autoConvertLineEndings give up:
+    // only then, retry on LF text and give the result the file's dominant ending
+    if (out === false && raw.includes('\r\n')) {
+      const crlf = (raw.match(/\r\n/g) ?? []).length > (raw.match(/(?<!\r)\n/g) ?? []).length;
+      out = applyPatch(raw.replace(/\r\n/g, '\n'), p, { autoConvertLineEndings: true });
+      if (out !== false && crlf) out = out.replace(/\n/g, '\r\n');
+    }
     if (out === false) return { ok: false, writes, error: `${path}: hunks don't match the current file` };
-    if (crlf) out = out.replace(/\n/g, '\r\n');
     writes.push({ path: join(root, path), content: to ? out : null });
   }
   return { ok: writes.length > 0, writes, error: writes.length ? '' : 'empty patch' };
