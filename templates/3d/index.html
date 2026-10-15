@@ -6,12 +6,19 @@
   <title>{{TITLE}}</title>
   <link rel="icon" href="data:," />
   <style>
-    html, body { margin: 0; height: 100%; background: #05060f; overflow: hidden; touch-action: none; font-family: Orbitron, system-ui, sans-serif; }
+    html, body { margin: 0; height: 100%; background: #0d1116; overflow: hidden; touch-action: none; font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
     #game { position: fixed; inset: 0; }
-    .hud .stat { position: absolute; top: 18px; font-size: 22px; letter-spacing: 2px; text-shadow: 0 0 12px currentColor; }
-    .hud .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(5,6,15,.55); pointer-events: auto; cursor: pointer; text-align: center; }
-    .hud .overlay h1 { margin: 0; font-size: clamp(36px, 8vw, 88px); color: #ff4dd2; text-shadow: 0 0 24px #ff4dd2; }
-    .hud .overlay p { margin: 0; color: #b9c2ff; font-size: 14px; letter-spacing: 1px; }
+    /* a clean HUD: small translucent chips that read over any scene, never wrap */
+    .hud .bar { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; gap: 8px; align-items: center; pointer-events: none; }
+    .hud .chip { display: flex; align-items: center; gap: 8px; white-space: nowrap; padding: 7px 14px; border-radius: 12px; background: rgba(12, 16, 22, .55); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.12); color: #f4f6f8; font-size: 15px; font-weight: 600; letter-spacing: .3px; box-shadow: 0 4px 18px rgba(0,0,0,.25); }
+    .hud .chip b { font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hud .chip .dim { color: #a9b4c0; font-weight: 500; }
+    .hud .spacer { flex: 1; }
+    .hud .toast { position: absolute; top: 22%; left: 50%; transform: translateX(-50%); font-size: clamp(28px, 5vw, 54px); font-weight: 800; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,.45); opacity: 0; transition: opacity .25s; pointer-events: none; }
+    .hud .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: linear-gradient(180deg, rgba(8,12,18,.15), rgba(8,12,18,.65)); pointer-events: auto; cursor: pointer; text-align: center; color: #fff; }
+    .hud .overlay h1 { margin: 0; font-size: clamp(40px, 8vw, 92px); font-weight: 900; letter-spacing: -1px; text-shadow: 0 6px 30px rgba(0,0,0,.4); }
+    .hud .overlay p { margin: 0; color: #dfe6ee; font-size: 16px; }
+    .hud .overlay .go { margin-top: 10px; padding: 10px 22px; border-radius: 999px; background: #fff; color: #10151b; font-weight: 700; font-size: 15px; }
     .hud .hidden { display: none; }
   </style>
 </head>

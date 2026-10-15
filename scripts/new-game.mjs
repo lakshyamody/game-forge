@@ -23,7 +23,8 @@ const TEMPLATES = {
   platformer: 'Pixel-art side-scroller: arcade physics, coyote time, ASCII levels, stomp enemies. Platformers, metroidvania rooms.',
   puzzle: 'Grid puzzle (Sokoban) with undo, restart, level progression. Any turn-based / tile / logic game.',
   physics: 'Matter.js slingshot destruction. Anything with real rigid bodies: stacking, ragdolls, marble runs, golf.',
-  '3d': 'Three.js arena with bloom and HTML HUD. Anything that needs 3D.',
+  '3d': 'Three.js world that already looks good: HDRI sky + sun shadows, textured ground, nature props, animated character, third-person camera, clean HUD. Start here for anything 3D.',
+  '3d-neon': 'Three.js neon arena (grid, glow, bloom). Only for an abstract neon style.',
 };
 const games = () => readdirSync(resolve(root, 'games')).filter((d) => existsSync(resolve(root, 'games', d, 'game.json')));
 

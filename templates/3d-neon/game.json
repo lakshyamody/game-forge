@@ -1,0 +1,7 @@
+{
+  "title": "{{TITLE}}",
+  "tagline": "{{TAGLINE}}",
+  "controls": "WASD move · Space dash · Esc pause · M mute",
+  "color": "#ff4dd2",
+  "engine": "three"
+}

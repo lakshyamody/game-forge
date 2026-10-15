@@ -21,7 +21,7 @@ A browser-game workshop: shared kit + genre templates + headless playtesting, so
 - `kit/three/` — `boot` (`bootThree`: renderer, bloom, shadows, resize, loop, HTML HUD, shake), `debris` (instanced cube particles).
 - `kit/assets.ts` — the asset library loader (models + animations, PBR textures, HDRI, recorded sounds, URLs). Works in dev, builds and itch.io zips.
 - Each kit file's header comment is its usage doc. Read it before using the module.
-- `templates/` — `blank`, `topdown`, `platformer`, `puzzle`, `physics`, `3d`. Each is a complete, playtested game; `npm run new` with no args describes them.
+- `templates/` — `blank`, `topdown`, `platformer`, `puzzle`, `physics`, `3d` (a grounded world that already looks good), `3d-neon`. Each is a complete, playtested game; `npm run new` with no args describes them.
 - Reference games: `games/neon-swarm` (polished 2D: pools + spatial hash, waves, upgrades, overlay scenes), `games/block-racer` (3D voxel racing: chunked InstancedMesh world, texture atlas, arcade drift physics), `games/hollow-house` (first-person horror: pointer lock, grid A* AI with hearing/sight, hiding, spatial audio), `games/siteline` (tactical FPS: hitscan with spread/recoil, abilities, round economy, defender AI), `games/banner-raid` (Clash-style raids: KayKit troops, A* through walls, defenses, camp upgrades), `games/sunset-district` (realistic GTA-style city: realism kit, procedural downtown + cars, Rocketbox pedestrians, traffic AI, day/night).
 
 ## Asset library (`assets/`, all CC0)
